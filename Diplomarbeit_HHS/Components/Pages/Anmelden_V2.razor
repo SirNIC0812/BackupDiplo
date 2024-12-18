@@ -1,0 +1,41 @@
+﻿@page "/anmelden"
+
+<link href="style/style.css" rel="stylesheet" />
+
+<body>
+	<section>
+		<table>
+			<thead>
+			</thead>
+			<tfoot>
+			</tfoot>
+			<tbody>
+				<tr>
+					<td><h1>Anmelden</h1></td>
+					<td rowspan="2"><img src="img/Logo_BHAK10.jpg" alt="Schullogo" class="Bild" /></td>
+				</tr>
+				<tr>
+					<td><p>Bitte melden Sie sich mit Ihrem User an.</p></td>
+				</tr>
+			</tbody>
+		</table>
+
+		<table class="User">
+			<thead>
+				<tr>
+					<th>Username</th>
+					<th>Passwort</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><input type="text" name="Username" id="Username" @Username /></td>
+					<td><input type="text" name="Passwort" id="PW" @PW /></td>
+				</tr>
+			</tbody>
+		</table>
+		<button name="Anmelden">Anmelden</button>
+		<a href="/admin">Admin</a>
+		<a href="/basic">Non-Admin</a>
+	</section>
+</body>

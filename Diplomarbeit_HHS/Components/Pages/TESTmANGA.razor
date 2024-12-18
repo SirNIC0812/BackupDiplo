@@ -1,0 +1,147 @@
+﻿@page "/manga"
+@using System.IO
+
+<link href="style/style.css" rel="stylesheet" />
+<body>
+    <header>
+        Manga Liste
+    </header>
+    <section>
+        <article class="AnzeigeDaten">
+            @if (mangas == null)
+            {
+                    <p>Lade Daten...</p>
+            }
+            else if (!mangas.Any())
+            {
+                    <p>Keine Daten gefunden.</p>
+            }
+            else
+            {
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th @onclick="() => SortTable(nameof(Manga.MangaNumber))">
+                                    ID
+                                @(currentSortColumn == nameof(Manga.MangaNumber)
+                                        ? (sortAscending ? "↑" : "↓")
+                                        : string.Empty)
+                                </th>
+                                <th @onclick="() => SortTable(nameof(Manga.MangaName))">
+                                    Name
+                                @(currentSortColumn == nameof(Manga.MangaName)
+                                        ? (sortAscending ? "↑" : "↓")
+                                        : string.Empty)
+                                </th>
+                                <th @onclick="() => SortTable(nameof(Manga.ChapterNumber))">
+                                    Chapter
+                                @(currentSortColumn == nameof(Manga.ChapterNumber)
+                                        ? (sortAscending ? "↑" : "↓")
+                                        : string.Empty)
+                                </th>
+                                <th @onclick="() => SortTable(nameof(Manga.Status))">
+                                    Status
+                                @(currentSortColumn == nameof(Manga.Status)
+                                        ? (sortAscending ? "↑" : "↓")
+                                        : string.Empty)
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var manga in mangas)
+                        {
+                                    <tr>
+                                        <td>@manga.MangaNumber</td>
+                                        <td>@manga.MangaName</td>
+                                        <td>@manga.ChapterNumber.ToString("F1", System.Globalization.CultureInfo.InvariantCulture)</td>
+                                        <td>@manga.Status</td>
+                                    </tr>
+                        }
+                        </tbody>
+                    </table>
+            }
+            <p>@Output</p>
+        </article>
+
+    </section>
+</body>
+
+
+@code {
+    private string Output = "";
+
+    public class Manga
+    {
+        public int MangaNumber { get; set; }
+        public string? MangaName { get; set; }
+        //public string? ChapterNumber { get; set; }
+        public double ChapterNumber { get; set; }
+        public string? Status { get; set; }
+    }
+
+    public async Task<List<Manga>> LoadMangaDataAsync(string filePath)
+    {
+        var mangas = new List<Manga>();
+        var lines = await File.ReadAllLinesAsync(filePath);
+
+        foreach (var line in lines.Skip(1)) // Überspringe die Header-Zeile
+        {
+            var fields = line.Split(';');
+            if (fields.Length >= 4)
+            {
+                mangas.Add(new Manga
+                    {
+                        MangaNumber = int.Parse(fields[0].Trim()),
+                        MangaName = fields[1].Trim(),
+                        //ChapterNumber = fields[2].Trim(),
+                        ChapterNumber = double.Parse(fields[2].Trim(), System.Globalization.CultureInfo.InvariantCulture),
+                        Status = fields[3].Trim()
+                    });
+            }
+        }
+        return mangas;
+    }
+
+    private List<Manga>? mangas;
+
+    protected override async Task OnInitializedAsync()
+    {
+        mangas = await LoadMangaDataAsync("C:/Playwright/MangaAusgabeTXT.txt");
+    }
+
+    private bool sortAscending = true;
+    private string? currentSortColumn;
+
+    private void SortTable(string columnName)
+    {
+        if (currentSortColumn == columnName)
+        {
+            sortAscending = !sortAscending; // Toggle sort direction
+        }
+        else
+        {
+            currentSortColumn = columnName;
+            sortAscending = true;
+        }
+
+        if (mangas != null)
+        {
+            mangas = columnName switch
+            {
+                nameof(Manga.MangaNumber) => sortAscending
+                    ? mangas.OrderBy(m => m.MangaNumber).ToList()
+                    : mangas.OrderByDescending(m => m.MangaNumber).ToList(),
+                nameof(Manga.MangaName) => sortAscending
+                    ? mangas.OrderBy(m => m.MangaName).ToList()
+                    : mangas.OrderByDescending(m => m.MangaName).ToList(),
+                nameof(Manga.ChapterNumber) => sortAscending
+                    ? mangas.OrderBy(m => m.ChapterNumber).ToList()
+                    : mangas.OrderByDescending(m => m.ChapterNumber).ToList(),
+                nameof(Manga.Status) => sortAscending
+                    ? mangas.OrderBy(m => m.Status).ToList()
+                    : mangas.OrderByDescending(m => m.Status).ToList(),
+                _ => mangas
+            };
+        }
+    }
+}

@@ -1,0 +1,227 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+body {
+    background-color: white;
+    font-family: sans-serif;
+    color: #000000;
+    width: 100%;
+    height: 100vh;
+    overflow-x: hidden;
+    font-size: 1em;
+}
+
+
+header {
+    height: 10%;
+    background-color: #94CCFF;
+    color: #0C01A5;
+    border: 1px solid #000000;
+    text-align: center;
+}
+#HeaderPicture {
+    float: left;
+    width: 15%;
+}
+#HeaderText {
+    float: left;
+    width: 70%;
+    font-size: 3em;
+    text-align: center;
+}
+#HeaderLogout {
+    float: right;
+    margin: 0% 0% 0% 0%;
+    width: 15%;
+    height: 100%;
+    border: none;
+    background-color: none;
+    color: red;
+    font-size: 1em;
+}
+
+
+section {
+    height: 90%;
+    //border: 0.1vh solid yellow;
+}
+article {
+    height: 50%;
+    //border: 0.1vh solid purple;
+}
+
+
+table {
+    width: 100%;
+    margin: 1.5% 0% 1.5% 0%;
+    text-align: right;
+    border-bottom: 1px solid red;
+}
+tr {
+    width: 100%;
+    height: 10%;
+}
+th {
+    border: 0.1vh solid #0C01A5;
+    margin: 2%;
+    text-align: center;
+    background-color: #94CCFF;
+    color: #0C01A5;
+    font-size: 1.3em;
+}
+td {
+    width: 20%;
+    padding: 0.5% 1% 0.5% 1%;
+    border: 1px solid #FFFFFF;
+}
+.AnzeigeDaten {
+    width: 100%;
+    height: 50%;
+    font-size: 1em;
+    float: left;
+    padding: 0% 1% 0% 1%;
+    background-color: #FFFFFF;
+    text-align: center;
+    overflow: auto;
+}
+
+.TableBestellungenID {
+    width: 5%;
+    padding: 0.5% 1% 0.5% 1%;
+    border: 1px solid #0C01A5;
+    text-align: center;
+}
+.TableBestellungenUnternehmen {
+    width: 30%;
+    padding: 0.5% 1% 0.5% 1%;
+    border: 1px solid #0C01A5;
+}
+.TableBestellungenFertig {
+    width: 5%;
+    padding: 0.5% 1% 0.5% 1%;
+    border: 1px solid #0C01A5;
+    text-align: center;
+}
+.TableBestellungenAnzahl {
+    width: 12.5%;
+    padding: 0.5% 1% 0.5% 1%;
+    border: 1px solid #0C01A5;
+}
+.TableBestellungenNetto {
+    width: 12.5%;
+    padding: 0.5% 1% 0.5% 1%;
+    border: 1px solid #0C01A5;
+}
+.TableBestellungenSteuer {
+    width: 12.5%;
+    padding: 0.5% 1% 0.5% 1%;
+    border: 1px solid #0C01A5;
+}
+.TableBestellungenBrutto {
+    width: 12.5%;
+    padding: 0.5% 1% 0.5% 1%;
+    border: 1px solid #0C01A5;
+}
+
+#TableBody {
+    //overflow: auto;
+    //border-bottom: 0.1vh solid #0C01A5;
+    //background-color: green;
+}
+
+
+#divEins {
+    float: left;
+    background-color: #F0F0F0;
+    border: 1px solid #000000;
+    width: 15%;
+    height: 25%;
+    margin: 3% 0% 0% 0%;
+}
+#divZwei {
+    float: left;
+    border: 1px solid #000000;
+    margin: 3% 0% 0% 5%;
+    background-color: #F0F0F0;
+    width: 80%;
+    height: 25%;
+}
+.divZweiBestellung {
+    float: left;
+    border: 1px solid #000000;
+    width: 25%;
+}
+
+#DivButtons {
+    float: left;
+    width: 15%;
+    margin: 2% 0% 0% 0%;
+    height: 70%
+}
+
+button {
+    width: 100%;
+}
+
+#divDrei {
+    float: left;
+    border: 1px solid #000000;
+    background-color: #F0F0F0;
+    width: 35%;
+    height: 70%;
+    margin: 2% 0% 0% 5%;
+}
+#divVier {
+    float: left;
+    border: 1px solid #FFFFFF;
+    background-color: #F0F0F0;
+    width: 40%;
+    height: 70%;
+    margin: 2% 0% 0% 5%;
+}
+
+
+
+
+select {
+    width: 100%;
+}
+input {
+    width: 100%;
+}
+
+
+
+button {
+    margin: 0% 0% 0% 0%;
+    background-color: #94CCFF;
+    color: #0C01A5;
+    font-size: 1.5em;
+    padding: 1%;
+    //border-radius: 20%;
+    border-color: blue;
+    float: right;
+}
+#AnmeldeButton {
+    float: right;
+    margin: 0% 0% 0% 0%;
+    width: 100%;
+}
+.ButtonsUnten {
+    float: left;
+    margin: 0% 1% 0% 1%;
+    width: 18%;
+}
+
+
+.TestTableUntenTest {
+    text-align: center;
+    margin: 0% 0% 0% 0%;
+    width: 14%;
+}
+
+
+.Hide {
+    display: none;
+}

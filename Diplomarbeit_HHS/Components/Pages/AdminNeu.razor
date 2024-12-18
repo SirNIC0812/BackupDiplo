@@ -1,0 +1,382 @@
+﻿@page "/adminneu"
+@using System.Text.Json
+@using System.Text
+@using System.Net.Http.Headers
+@using Diplomarbeit_HHS.Models
+
+<link href="style/style.css" rel="stylesheet" />
+<body>
+	<header>
+		<table>
+			<thead>
+				<tr>
+					<th><h1>Adminansicht NEU 123</h1></th>
+					<th><p>@Username || @UEFA</p></th>
+				</tr>
+			</thead>
+			<tfoot>
+			</tfoot>
+			<tbody>
+				<tr>
+					<td><p>Das ist die Ansicht des Admin-User.</p></td>
+					<td rowspan="2"><img src="img/Logo_BHAK10.jpg" alt="Schullogo" class="Bild" /></td>
+				</tr>
+				<tr>
+					<td><p>Herzlich Willkommen bei der Anmeldeseite für die Übungsfirmen!</p></td>
+				</tr>
+			</tbody>
+		</table>
+
+	</header>
+	<nav>
+	</nav>
+	<section>
+		<article>
+			<p>@OutputResult</p>
+
+			<h3>Test Appsettings</h3>
+
+			<table>
+				<thead>
+					<tr>
+						<th class="TestTableUntenTest">ID</th>
+						<th class="TestTableUntenTest">Unternehmen</th>
+						<th class="TestTableUntenTest">Ist Fertig</th>
+						<th class="TestTableUntenTest">Anzahl</th>
+						<th class="TestTableUntenTest">Netto</th>
+						<th class="TestTableUntenTest">Steuer</th>
+						<th class="TestTableUntenTest">Brutto</th>
+					</tr>
+				</thead>
+				<tfoot>
+				</tfoot>
+				<tbody>
+						@if (bestellungen == null)
+						{
+							<p>Sucht die Datensätze</p>
+						}
+						else if (bestellungen.Count == 0)
+						{
+							<p>Keine Datensätze von Bestellungen gefunden.</p>
+						}
+						else
+						{
+							{@foreach (var bestellung in bestellungen)
+								{
+									<tr>
+										<td>@bestellung.id</td>
+										<td>@bestellung.unternehmen</td>
+										<td>@bestellung.isComplete</td>
+										<td>@bestellung.anzahl</td>
+										<td>@bestellung.netto</td>
+										<td>@bestellung.steuer</td>
+										<td>@bestellung.brutto</td>
+									</tr>
+								}
+							}
+						}
+					<tr>
+						<td class="TestTableUntenTest">@IDNumber</td>
+						<td class="TestTableUntenTest">@Unternehmen</td>
+						<td class="TestTableUntenTest">@IsComplete</td>
+						<td class="TestTableUntenTest">@Anzahl</td>
+						<td class="TestTableUntenTest">@Netto</td>
+						<td class="TestTableUntenTest">@Steuer</td>
+						<td class="TestTableUntenTest">@Brutto</td>
+					</tr>
+				</tbody>
+			</table>
+
+			<P>@OutputGetPostPutDelete</P>
+
+			<table id="TestTableAllesAnzeigen">
+				<thead>
+					<tr>
+						<th class="TestTableUntenTest">ID</th>
+						<th class="TestTableUntenTest">Unternehmen</th>
+						<th class="TestTableUntenTest">Ist Fertig</th>
+						<th class="TestTableUntenTest">Anzahl</th>
+						<th class="TestTableUntenTest">Netto</th>
+						<th class="TestTableUntenTest">Steuer</th>
+						<th class="TestTableUntenTest">Brutto</th>
+					</tr>
+				</thead>
+				<tfoot>
+				</tfoot>
+				<tbody>
+					<tr>
+						<td class="TestTableUntenTest"><input type="number" @bind="IDNumber" name="IDNumber" id="IDNumber" /></td>
+						<!-- atbind="zahl" dient dazu das der Wert vom Input-Feld direkt syncronisiert wird mit er Variable "zahl"" in C#-->
+						<td class="TestTableUntenTest"><input type="text" @bind="Unternehmen" name="Unternehmen" id="Unternehmen" /></td>
+						<td class="TestTableUntenTest"><input type="checkbox" @bind="IsComplete" name="IsComplete" id="IsComplete" /></td>
+						<td class="TestTableUntenTest"><input type="number" @bind="Anzahl" name="Anzahl" id="Anzahl" /></td>
+						<td class="TestTableUntenTest"><input type="number" @bind="Netto" name="Netto" id="Netto" /></td>
+						<td class="TestTableUntenTest"><input type="number" @bind="Steuer" name="Steuer" id="Steuer" /></td>
+						<td class="TestTableUntenTest"><input type="number" @bind="Brutto" name="Brutto" id="Brutto" /></td>
+					</tr>
+				</tbody>
+			</table>
+			<table>
+				<thead>
+				</thead>
+				<tfoot>
+				</tfoot>
+				<tbody>
+					<tr>
+						<td class="ButtonsUnten"><button id="TestAPI" @onclick="TestAPIGETALL">Testen API DIP GETALL</button></td>
+						<td class="ButtonsUnten"><button id="TestAPI" @onclick="TestAPIGET">Testen API DIP GET</button></td>
+						<td class="ButtonsUnten"><button id="TestAPI" @onclick="TestAPIPOST">Testen API DIP POST</button></td>
+						<td class="ButtonsUnten"><button id="TestAPI" @onclick="TestAPIPUT">Testen API DIP PUT</button></td>
+						<td class="ButtonsUnten"><button id="TestAPI" @onclick="TestAPIDELETE">Testen API DIP DELETE</button></td>
+					</tr>
+					<tr>
+						<td><button @onclick="LogOut">Logout</button></td>
+						<td><button id="TestAPI" @onclick="NettoSteuerBruttoErgebnis">NettoSteuerBrutto</button></td>
+
+					</tr>
+				</tbody>
+			</table>
+
+			<p>@NettoSteuerBrutto</p>
+
+		</article>
+	</section>
+</body>
+
+
+@code {
+
+	private string Username = "TestAdmin";
+	private string UEFA = "Udesigndea";
+	private string NettoSteuerBrutto = "";
+	private string OutputResult = "";
+	private string OutputGetPostPutDelete = "";
+
+	public class DIP
+	{
+		public int id { get; set; }
+		public string? unternehmen { get; set; }
+		public Boolean isComplete { get; set; }
+		public int anzahl { get; set; }
+		public double netto { get; set; }
+		public double steuer { get; set; }
+		public double brutto { get; set; }
+	}
+
+	private int IDNumber;
+	private string? Unternehmen;
+	private Boolean IsComplete;
+	private int Anzahl;
+	private double Netto;
+	private double Steuer;
+	private double Brutto;
+
+
+	public async Task NettoSteuerBruttoErgebnis()
+	{
+		double netto = Netto;
+
+		NettoSteuerBrutto NewNettoSteuerBrutto = new NettoSteuerBrutto();
+		string zahlen = Convert.ToString(await NewNettoSteuerBrutto.NettoBruttoRechnerRechnen(netto));
+		NettoSteuerBrutto = zahlen;
+	}
+
+	private List<DIP> bestellungen;
+
+	public async Task<List<DIP>> HoleAlleBestellungen()
+	{
+
+		string BestellungURL = URLs.URLEinkaufBestellung;
+		var token = await SecureStorage.GetAsync("authToken");
+
+		HttpClient GetBestellungen = new HttpClient();
+		GetBestellungen.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+		HttpResponseMessage response = await GetBestellungen.GetAsync(BestellungURL);
+
+		if (response.IsSuccessStatusCode)
+		{
+			string responseBody = await response.Content.ReadAsStringAsync();
+			List<DIP> bestellung = JsonSerializer.Deserialize<List<DIP>>(responseBody);
+
+			Console.WriteLine(Convert.ToString(response));
+			return bestellung;
+		}
+		else
+		{
+			string test = "\nFehlermeldung: " + response.StatusCode;
+			return null;
+		}
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+
+		bestellungen = await HoleAlleBestellungen();
+
+
+		HttpClient client = new HttpClient();
+		var token = await SecureStorage.GetAsync("authToken");
+		client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+		HttpResponseMessage GetResponse = await client.GetAsync($"{URLs.URLEinkaufBestellung}");
+
+		if (GetResponse.IsSuccessStatusCode)
+		{
+			var responseBody = await GetResponse.Content.ReadAsStringAsync();
+			OutputResult = responseBody;
+			OutputGetPostPutDelete = "GETALL wurde erfolgreich ausgeführt!";
+		}
+		else
+		{
+			OutputResult = "Error TestAPIGET: " + GetResponse.StatusCode;
+		}
+	}
+
+
+	public async Task TestAPIGETALL()
+	{
+		HttpClient client = new HttpClient();
+		var token = await SecureStorage.GetAsync("authToken");
+		client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+		HttpResponseMessage GetResponse = await client.GetAsync($"{URLs.URLEinkaufBestellung}");
+
+		if (GetResponse.IsSuccessStatusCode)
+		{
+			var responseBody = await GetResponse.Content.ReadAsStringAsync();
+			OutputResult = responseBody;
+			OutputGetPostPutDelete = "GETALL wurde erfolgreich ausgeführt!";
+		}
+		else
+		{
+			OutputGetPostPutDelete = "Error TestAPIGET: " + GetResponse.StatusCode;
+		}
+	}
+
+
+
+
+	public async Task<DIP> HoleBestellungById(int id)
+	{
+		HttpClient client = new HttpClient();
+		var token = await SecureStorage.GetAsync("authToken");
+		client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+		HttpResponseMessage GetResponse = await client.GetAsync($"{URLs.URLEinkaufBestellung}/{IDNumber}");
+		OutputGetPostPutDelete += $"{URLs.URLEinkaufBestellung}/{IDNumber}";
+
+
+		if (GetResponse.IsSuccessStatusCode)
+		{
+			var responseBody = await GetResponse.Content.ReadAsStringAsync();
+			OutputResult = responseBody;
+
+			DIP bestellung = JsonSerializer.Deserialize<DIP>(responseBody);
+			return bestellung;
+		}
+		else
+		{
+			OutputGetPostPutDelete += "Error TestAPIGET: " + GetResponse.StatusCode;
+			return null;
+		}
+	}
+
+	private async void GetBestellungById(int IDNumber)
+	{
+		var Bestellung = await HoleBestellungById(IDNumber);
+
+		if (Bestellung == null)
+		{
+			OutputGetPostPutDelete = "Ihre werte sind null, da hat was ned funkt";
+		}
+		else
+		{		
+			Unternehmen = Bestellung.unternehmen;
+			IsComplete = Bestellung.isComplete;
+			Anzahl = Bestellung.anzahl;
+			Netto = Bestellung.netto;
+			Steuer = Bestellung.steuer;
+			Brutto = Bestellung.brutto;		
+		}
+	}
+
+	public async Task TestAPIGET()
+	{
+		GetBestellungById(IDNumber);
+	}
+
+
+
+	public async Task TestAPIPOST()
+	{
+		HttpClient client = new HttpClient();
+		var token = await SecureStorage.GetAsync("authToken");
+		client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+		//Problem liegt derweil bei der Id, muss immer die nächste Zahl selber eingeben sonst error; auch irgendwie zahlen funkt nicht so wirklich
+		DIP newDIP = new DIP { id = IDNumber, unternehmen = Unternehmen, isComplete = IsComplete, anzahl = Anzahl, netto = Netto, steuer = Steuer, brutto = Brutto };
+		string jsonData = JsonSerializer.Serialize(newDIP);
+		var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+		HttpResponseMessage response = await client.PostAsync($"{URLs.URLEinkaufBestellung}/", content);
+
+		if (response.IsSuccessStatusCode)
+		{
+			var responseBody = await response.Content.ReadAsStringAsync();
+			OutputResult = responseBody;
+			OutputGetPostPutDelete = "POST wurde erfolgreich ausgeführt!";
+		}
+		else
+		{
+			OutputGetPostPutDelete = "Error TestAPIPOST: " + response.StatusCode;
+		}
+	}
+
+
+
+
+	public async Task TestAPIPUT()
+	{
+		HttpClient client = new HttpClient();
+		var token = await SecureStorage.GetAsync("authToken");
+		client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+		DIP newDIP = new DIP { id = IDNumber, unternehmen = Unternehmen, isComplete = IsComplete, anzahl = Anzahl, netto = Netto, steuer = Steuer, brutto = Brutto };
+		string jsonData = JsonSerializer.Serialize(newDIP);
+		var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+		HttpResponseMessage response = await client.PutAsync($"{URLs.URLEinkaufBestellung}/{IDNumber}", content);
+
+		if (response.IsSuccessStatusCode)
+		{
+			var responseBody = await response.Content.ReadAsStringAsync();
+			OutputResult = responseBody;
+			OutputGetPostPutDelete = "PUT wurde erfolgreich ausgeführt!";
+		}
+		else
+		{
+			OutputGetPostPutDelete = "Error TestAPIPUT: " + response.StatusCode;
+		}
+	}
+
+
+	public async Task TestAPIDELETE()
+	{
+		HttpClient client = new HttpClient();
+		var token = await SecureStorage.GetAsync("authToken");
+		client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+		HttpResponseMessage response = await client.DeleteAsync($"{URLs.URLEinkaufBestellung}/{IDNumber}"); //Ich kann die ID 1 nicht löschen --> gewollt ja/nein
+
+		if (response.IsSuccessStatusCode)
+		{
+			var responseBody = await response.Content.ReadAsStringAsync();
+			OutputResult = responseBody;
+			OutputGetPostPutDelete = "DELETE wurde erfolgreich ausgeführt!";
+		}
+		else
+		{
+			OutputGetPostPutDelete = "Error TestAPIDELETE: " + response.StatusCode;
+		}
+	}
+
+
+	private async void LogOut()
+	{
+		await SecureStorage.SetAsync("authToken", "1");
+		OutputGetPostPutDelete = "Sie haben sich abgemeldet. Ihr Token ist gelöscht";
+	}
+}
