@@ -20,10 +20,6 @@
 	</nav>
 	<section class="AnzeigeDaten">
 		<article >
-			<!--<p>@OutputResult</p>
-
-			<h3>Test Appsettings</h3>-->
-
 			<table>
 				<thead>
 					<tr>
@@ -39,20 +35,20 @@
 				</thead>
 				<tfoot>
 					<tr>
-						<td colspan="7">@OutputGetPostPutDelete</td>
+						<td colspan="8">@OutputGetPostPutDelete</td>
 					</tr>
 				</tfoot>
 				<tbody id="TableBody">
 					@if (bestellungen == null)
 					{
 						<tr>
-							<td>Es wird nach den Datensätzen gesucht.</td>
+							<td colspan="8">Es wird nach den Datensätzen gesucht.</td>
 						</tr>
 					}
 					else if (bestellungen.Count == 0)
 					{
 						<tr>
-							<td>Es wurden keine Datensätze gefunden.</td>
+							<td colspan="8">Es wurden keine Datensätze gefunden.</td>
 						</tr>
 					}
 					else
