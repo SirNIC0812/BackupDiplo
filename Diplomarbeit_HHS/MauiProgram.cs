@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using static Diplomarbeit_HHS.Components.Pages.Anmelden;
 
 namespace Diplomarbeit_HHS
 {
@@ -25,6 +26,9 @@ namespace Diplomarbeit_HHS
     		builder.Logging.AddDebug();
 
 			builder.Services.AddOptions();
+
+			builder.Services.AddSingleton<Models.AppUserService>();
+
 
 
 			//var builder = WebApplication.CreateBuilder(args);

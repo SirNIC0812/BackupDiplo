@@ -1,0 +1,311 @@
+﻿@page "/EinkaufBestellungen"
+@using System.Text.Json
+@using System.Text
+@using System.Net.Http.Headers
+@using Microsoft.Extensions.Configuration
+@using Diplomarbeit_HHS.Models
+@inject IConfiguration Configuration
+@inject NavigationManager Navigation
+@inject IJSRuntime JS //Schnittstelle zwischen c# und js
+
+<script src="javaScript/script.js"></script>
+<link rel="stylesheet" media="(min-width:0px)" href="style/styleMobile.css" />
+<link rel="stylesheet" media="(min-width:1000px)" href="style/style.css" />
+
+<body>
+	<header>
+		<!--<img src="img/Logo_BHAK10.jpg" alt="BhakWien10Schullogo" class="BildHeader" />-->
+		<h1 class="HeaderText">Einkauf Bestellungen</h1>
+		<!--<button @onclick="LogOut" class="HeaderLogout">Logout</button>-->
+	</header>
+	<nav>
+	</nav>
+	<section>
+		<article class="AnzeigeDaten">
+			<table id ="InhaltOnClick">
+				<thead>
+					<tr>
+						<th class="TableBestellungenID">ID</th>
+						<th class="TableBestellungenUnternehmen">Unternehmen</th>
+						<th class="TableBestellungenBestelldatum">Bestelldatum</th>
+						<th class="TableBestellungenFertig"><span>✔</span></th>
+						<th class="TableBestellungenAnzahl">Anzahl</th>
+						<th class="TableBestellungenNetto">Netto</th>
+						<th class="TableBestellungenSteuer">Steuer</th>
+						<th class="TableBestellungenBrutto">Brutto</th>
+					</tr>
+				</thead>
+				<tfoot>
+					<tr>
+						<td colspan="8">@OutputGetPostPutDelete</td>
+					</tr>
+				</tfoot>
+				<tbody id="TableBody">
+					@if (bestellungen == null)
+					{
+						<tr>
+							<td colspan="8">Es wird nach den Datensätzen gesucht.</td>
+						</tr>
+					}
+					else if (bestellungen.Count == 0)
+					{
+						<tr>
+							<td colspan="8">Es wurden keine Datensätze gefunden.</td>
+						</tr>
+					}
+					else
+					{
+						@foreach (var bestellung in bestellungen)
+						{
+							<tr @onclick="() => GetBestellungById(bestellung.bId)" style="cursor: pointer;" >
+								<td class="TableBestellungenID">@bestellung.bId</td>
+								<td class="TableBestellungenUnternehmen">@bestellung.beschreibung</td>
+								<td class="TableBestellungenBestelldatum">@bestellung.bestelldatum</td>
+								<td class="TableBestellungenFertig">
+									@if (bestellung.isComplete)
+									{
+										<span>✔</span>
+									}
+								</td>
+								<td class="TableBestellungenAnzahl">@bestellung.anzahl</td>
+								<td class="TableBestellungenNetto">@bestellung.netto</td>
+								<td class="TableBestellungenSteuer">@bestellung.steuer</td>
+								<td class="TableBestellungenBrutto">@bestellung.brutto</td>
+							</tr>
+						}
+					}
+				</tbody>
+			</table>
+		</article>
+		<article class="AnzeigeInput">
+			<div class="LinkesDiv">
+				<div id="divEins">
+					<label class="divEinsBestellung" for="IDNumber">ID</label>
+					<input type="number" name="IDNumber" id="IDNumber" @bind="IDNumber" min="0" class="divEinsBestellung" />
+				</div>
+
+				<div id="DivButtons">
+					<button id="GETBestellungen" @onclick="TestAPIGET">Anzeigen</button>
+					<br>
+					<button id="POSTBestellungen" @onclick="TestAPIPOST">Erstellen</button>
+					<br>
+					<button id="PUTBestellungen" @onclick="TestAPIPUT" class="Hide">Ändern</button>
+					<br>
+					<button id="DELETEBestellungen" @onclick="TestAPIDELETE">Löschen</button>
+				</div>
+			</div>
+
+			<div class="RechtesDiv">
+				<div id="divZwei">
+					<label class="divZweiBestellung" for="Bestelldatum">Bestelldatum</label>
+					<label class="divZweiBestellung" for="Beschreibung">Beschreibung</label>
+					<label class="divZweiBestellung" for="Zahlungsart">Zahlungsart</label>
+					<label class="divZweiBestellung" for="IsComplete">Fertig</label>
+
+					<input type="date" @bind="Bestelldatum" name="Bestelldatum" id="Bestelldatum" class="divZweiBestellung" />
+					<input type="text" @bind="Beschreibung" name="Beschreibung" id="Beschreibung" class="divZweiBestellung" />
+					<select @bind="Zahlungsart" name="Zahlungsart" id="Zahlungsart" class="divZweiBestellung">
+						<option value="BK" selected="selected">Bankomartkarte</option>
+						<option value="KK">Kreditkarte</option>
+					</select>
+					<input type="checkbox" @bind="IsComplete" name="IsComplete" id="IsComplete" class="divZweiBestellung" />
+				</div>
+				<div id="divDrei">
+					<label class="divDreiBestellung" for="BestellNrLieferant">Lieferantennr</label>
+					<label class="divDreiBestellung" for="UUID">UUID</label>
+					<label class="divDreiBestellung" for="LID">LID</label>
+
+					<input type="number" @bind="BestellNRLieferant" name="BestellNrLieferant" id="BestellNrLieferant" class="divDreiBestellung" />
+					<input type="number" @bind="Uiid" name="UUID" id="UUID" class="divDreiBestellung" />
+					<input type="number" @bind="Lid" name="LID" id="LID" class="divDreiBestellung" />
+				</div>
+
+				<div id="divVier">
+					<label class="divVierBestellung" for="Anzahl">Anzahl</label>
+					<label class="divVierBestellung" for="Netto">Netto</label>
+					<label class="divVierBestellung" for="Steuer">Steuer</label>
+					<label class="divVierBestellung" for="Brutto">Brutto</label>
+					<label class="divVierBestellung" for="Skonto">Skonto</label>
+
+					<input type="number" @bind="Anzahl" name="Anzahl" id="Anzahl" class="divVierBestellung" />
+					<input type="number" @bind="Netto" name="Netto" id="Netto" class="divVierBestellung" />
+					<input type="number" @bind="Steuer" name="Steuer" id="Steuer" class="divVierBestellung" />
+					<input type="number" @bind="Brutto" name="Brutto" id="Brutto" class="divVierBestellung" />
+					<input type="number" @bind="Skonto" name="Skonto" id="Skonto" class="divVierBestellung" />
+
+
+					<button id="BruttoNettoRechnerBestellungen" @onclick="NettoSteuerBruttoErgebnis">Netto-zu-Brutto Rechner</button>
+					<p id="AusgabeTest">@NettoSteuerBrutto</p>
+				</div>
+			</div>
+		</article>
+	</section>
+</body>
+
+
+@code {
+
+	private string Username = "TestAdmin";
+	private string UEFA = "Udesigndea";
+	private string NettoSteuerBrutto = "";
+	private string OutputResult = "";
+	private string OutputGetPostPutDelete = "";
+
+	public class DIP
+	{
+		public int bId { get; set; }
+		public DateTime? bestelldatum { get; set; }
+		public string? beschreibung { get; set; }
+		public string? zahlungsart { get; set; }
+		public int bestellNRLieferant { get; set; }
+		public int uiid { get; set; }
+		public int lid { get; set; }
+		public int anzahl { get; set; }
+		public double netto { get; set; }
+		public double steuer { get; set; }
+		public double skonto { get; set; }
+		public double brutto { get; set; }
+		public Boolean isComplete { get; set; }
+	}
+
+	private int IDNumber;
+	private DateTime? Bestelldatum;
+	private string? Beschreibung;
+	private string? Zahlungsart;
+	private int BestellNRLieferant;
+	private int Uiid;
+	private int Lid;
+	private int Anzahl;
+	private double Netto;
+	private double Steuer;
+	private double Skonto;
+	private double Brutto;
+	private Boolean IsComplete;
+
+
+	public async Task NettoSteuerBruttoErgebnis()
+	{
+		double netto = Netto;
+
+		NettoSteuerBrutto NewNettoSteuerBrutto = new NettoSteuerBrutto();
+		string zahlen = Convert.ToString(await NewNettoSteuerBrutto.NettoBruttoRechnerRechnen(netto));
+		NettoSteuerBrutto = zahlen;
+		Steuer = await NewNettoSteuerBrutto.NettoSteuer(netto);
+		Brutto = await NewNettoSteuerBrutto.NettoBrutto(netto);		
+	}
+
+	private int lastID;
+
+	private List<Einkauf.DIP> bestellungen;
+
+	protected override async Task OnInitializedAsync()
+	{
+		Einkauf e1 = new Einkauf();
+		bestellungen = await e1.HoleAlleBestellungen();
+
+		HttpClient client = new HttpClient();
+		var token = await SecureStorage.GetAsync("authToken");
+		client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+		HttpResponseMessage GetResponse = await client.GetAsync($"{URLs.URLEinkaufBestellung}");
+
+		if (GetResponse.IsSuccessStatusCode)
+		{
+			var responseBody = await GetResponse.Content.ReadAsStringAsync();
+			//OutputResult = responseBody;
+			OutputGetPostPutDelete = "GETALL wurde erfolgreich ausgeführt!";
+
+			foreach (var bestellung in bestellungen)
+			{
+				lastID = bestellung.bId;
+				int newID = lastID + 1;
+				IDNumber = newID;
+			}
+		}
+		else
+		{
+			OutputGetPostPutDelete = "Error TestAPIGET: " + GetResponse.StatusCode;
+		}
+		JS.InvokeVoidAsync("setLastIDInJS", lastID);
+	}
+
+
+	private async void GetBestellungById(int IDNumberEingegeben)
+	{
+		Einkauf e2 = new Einkauf();
+		var Bestellung = await e2.HoleBestellungById(IDNumberEingegeben);
+		OutputGetPostPutDelete = Convert.ToString(Bestellung);
+
+		if (Bestellung == null)
+		{
+			OutputGetPostPutDelete = "Ihre werte sind null, da hat was ned funkt";
+		}
+		else
+		{
+			IDNumber = Bestellung.bId;
+			Bestelldatum = Bestellung.bestelldatum;
+			Beschreibung = Bestellung.beschreibung;
+			Zahlungsart = Bestellung.zahlungsart; ;
+			BestellNRLieferant = Bestellung.bestellNRLieferant;
+			Uiid = Bestellung.uiid;
+			Lid = Bestellung.lid;
+			Anzahl = Bestellung.anzahl;
+			Netto = Bestellung.netto;
+			Steuer = Bestellung.steuer;
+			Skonto = Bestellung.skonto;
+			Brutto = Bestellung.brutto;
+			IsComplete = Bestellung.isComplete;
+		}
+	}
+
+
+	public async Task TestAPIGET()
+	{
+		GetBestellungById(IDNumber);
+		
+		OutputGetPostPutDelete = "GET wurde erfolgreich ausgeführt!";
+	}
+
+
+	public async Task TestAPIPOST()
+	{
+		Einkauf e3 = new Einkauf();
+		await e3.PostBestellung(IDNumber, Bestelldatum, Beschreibung, Zahlungsart, BestellNRLieferant, Uiid, Lid, Anzahl, Netto, Steuer, Skonto, Brutto, IsComplete);
+		await OnInitializedAsync();
+		OutputGetPostPutDelete = "POST wurde erfolgreich ausgeführt!";
+	}
+
+
+	public async Task TestAPIPUT()
+	{
+		Einkauf e4 = new Einkauf();
+		await e4.PutBestellung (IDNumber, Bestelldatum, Beschreibung, Zahlungsart, BestellNRLieferant, Uiid, Lid, Anzahl, Netto, Steuer, Skonto, Brutto, IsComplete);
+		await OnInitializedAsync();
+		OutputGetPostPutDelete = "PUT wurde erfolgreich ausgeführt!";
+	}
+
+
+	public async Task TestAPIDELETE()
+	{
+		Einkauf e5 = new Einkauf();
+		await e5.DeleteBestellung(IDNumber);
+		await OnInitializedAsync();
+		OutputGetPostPutDelete = "DELETE wurde erfolgreich ausgeführt!";
+	}
+
+
+	private async void LogOut()
+	{
+		await SecureStorage.SetAsync("authToken", "1");
+		OutputGetPostPutDelete = "Sie haben sich abgemeldet. Ihr Token ist gelöscht";
+
+		var token = await SecureStorage.GetAsync("authToken");
+		if (token == "1")
+		{
+			Navigation.NavigateTo("/");
+		}
+		else
+		{
+			OutputGetPostPutDelete = "Irgendwas hat beim Logout nicht funktioniert!";
+		}
+	}
+}

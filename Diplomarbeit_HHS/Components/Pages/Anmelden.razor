@@ -1,0 +1,182 @@
+﻿@page "/"
+@using System.Net.Http;
+@using System.Net.Security;
+@using System.Security.Cryptography.X509Certificates;
+@using System.Text.Json;
+@using System.Net.Http.Headers;
+@using System.Configuration;
+@using Microsoft.Extensions.Configuration
+@using System.Text
+@using System.Net.Http.Json;
+@inject NavigationManager Navigation
+@inject Models.AppUserService AppUserService
+
+<link rel="stylesheet" media="(min-width:0px)" href="style/styleMobile.css" />
+<link rel="stylesheet" media="(min-width:1000px)" href="style/style.css" />
+<script src="javaScript/script.js"></script>
+
+<body>
+    <header>
+        <h1 class="HeaderText">Anmelden</h1>
+    </header>
+    <section>
+        <table id="AnmeldeTable">
+            <thead>
+            </thead>
+            <tfoot>
+            </tfoot>
+            <tbody>
+                <tr>
+                    <td>Position: </td>
+                    <td>
+                        <select name="Admin" @bind="Position">
+                            <option value=""></option>
+                            <option value="Admin">Admin User</option>
+                            <option value="NonAdmin">Non-Admin User</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Username: </td>
+                    <td>
+                        <input type="text" class="form-control" id="Username" @bind="Username">
+                    </td>
+                </tr>
+                <tr>
+                    <td>Passwort: </td>
+                    <td>
+                        <input type="text" class="form-control" id="Passwort" @bind="Passwort">
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><button id="AnmeldeButton" @onclick="TestenMitLogin">Login</button></td>
+                </tr>
+            </tbody>
+        </table>
+        <p>@OutputGetPostPutDelete</p>
+        <p>@AusgabeUser</p>
+    </section>
+</body>
+
+
+@code {
+
+    public class Inhalte
+    {
+        public int id { get; set; }
+        public string? uefa { get; set; }
+        public string? position { get; set; }
+        public string? username { get; set; }
+        public string? passwort { get; set; }
+    }
+
+    private string? UEFA;
+    private string? Position;
+    private string? Username;
+    private string? Passwort;
+    private string? OutputGetPostPutDelete;
+    private string? AusgabeUser;
+
+    public class Login
+    {
+        public string? username { get; set; }
+        public string? passwort { get; set; }
+    }
+
+    private string username;
+
+
+    HttpClientHandler handler = new HttpClientHandler
+	{
+		ServerCertificateCustomValidationCallback = (HttpRequestMessage? message, X509Certificate2? certificate, X509Chain? chain, SslPolicyErrors errors) => true
+	};
+
+    public async Task<bool> LoginVorgang(string username, string password)
+    {
+        string LoginURL = URLs.URLLogin;
+
+        HttpClient client = new HttpClient(handler);
+
+        Login login = new Login { username = username, passwort = password };
+        string jsonData = JsonSerializer.Serialize(login);
+        var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+        HttpResponseMessage response = await client.PostAsync(LoginURL, content);
+
+        if (response.IsSuccessStatusCode)
+        {
+            string responseBody = await response.Content.ReadAsStringAsync();
+
+            var tokenSpeichern = await response.Content.ReadAsStringAsync();
+            await SecureStorage.SetAsync("authToken", tokenSpeichern);
+            return true;
+        }
+        else
+        {
+            OutputGetPostPutDelete = "Fehler: " + response.StatusCode;
+            return false;
+        }
+    }
+
+    private int versuche = 1;
+
+    private async void TestenMitLogin()
+    {
+		bool newLogin = await LoginVorgang(Username, Passwort);
+
+		var token = await SecureStorage.GetAsync("authToken");
+		string janein = "";
+		if (token != null)
+		{
+			janein = "ja";
+		}
+		else
+		{
+			janein = "nein";
+		}
+
+		AusgabeUser = "LoginDIP: " + URLs.URLLogin + " || URLBestellung: " + URLs.URLEinkaufBestellung + " || Token: " + janein;
+		AusgabeUser += "\n Username: " + Username + " || Passwort: " + Passwort;
+        AppUserService.Username = Username;
+
+		if (newLogin == true)
+		{
+			OutputGetPostPutDelete = "Sie haben sich erfolgreich angemeldet!";
+            
+
+			if (Username != null)
+			{
+				//AusgabeUser = "ÜFA: " + UEFA + " || Position: " + Position + " || Username: " + Username + " || Passwort: " + Passwort;
+
+				if (Position == "Admin")
+				{
+                    Navigation.NavigateTo("/EinkaufBestellungen"); // "/adminneu"
+				}
+				else if (Position == "NonAdmin")
+				{
+					Navigation.NavigateTo("/");
+				}
+				else
+				{
+					Navigation.NavigateTo("/");
+				}
+			}
+			else
+			{
+				//AusgabeUser = "Fehler beim wechelsn der seite";
+			}
+		}
+		else
+		{
+			if (versuche <= 3)
+			{
+				OutputGetPostPutDelete = "Sie haben einen falschen Benutzer verwendet!Bitte versuchen Sie es erneut. Versuche: " + versuche;
+				versuche++;
+			}
+			else
+			{
+				OutputGetPostPutDelete = "Sie haben zu oft einen falschen Benutzer verwendet! Bitte versuchen Sie sich nicht mehr anzumelden.";
+			}
+		}
+	}
+}

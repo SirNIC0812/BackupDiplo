@@ -1,6 +1,12 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@inject NavigationManager Navigation
+@inject Models.AppUserService AppUserService
+
+<link rel="stylesheet" media="(min-width:0px)" href="style/styleMobile.css" />
+<link rel="stylesheet" media="(min-width:1000px)" href="style/style.css" />
+
+<div class="ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">Diplomarbeit_HHS</a>
+        <img src="img/Logo-FANCO.png" alt="BhakWien10Schullogo" id="NavBild" />
     </div>
 </div>
 
@@ -10,13 +16,50 @@
     <nav class="flex-column">
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Anmelden 1
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Anmeldeseite
             </NavLink>
         </div>
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="admin">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Admin
+            <NavLink class="nav-link" href="EinkaufBestellungen">
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Einkauf Bestellungen
             </NavLink>
         </div>
     </nav>
+
+    <div class="linksunten">
+        <div class="divNavUserInfo">
+            @AppUserService.Username
+        </div>
+        <div class="divNavUserInfo">
+            @Abteilung
+        </div>
+        <button @onclick="LogOut">Logout</button>
+    </div>
 </div>
+
+@code {
+    private string UserName = "xxx";
+    private string Abteilung = "Ábteilung 1";
+
+    protected override void OnInitialized()
+    {
+        AppUserService.OnChange += StateHasChanged;
+    }
+
+    private async void LogOut()
+    {
+        await SecureStorage.SetAsync("authToken", "1");
+
+        var token = await SecureStorage.GetAsync("authToken");
+        if (token == "1")
+        {
+            Navigation.NavigateTo("/");
+            AppUserService.Username = "";
+        }
+    }
+
+    public void Dispose()
+    {
+        AppUserService.OnChange -= StateHasChanged;
+    }
+}

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Diplomarbeit_HHS.Components.Pages;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
@@ -11,21 +12,33 @@ namespace Diplomarbeit_HHS.Models
 	internal class Einkauf
 	{
 		private int IDNumber;
-		private string? Unternehmen;
-		private Boolean IsComplete;
+		private DateTime? Bestelldatum;
+		private string? Beschreibung;
+		private string? Zahlungsart;
+		private int BestellNRLieferant;
+		private int Uiid;
+		private int Lid;
 		private int Anzahl;
 		private double Netto;
 		private double Steuer;
+		private double Skonto;
 		private double Brutto;
+		private Boolean IsComplete;
 		public class DIP
 		{
 			public int bId { get; set; }
-			public string? unternehmen { get; set; }
-			public Boolean isComplete { get; set; }
+			public DateTime? bestelldatum { get; set; }
+			public string? beschreibung { get; set; }
+			public string? zahlungsart { get; set; }
+			public int bestellNRLieferant { get; set; }
+			public int uiid { get; set; }
+			public int lid { get; set; }
 			public int anzahl { get; set; }
 			public double netto { get; set; }
 			public double steuer { get; set; }
+			public double skonto { get; set; }
 			public double brutto { get; set; }
+			public Boolean isComplete { get; set; }
 		}
 
 		private List<DIP> bestellungen;
@@ -124,29 +137,35 @@ namespace Diplomarbeit_HHS.Models
 
 			if (Bestellung == null)
 			{
-				string error = "Ihre werte sind null, da hat was ned funkt";
+				string error = "Ihre Werte sind null, da hat was ned funkt";
 				return null;
 			}
 			else
 			{
-				string? Unternehmen = Bestellung.unternehmen;
-				Boolean IsComplete = Bestellung.isComplete;
+				DateTime? Bestelldatum = Bestellung.bestelldatum;
+				string? Beschreibung = Bestellung.beschreibung;
+				string? Zahlungsart = Bestellung.zahlungsart; ;
+				int BestellNRLieferant = Bestellung.bestellNRLieferant; ;
+				int Uiid = Bestellung.uiid; ;
+				int Lid = Bestellung.lid; ;
 				int Anzahl = Bestellung.anzahl;
 				double Netto = Bestellung.netto;
 				double Steuer = Bestellung.steuer;
+				double Skonto = Bestellung.skonto;
 				double Brutto = Bestellung.brutto;
+				Boolean IsComplete = Bestellung.isComplete;
 				return new DIP { };
 			}
 		}
 
 
-		public async Task<String> PostBestellung(int IDNumber, string Unternehmen, Boolean IsComplete, int Anzahl, double Netto, double Steuer, double Brutto)
+		public async Task<string> PostBestellung(int IDNumber, DateTime? Bestelldatum, string Beschreibung, string Zahlungsart, int BestellNRLieferant, int Uiid, int Lid, int Anzahl, double Netto, double Steuer, double Skonto, double Brutto, Boolean IsComplete)
 		{
 			HttpClient client = new HttpClient();
 			var token = await SecureStorage.GetAsync("authToken");
 			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 			//Problem liegt derweil bei der Id, muss immer die nächste Zahl selber eingeben sonst error; auch irgendwie zahlen funkt nicht so wirklich
-			DIP newDIP = new DIP { bId = IDNumber, unternehmen = Unternehmen, isComplete = IsComplete, anzahl = Anzahl, netto = Netto, steuer = Steuer, brutto = Brutto };
+			DIP newDIP = new DIP { bId = IDNumber, bestelldatum = Bestelldatum, beschreibung = Beschreibung, zahlungsart = Zahlungsart, bestellNRLieferant = BestellNRLieferant, uiid = Uiid, lid = Lid, anzahl = Anzahl, netto = Netto, steuer = Steuer, skonto = Skonto, brutto = Brutto, isComplete = IsComplete };
 			string jsonData = JsonSerializer.Serialize(newDIP);
 			var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
 			HttpResponseMessage response = await client.PostAsync($"{URLs.URLEinkaufBestellung}/", content);
@@ -167,13 +186,13 @@ namespace Diplomarbeit_HHS.Models
 			}
 		}
 
-		public async Task<String> PutBestellung(int IDNumber, string Unternehmen, Boolean IsComplete, int Anzahl, double Netto, double Steuer, double Brutto)
+		public async Task<String> PutBestellung(int IDNumber, DateTime? Bestelldatum, string Beschreibung, string Zahlungsart, int BestellNRLieferant, int Uiid, int Lid, int Anzahl, double Netto, double Steuer, double Skonto, double Brutto, Boolean IsComplete)
 		{
 			HttpClient client = new HttpClient();
 			var token = await SecureStorage.GetAsync("authToken");
 			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 			//Problem liegt derweil bei der Id, muss immer die nächste Zahl selber eingeben sonst error; auch irgendwie zahlen funkt nicht so wirklich
-			DIP newDIP = new DIP { bId = IDNumber, unternehmen = Unternehmen, isComplete = IsComplete, anzahl = Anzahl, netto = Netto, steuer = Steuer, brutto = Brutto };
+			DIP newDIP = new DIP { bId = IDNumber, bestelldatum = Bestelldatum, beschreibung = Beschreibung, zahlungsart = Zahlungsart, bestellNRLieferant = BestellNRLieferant, uiid = Uiid, lid = Lid, anzahl = Anzahl, netto = Netto, steuer = Steuer, skonto = Skonto, brutto = Brutto, isComplete = IsComplete };
 			string jsonData = JsonSerializer.Serialize(newDIP);
 			var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
 			HttpResponseMessage response = await client.PutAsync($"{URLs.URLEinkaufBestellung}/{IDNumber}", content);
@@ -215,6 +234,5 @@ namespace Diplomarbeit_HHS.Models
 				return OutputGetPostPutDelete;
 			}
 		}
-
 	}
 }
