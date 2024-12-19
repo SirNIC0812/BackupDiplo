@@ -1,4 +1,4 @@
-﻿@page "/adminneugui"
+﻿@page "/admin"
 @using System.Text.Json
 @using System.Text
 @using System.Net.Http.Headers
@@ -12,14 +12,14 @@
 <link href="style/style.css" rel="stylesheet" />
 <body>
 	<header>
-		<img src="img/Logo_BHAK10.jpg" alt="BhakWien10Schullogo" class="Bild" id="HeaderPicture" />
-		<h1 id="HeaderText">Adminansicht GUI</h1>
-		<button @onclick="LogOut" id="HeaderLogout">Logout</button>
+		<img src="img/Logo_BHAK10.jpg" alt="BhakWien10Schullogo" class="BildHeader" />
+		<h1 class="HeaderText">Adminansicht GUI</h1>
+		<button @onclick="LogOut" class="HeaderLogout">Logout</button>
 	</header>
 	<nav>
 	</nav>
-	<section>
-		<article class="AnzeigeDaten">
+	<section class="AnzeigeDaten">
+		<article >
 			<!--<p>@OutputResult</p>
 
 			<h3>Test Appsettings</h3>-->
@@ -29,6 +29,7 @@
 					<tr>
 						<th class="TableBestellungenID">ID</th>
 						<th class="TableBestellungenUnternehmen">Unternehmen</th>
+						<th class="TableBestellungenBestelldatum">Bestelldatum</th>
 						<th class="TableBestellungenFertig"><span>✔</span></th>
 						<th class="TableBestellungenAnzahl">Anzahl</th>
 						<th class="TableBestellungenNetto">Netto</th>
@@ -61,6 +62,7 @@
 							<tr>
 								<td class="TableBestellungenID">@bestellung.bId</td>
 								<td class="TableBestellungenUnternehmen">@bestellung.unternehmen</td>
+								<td class="TableBestellungenBestelldatum">Bestelldatum</td>
 								<td class="TableBestellungenFertig">
 									@if (bestellung.isComplete)
 									{
@@ -74,28 +76,19 @@
 							</tr>
 						}
 					}
-					<!--<tr>
-						<td class="TestTableUntenTest">@IDNumber</td>
-						<td class="TestTableUntenTest">@Unternehmen</td>
-						<td class="TestTableUntenTest">@IsComplete</td>
-						<td class="TestTableUntenTest">@Anzahl</td>
-						<td class="TestTableUntenTest">@Netto</td>
-						<td class="TestTableUntenTest">@Steuer</td>
-						<td class="TestTableUntenTest">@Brutto</td>
-					</tr>-->
 				</tbody>
 			</table>
 		</article>
 		<article>
 			<div id="divEins">
-				<label for="IDNumber">ID</label>
+				<label class="divZweiBestellung" for="IDNumber">ID</label>
 				<input type="number" name="IDNumber" id="IDNumber" @bind="IDNumber" min="0" />
 			</div>
 
 			<div id="divZwei">
 				<label class="divZweiBestellung" for="Bestelldatum">Bestelldatum</label>
 				<input type="date" name="Bestelldatum" id="Bestelldatum" class="divZweiBestellung" />
-				
+
 				<label class="divZweiBestellung" for="Unternehmen">Beschreibung</label>
 				<input type="text" @bind="Unternehmen" name="Unternehmen" id="Unternehmen" class="divZweiBestellung" />
 
@@ -109,23 +102,6 @@
 				<input type="checkbox" @bind="IsComplete" name="IsComplete" id="IsComplete" class="divZweiBestellung" />
 			</div>
 
-
-			<!--<div id="DivGetAll">
-				<button id="GETALLBestellungen" @onclick="TestAPIGETALL">Zeig alle Bestellungen an</button>
-			</div>
-			<div id="DivGet">
-				<button id="GETBestellungen" @onclick="TestAPIGET">Zeige eine Bestellung an</button>
-			</div>
-			<div id="DivGetPost">
-				<button id="POSTBestellungen" @onclick="TestAPIPOST">Erstellen</button>
-			</div>
-			<div id="DivGetPut">
-				<button id="PUTBestellungen" @onclick="TestAPIPUT">Ändern</button>
-			</div>
-			<div id="DivGetDelete">
-				<button id="DELETEBestellungen" @onclick="TestAPIDELETE">Löschen</button>
-			</div>-->
-
 			<div id="DivButtons">
 				<button id="GETALLBestellungen" @onclick="TestAPIGETALL">Alle Bestellungen</button>
 				<br>
@@ -135,7 +111,7 @@
 				<br>
 				<button id="PUTBestellungen" @onclick="TestAPIPUT" class="Hide">Ändern</button>
 				<br>
-				<button id="DELETEBestellungen" @onclick="TestAPIDELETE" >Löschen</button>
+				<button id="DELETEBestellungen" @onclick="TestAPIDELETE">Löschen</button>
 			</div>
 
 
@@ -148,7 +124,7 @@
 
 				<label class="divZweiBestellung" for="LID">LID</label>
 				<input type="text" name="LID" id="LID" class="divZweiBestellung" />
-				
+
 			</div>
 
 			<div id="divVier">
@@ -159,7 +135,7 @@
 				<input type="number" @bind="Netto" name="Netto" id="Netto" class="divZweiBestellung" />
 
 				<label class="divZweiBestellung" for="Steuer">Steuer</label>
-				<input type="number" @bind="Steuer" name="Steuer" id="Steuer" class="divZweiBestellung"/>
+				<input type="number" @bind="Steuer" name="Steuer" id="Steuer" class="divZweiBestellung" />
 
 				<label class="divZweiBestellung" for="Brutto">Brutto</label>
 				<input type="number" @bind="Brutto" name="Brutto" id="Brutto" class="divZweiBestellung" />
@@ -167,35 +143,6 @@
 				<button id="BruttoNettoRechnerBestellungen" @onclick="NettoSteuerBruttoErgebnis">Netto-zu-Brutto Rechner</button>
 				<p id="AusgabeTest">@NettoSteuerBrutto</p>
 			</div>
-
-			<!--
-				<table id="TestTableAllesAnzeigen">
-				<thead>
-					<tr>
-						<th class="TestTableUntenTest">ID</th>
-						<th class="TestTableUntenTest">Unternehmen</th>
-						<th class="TestTableUntenTest">Ist Fertig</th>
-						<th class="TestTableUntenTest">Anzahl</th>
-						<th class="TestTableUntenTest">Netto</th>
-						<th class="TestTableUntenTest">Steuer</th>
-						<th class="TestTableUntenTest">Brutto</th>
-					</tr>
-				</thead>
-				<tfoot>
-				</tfoot>
-				<tbody>
-					<tr>
-						<td class="TestTableUntenTest"><input type="number" @bind="IDNumber" name="IDNumber" id="IDNumber"/></td>
-						--><!-- atbind="zahl" dient dazu das der Wert vom Input-Feld direkt syncronisiert wird mit er Variable "zahl"" in C#--><!--
-						<td class="TestTableUntenTest"><input type="text" @bind="Unternehmen" name="Unternehmen" id="Unternehmen" /></td>
-						<td class="TestTableUntenTest"><input type="checkbox" @bind="IsComplete" name="IsComplete" id="IsComplete" /></td>
-						<td class="TestTableUntenTest"><input type="number" @bind="Anzahl" name="Anzahl" id="Anzahl" /></td>
-						<td class="TestTableUntenTest"><input type="number" @bind="Netto" name="Netto" id="Netto" /></td>
-						<td class="TestTableUntenTest"><input type="number" @bind="Steuer" name="Steuer" id="Steuer" /></td>
-						<td class="TestTableUntenTest"><input type="number" @bind="Brutto" name="Brutto" id="Brutto" /></td>
-					</tr>
-				</tbody>
-			</table>-->
 		</article>
 	</section>
 </body>

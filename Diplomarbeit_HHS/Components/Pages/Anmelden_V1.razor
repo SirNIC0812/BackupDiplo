@@ -14,75 +14,46 @@
 
 <body>
 	<header>
-		<table>
+		<img src="img/Logo_BHAK10.jpg" alt="BhakWien10Schullogo" class="BildHeader" />
+		<h1 class="HeaderText">Adminansicht</h1>
+	</header>
+	<nav>
+	</nav>
+	<section>
+		<table id="AnmeldeTable">
 			<thead>
-				<tr>
-					<th><h1>Anmeldeseite</h1></th>
-					<!--<td rowspan="2"><img src="img/Logo_BHAK10.jpg" alt="Schullogo" class="Bild" /></td>
-					-->
-				</tr>
 			</thead>
 			<tfoot>
 			</tfoot>
 			<tbody>
 				<tr>
-					<td colspan="2">Herzlich Willkommen bei der Anmeldeseite für die Übungsfirmen!</td>
+					<td>Position: </td>
+					<td>
+						<select name="Admin" @bind="Position">
+							<option value=""></option>
+							<option value="Admin">Admin User</option>
+							<option value="NonAdmin">Non-Admin User</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<td>Username: </td>
+					<td>
+						<input type="text" class="form-control" id="Username" @bind="Username">
+					</td>
+				</tr>
+				<tr>
+					<td>Passwort: </td>
+					<td>
+						<input type="text" class="form-control" id="Passwort" @bind="Passwort">
+					</td>
+				</tr>
+				<tr>
+					<td></td>
+					<td><button id="AnmeldeButton" @onclick="TestenMitLogin">Login</button></td>
 				</tr>
 			</tbody>
 		</table>
-	</header>
-	<nav>
-	</nav>
-	<section>
-		<article>
-			<table>
-				<thead>
-				</thead>
-				<tfoot>
-				</tfoot>
-				<tbody>
-					<tr>
-						<td>Übungsfirma: </td>
-						<td>
-							<select name="UEFA" @bind="UEFA">
-								<option value="Udesigndea">Udesigndea</option>
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							Position (<a href="/admin">Admin</a> || <a href="/basic">Non-Admin</a>):
-						</td>
-						<td>
-							<select name="Admin" @bind="Position">
-								<option value=""></option>
-								<option value="Admin">Admin User</option>
-								<option value="NonAdmin">Non-Admin User</option>
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<td>Username: </td>
-						<td>
-							<input type="text" class="form-control" id="Username" @bind="Username">
-						</td>
-					</tr>
-					<tr>
-						<td>Passwort: </td>
-						<td>
-							<input type="text" class="form-control" id="Passwort" @bind="Passwort">
-						</td>
-					</tr>
-					<tr>
-						<td>
-							Der User hat sich mit (@AusgabeUser) angemeldet.
-						</td>
-						<td><button id="AnmeldeButton" @onclick="TestenMitLogin">Login</button></td>
-						<p>@OutputGetPostPutDelete</p>
-					</tr>
-				</tbody>
-			</table>
-		</article>
 	</section>
 </body>
 
@@ -98,13 +69,10 @@
 		public string? passwort { get; set; }
 	}
 
-
-
 	private string? UEFA;
 	private string? Position;
 	private string? Username;
 	private string? Passwort;
-	private string? AusgabeUser;
 	private string? OutputGetPostPutDelete;
 
 	public class Login
@@ -193,8 +161,8 @@
 			janein = "nein";
 		}
 
-		AusgabeUser = "LoginDIP: " + URLs.URLLogin + " || URLBestellung: " + URLs.URLEinkaufBestellung + " || Token: " + janein;
-		AusgabeUser += "\n Username: " + Username + " || Passwort: " + Passwort;
+		//AusgabeUser = "LoginDIP: " + URLs.URLLogin + " || URLBestellung: " + URLs.URLEinkaufBestellung + " || Token: " + janein;
+		//AusgabeUser += "\n Username: " + Username + " || Passwort: " + Passwort;
 
 		if (newLogin == true)
 		{
@@ -202,11 +170,11 @@
 
 			if (Username != null)
 			{
-				AusgabeUser = "ÜFA: " + UEFA + " || Position: " + Position + " || Username: " + Username + " || Passwort: " + Passwort;
+				//AusgabeUser = "ÜFA: " + UEFA + " || Position: " + Position + " || Username: " + Username + " || Passwort: " + Passwort;
 
 				if (Position == "Admin")
 				{
-					Navigation.NavigateTo("/adminneuzwei"); // "/adminneu"
+					Navigation.NavigateTo("/admin"); // "/adminneu"
 				}
 				else if (Position == "NonAdmin")
 				{
@@ -219,7 +187,7 @@
 			}
 			else
 			{
-				AusgabeUser = "Fehler beim wechelsn der seite";
+				//AusgabeUser = "Fehler beim wechelsn der seite";
 			}
 		}
 		else

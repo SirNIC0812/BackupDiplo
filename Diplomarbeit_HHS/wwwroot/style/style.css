@@ -9,7 +9,7 @@ body {
     width: 100%;
     height: 100vh;
     overflow-x: hidden;
-    font-size: 1em;
+    font-size: 1.5vh;
 }
 
 
@@ -17,33 +17,32 @@ header {
     height: 10%;
     background-color: #94CCFF;
     color: #0C01A5;
-    border: 1px solid #000000;
+    //border: 1px solid #000000;
     text-align: center;
 }
-#HeaderPicture {
+.BildHeader {
     float: left;
-    width: 15%;
+    height: 100%;
 }
-#HeaderText {
+.HeaderText {
     float: left;
     width: 70%;
-    font-size: 3em;
+    font-size: 7vh;
     text-align: center;
 }
-#HeaderLogout {
+.HeaderLogout {
     float: right;
     margin: 0% 0% 0% 0%;
     width: 15%;
     height: 100%;
-    border: none;
-    background-color: none;
-    color: red;
-    font-size: 1em;
+    background-color: white;
+    font-size: 2em;
 }
 
 
 section {
     height: 90%;
+    width: 100%;
     //border: 0.1vh solid yellow;
 }
 article {
@@ -53,10 +52,8 @@ article {
 
 
 table {
-    width: 100%;
     margin: 1.5% 0% 1.5% 0%;
     text-align: right;
-    border-bottom: 1px solid red;
 }
 tr {
     width: 100%;
@@ -66,9 +63,8 @@ th {
     border: 0.1vh solid #0C01A5;
     margin: 2%;
     text-align: center;
-    background-color: #94CCFF;
     color: #0C01A5;
-    font-size: 1.3em;
+    font-size: 2vh;
 }
 td {
     width: 20%;
@@ -78,7 +74,7 @@ td {
 .AnzeigeDaten {
     width: 100%;
     height: 50%;
-    font-size: 1em;
+    font-size: 2vh;
     float: left;
     padding: 0% 1% 0% 1%;
     background-color: #FFFFFF;
@@ -87,41 +83,53 @@ td {
 }
 
 .TableBestellungenID {
-    width: 5%;
+    width: 10%;
     padding: 0.5% 1% 0.5% 1%;
     border: 1px solid #0C01A5;
     text-align: center;
 }
+
 .TableBestellungenUnternehmen {
     width: 30%;
     padding: 0.5% 1% 0.5% 1%;
     border: 1px solid #0C01A5;
 }
+
 .TableBestellungenFertig {
     width: 5%;
     padding: 0.5% 1% 0.5% 1%;
     border: 1px solid #0C01A5;
     text-align: center;
 }
+
 .TableBestellungenAnzahl {
-    width: 12.5%;
+    width: 10%;
     padding: 0.5% 1% 0.5% 1%;
     border: 1px solid #0C01A5;
 }
+
 .TableBestellungenNetto {
-    width: 12.5%;
+    width: 10%;
     padding: 0.5% 1% 0.5% 1%;
     border: 1px solid #0C01A5;
 }
+
 .TableBestellungenSteuer {
-    width: 12.5%;
+    width: 10%;
     padding: 0.5% 1% 0.5% 1%;
     border: 1px solid #0C01A5;
 }
+
 .TableBestellungenBrutto {
-    width: 12.5%;
+    width: 10%;
     padding: 0.5% 1% 0.5% 1%;
     border: 1px solid #0C01A5;
+}
+.TableBestellungenBestelldatum {
+    width: 15%;
+    padding: 0.5% 1% 0.5% 1%;
+    border-bottom: 0.1vh solid #0C01A5;
+    text-align: center;
 }
 
 #TableBody {
@@ -139,6 +147,7 @@ td {
     height: 25%;
     margin: 3% 0% 0% 0%;
 }
+
 #divZwei {
     float: left;
     border: 1px solid #000000;
@@ -147,6 +156,7 @@ td {
     width: 80%;
     height: 25%;
 }
+
 .divZweiBestellung {
     float: left;
     border: 1px solid #000000;
@@ -172,6 +182,7 @@ button {
     height: 70%;
     margin: 2% 0% 0% 5%;
 }
+
 #divVier {
     float: left;
     border: 1px solid #FFFFFF;
@@ -180,6 +191,7 @@ button {
     height: 70%;
     margin: 2% 0% 0% 5%;
 }
+
 
 
 
@@ -194,14 +206,15 @@ input {
 
 
 button {
-    margin: 0% 0% 0% 0%;
+    margin: 1%;
     background-color: #94CCFF;
     color: #0C01A5;
-    font-size: 1.5em;
+    font-size: 2.5vh;
     padding: 1%;
     //border-radius: 20%;
     border-color: blue;
     float: right;
+    //width: 100%;
 }
 #AnmeldeButton {
     float: right;
@@ -224,4 +237,24 @@ button {
 
 .Hide {
     display: none;
+}
+
+
+
+#AnmeldeTable {
+    margin: 5% 0% 0% 0%;
+    height: 50%;
+    font-size: 3vh;
+    border: 1px solid black;
+}
+.Username {
+    font-size: 3vh;
+}
+.Passwort {
+    font-size: 3vh;
+}
+
+
+label {
+    background-color: red;
 }
