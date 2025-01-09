@@ -1,0 +1,226 @@
+﻿@page "/Aufgaben"
+@using System.Text.Json
+@using System.Text
+@using System.Net.Http.Headers
+@using Microsoft.Extensions.Configuration
+@using Diplomarbeit_HHS.Models
+@inject IConfiguration Configuration
+@inject NavigationManager Navigation
+@inject IJSRuntime JS //Schnittstelle zwischen c# und js
+
+<script src="javaScript/script.js"></script>
+<link rel="stylesheet" media="(min-width:0px)" href="style/styleMobile.css" />
+<link rel="stylesheet" media="(min-width:1000px)" href="style/style.css" />
+
+<body>
+	<header>
+		<h1 class="HeaderText">Aufgaben</h1>
+	</header>
+	<nav>
+	</nav>
+	<section>
+		<article class="AnzeigeDaten">
+			<table id ="InhaltOnClick">
+				<thead>
+					<tr>
+						<th class="TableBestellungenID">ID</th>
+						<th class="TableBestellungenUnternehmen">Aufgaben</th>
+						<th class="TableBestellungenBestelldatum">Abgabeterim</th>
+					</tr>
+				</thead>
+				<tfoot>
+					<!--<tr>
+						<td colspan="3">@OutputGetPostPutDelete</td>
+					</tr>-->
+				</tfoot>
+				<tbody id="TableBody">
+					@if (aufgaben == null)
+					{
+						<tr>
+							<td colspan="3">Es wird nach den Datensätzen gesucht.</td>
+						</tr>
+					}
+					else if (aufgaben.Count == 0)
+					{
+						<tr>
+							<td colspan="3">Es wurden keine Datensätze gefunden.</td>
+						</tr>
+					}
+					else
+					{
+						@foreach (var aufgabe in aufgaben)
+						{
+							<tr @onclick="() => GetAufgabeById(aufgabe.aId)" style="cursor: pointer;" class="@GetRowClass(aufgabe.aId)">
+								<td class="TableBestellungenID">@aufgabe.aId</td>
+								<td class="TableBestellungenUnternehmen">@aufgabe.aufgabe</td>
+								<td class="TableBestellungenBestelldatum">@aufgabe.expiryDate.Value.ToString("yyyy-MM-dd")</td>
+							</tr>
+						}
+					}
+				</tbody>
+			</table>
+		</article>
+		<article class="AnzeigeInput">
+			<div class="LinkesDiv">
+				<div id="divEins">
+					<label class="divEinsBestellung" for="AID">ID</label>
+					<input type="number" name="AID" id="AID" @bind="AId" min="0" class="divEinsBestellung" />
+				</div>
+
+				<div id="DivButtons">
+					<button id="GETAufgaben" @onclick="GETAufgaben">Anzeigen</button>
+					<br>
+					<button id="POSTAufgaben" @onclick="POSTAufgaben">Erstellen</button>
+					<br>
+					<button id="PUTAufgaben" @onclick="PUTAufgaben">Ändern</button>
+					<br>
+					<button id="DELETEAufgaben" @onclick="DELETEAufgaben">Löschen</button>
+				</div>
+			</div>
+
+			<div class="RechtesDiv">
+				<div id="divZwei">
+					<label class="divZweiBestellung" for="Aufgaben">Aufgaben</label>
+					<input type="text" @bind="AufgabenInput" name="Aufgaben" id="Aufgaben" class="divZweiBestellung" />
+
+					<label class="divZweiBestellung" for="Abgabeterim">Abgabeterim</label>
+					<input type="date" @bind="ExpiryDate" name="Abgabeterim" id="Abgabeterim" class="divZweiBestellung" />
+				</div>
+			</div>
+		</article>
+	</section>
+</body>
+
+
+@code {
+
+	private string OutputResult = "";
+	private string OutputGetPostPutDelete = "";
+
+
+	public class Aufgabe
+	{
+		public int aId { get; set; }
+		public string? aufgabe { get; set; }
+		public DateTime? expiryDate { get; set; }
+	}
+
+	private int AId;
+	private string? AufgabenInput;
+	private DateTime? ExpiryDate;
+	
+	private int lastID;
+
+	private List<AufgabenListe.Aufgabe> aufgaben;
+
+
+	protected override async Task OnInitializedAsync()
+	{
+		AufgabenListe a1 = new AufgabenListe();
+		aufgaben = await a1.HoleAlleAufgaben();
+
+		HttpClient client = new HttpClient();
+		var token = await SecureStorage.GetAsync("authToken");
+		client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+		HttpResponseMessage GetResponse = await client.GetAsync($"{URLs.URLAufgaben}");
+
+		if (GetResponse.IsSuccessStatusCode)
+		{
+			var responseBody = await GetResponse.Content.ReadAsStringAsync();
+			OutputGetPostPutDelete = "GETALL wurde erfolgreich ausgeführt!";
+
+			foreach (var aufgabe in aufgaben)
+			{
+				lastID = aufgabe.aId;
+				int newID = lastID + 1;
+				AId = newID;
+			}
+		}
+		else
+		{
+			OutputGetPostPutDelete = "Error TestAPIGET: " + GetResponse.StatusCode;
+		}
+		JS.InvokeVoidAsync("setLastIDInJS", lastID);
+
+	}
+
+
+	private int? selectedId; // Speichert die ID der ausgewählten Zeile
+
+	private string GetRowClass(int Id)
+	{
+		// Rückgabe der CSS-Klasse für die aktuelle Zeile
+		return selectedId == Id ? "AusgewaehlteReihe" : "";
+	}
+
+	private async void GetAufgabeById(int IDNumberEingegeben)
+	{
+		selectedId = AId; // Aktualisiert die ausgewählte ID
+
+		AufgabenListe a2 = new AufgabenListe();
+		var Aufgabe = await a2.HoleAufgabeById(IDNumberEingegeben);
+		OutputGetPostPutDelete = Convert.ToString(Aufgabe);
+
+		if (Aufgabe == null)
+		{
+			OutputGetPostPutDelete = "Ihre werte sind null, da hat was ned funkt";
+		}
+		else
+		{
+			AId = Aufgabe.aId;
+			AufgabenInput = Aufgabe.aufgabe;
+			ExpiryDate = Aufgabe.expiryDate;
+		}
+	}
+
+
+	public async Task GETAufgaben()
+	{
+		GetAufgabeById(AId);
+		OutputGetPostPutDelete = "GET wurde erfolgreich ausgeführt!";
+	}
+
+
+	public async Task POSTAufgaben()
+	{
+		AufgabenListe a3 = new AufgabenListe();
+		await a3.PostAufgabe(AId, AufgabenInput, ExpiryDate);
+		await OnInitializedAsync();
+		OutputGetPostPutDelete = "POST wurde erfolgreich ausgeführt!";
+	}
+
+
+	public async Task PUTAufgaben()
+	{
+		AufgabenListe a4 = new AufgabenListe();
+		await a4.PutAufgabe(AId, AufgabenInput, ExpiryDate);
+		await OnInitializedAsync();
+		OutputGetPostPutDelete = "PUT wurde erfolgreich ausgeführt!";
+	}
+
+
+	public async Task DELETEAufgaben()
+	{
+		AufgabenListe a5 = new AufgabenListe();
+		await a5.DeleteAufgabe(AId);
+		await OnInitializedAsync();
+		OutputGetPostPutDelete = "DELETE wurde erfolgreich ausgeführt!";
+	}
+
+
+	private async void LogOut()
+	{
+		await SecureStorage.SetAsync("authToken", "1");
+		OutputGetPostPutDelete = "Sie haben sich abgemeldet. Ihr Token ist gelöscht";
+
+		var token = await SecureStorage.GetAsync("authToken");
+		if (token == "1")
+		{
+			Navigation.NavigateTo("/");
+		}
+		else
+		{
+			OutputGetPostPutDelete = "Irgendwas hat beim Logout nicht funktioniert!";
+		}
+	}
+}

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.Globalization;
 using static Diplomarbeit_HHS.Components.Pages.Anmelden;
 
 namespace Diplomarbeit_HHS
@@ -40,6 +41,7 @@ namespace Diplomarbeit_HHS
 #endif
 
 			return builder.Build();
-        }
+
+		}
     }
 }

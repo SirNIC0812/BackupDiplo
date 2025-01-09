@@ -3,7 +3,7 @@
 	//public const string AnfangURL = "https://localhost:7286/api"; //Local
 	public const string AnfangURL = "https://api.nwl.bhakwien10.at/UefaAPI/api";
 
-	//public const string URLLogin = $"{AnfangURL}/Login/login";//local
+	//public const string URLLogin = $"{AnfangURL}/Login/login"; //local
 	public const string URLLogin = $"{AnfangURL}/User/login";
 
 	public const string URLEinkaufBestellung = $"{AnfangURL}/Einkauf/Bestellung";

@@ -14,9 +14,7 @@
 
 <body>
 	<header>
-		<!--<img src="img/Logo_BHAK10.jpg" alt="BhakWien10Schullogo" class="BildHeader" />-->
-		<h1 class="HeaderText">Einkauf Bestellungen</h1>
-		<!--<button @onclick="LogOut" class="HeaderLogout">Logout</button>-->
+		<h1 class="HeaderText">Bestellungen</h1>
 	</header>
 	<nav>
 	</nav>
@@ -36,9 +34,9 @@
 					</tr>
 				</thead>
 				<tfoot>
-					<tr>
+					<!--<tr>
 						<td colspan="8">@OutputGetPostPutDelete</td>
-					</tr>
+					</tr>-->
 				</tfoot>
 				<tbody id="TableBody">
 					@if (bestellungen == null)
@@ -57,10 +55,10 @@
 					{
 						@foreach (var bestellung in bestellungen)
 						{
-							<tr @onclick="() => GetBestellungById(bestellung.bId)" style="cursor: pointer;" >
+							<tr @onclick="() => GetBestellungById(bestellung.bId)" style="cursor: pointer;" class="@GetRowClass(bestellung.bId)">
 								<td class="TableBestellungenID">@bestellung.bId</td>
 								<td class="TableBestellungenUnternehmen">@bestellung.beschreibung</td>
-								<td class="TableBestellungenBestelldatum">@bestellung.bestelldatum</td>
+								<td class="TableBestellungenBestelldatum">@bestellung.bestelldatum.Value.ToString("yyyy-MM-dd")</td>
 								<td class="TableBestellungenFertig">
 									@if (bestellung.isComplete)
 									{
@@ -89,7 +87,7 @@
 					<br>
 					<button id="POSTBestellungen" @onclick="TestAPIPOST">Erstellen</button>
 					<br>
-					<button id="PUTBestellungen" @onclick="TestAPIPUT" class="Hide">Ändern</button>
+					<button id="PUTBestellungen" @onclick="TestAPIPUT">Ändern</button>
 					<br>
 					<button id="DELETEBestellungen" @onclick="TestAPIDELETE">Löschen</button>
 				</div>
@@ -145,8 +143,6 @@
 
 @code {
 
-	private string Username = "TestAdmin";
-	private string UEFA = "Udesigndea";
 	private string NettoSteuerBrutto = "";
 	private string OutputResult = "";
 	private string OutputGetPostPutDelete = "";
@@ -229,8 +225,18 @@
 	}
 
 
+	private int? selectedId; // Speichert die ID der ausgewählten Zeile
+
+	private string GetRowClass(int Id)
+	{
+		// Rückgabe der CSS-Klasse für die aktuelle Zeile
+		return selectedId == Id ? "AusgewaehlteReihe" : "";
+	}
+
 	private async void GetBestellungById(int IDNumberEingegeben)
 	{
+		selectedId = IDNumber; // Aktualisiert die ausgewählte ID
+
 		Einkauf e2 = new Einkauf();
 		var Bestellung = await e2.HoleBestellungById(IDNumberEingegeben);
 		OutputGetPostPutDelete = Convert.ToString(Bestellung);
@@ -261,7 +267,6 @@
 	public async Task TestAPIGET()
 	{
 		GetBestellungById(IDNumber);
-		
 		OutputGetPostPutDelete = "GET wurde erfolgreich ausgeführt!";
 	}
 

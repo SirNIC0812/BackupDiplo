@@ -150,11 +150,11 @@
 
 				if (Position == "Admin")
 				{
-                    Navigation.NavigateTo("/EinkaufBestellungen"); // "/adminneu"
+                    Navigation.NavigateTo("/Aufgaben"); // "/adminneu"
 				}
 				else if (Position == "NonAdmin")
 				{
-					Navigation.NavigateTo("/");
+                    Navigation.NavigateTo("/EinkaufBestellungen");
 				}
 				else
 				{
@@ -163,7 +163,7 @@
 			}
 			else
 			{
-				//AusgabeUser = "Fehler beim wechelsn der seite";
+				AusgabeUser = "Fehler beim wechelsn der seite";
 			}
 		}
 		else

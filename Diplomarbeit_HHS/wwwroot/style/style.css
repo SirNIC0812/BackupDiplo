@@ -55,7 +55,6 @@ th {
 td {
     width: 20%;
     padding: 0.5% 1% 0.5% 1%;
-    border: 1px solid #018585;
 }
 .AnzeigeDaten {
     width: 100%;
@@ -227,7 +226,7 @@ button {
 
 
 #AnmeldeTable {
-    margin: 10% 25% 0% 25%;
+    margin: 5% 25% 0% 25%;
     height: 50%;
     width: 50%;
     font-size: 3vh;
@@ -273,7 +272,7 @@ label {
 .nav-scrollable {
     background-color: #018585;
     color: #FFEF23;
-    border: 1px solid #FFEF23;
+    border: 0.1vh solid #FFEF23;
 }
 .navbar {
     background-color: #018585;
@@ -294,4 +293,10 @@ label {
     margin: 0;
     padding: 0%;
     font-size: 1.5em;
+}
+
+.AusgewaehlteReihe {
+    background-color: #018585;
+    color: #FFEF23;
+    border: 0.1vh solid #FFEF23;
 }

@@ -35,3 +35,13 @@ document.getElementById("HeaderLogout").addEventListener("click", Abmelden);
 function Abmelden() {
 	alert("Sie haben sich erfolgreich Abgemeldet!");
 };
+
+
+// JavaScript, um die Breite des fixierten Bereichs an die Breite des Buttons anzupassen
+function highlightRow(row) {
+	// Entferne die Klasse 'selected-row' von allen Zeilen
+	const rows = document.querySelectorAll("tr");
+	rows.forEach(r => r.classList.remove("selected-row"));
+
+	// Füge die Klasse 'selected-row' zur geklickten Zeile hinzu
+	row.classList.add("selected-row");

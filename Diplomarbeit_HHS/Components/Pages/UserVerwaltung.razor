@@ -1,0 +1,106 @@
+﻿@page "/UserVerwaltung"
+@using System.Text.Json
+@using System.Text
+@using System.Net.Http.Headers
+@using Microsoft.Extensions.Configuration
+@using Diplomarbeit_HHS.Models
+@inject IConfiguration Configuration
+@inject NavigationManager Navigation
+@inject IJSRuntime JS //Schnittstelle zwischen c# und js
+
+<script src="javaScript/script.js"></script>
+<link rel="stylesheet" media="(min-width:0px)" href="style/styleMobile.css" />
+<link rel="stylesheet" media="(min-width:1000px)" href="style/style.css" />
+
+<body>
+	<header>
+		<h1 class="HeaderText">User Verwaltung</h1>
+	</header>
+	<nav>
+	</nav>
+	<section>
+		<article class="AnzeigeDaten">
+			<table id="InhaltOnClick">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Username</th>
+						<th>Passwort</th>
+						<th>Rolle</th>
+					</tr>
+				</thead>
+				<tfoot>
+					<tr>
+						<td colspan="4"><button id="AnmeldeButton" @onclick="HoleAlleUsers">Alle User</button></td>
+					</tr>
+				</tfoot>
+				<tbody id="TableBody">
+					@if (userlist == null)
+					{
+						<tr>
+							<td colspan="4">Es wird nach den Datensätzen gesucht.</td>
+						</tr>
+					}
+					else if (userlist.Count == 0)
+					{
+						<tr>
+							<td colspan="4">Es wurden keine Datensätze gefunden.</td>
+						</tr>
+					}
+					else
+					{
+						@foreach (var user in userlist)
+						{
+							<tr>
+								<td class="TableBestellungenID">@user.uId</td>
+								<td class="TableBestellungenUnternehmen">@user.username</td>
+								<td class="TableBestellungenBestelldatum">@user.passwort</td>
+								<td class="TableBestellungenBestelldatum">@user.rolle</td>
+							</tr>
+						}
+					}
+				</tbody>
+			</table>
+		</article>
+		<p>@AusgabeUser</p>
+	</section>
+</body>
+
+
+@code {
+
+	public class User
+	{
+		public int uId { get; set; }
+		public string? username { get; set; }
+		public string? passwort { get; set; }
+		public string? rolle { get; set; }
+	}
+
+	private string? Position;
+	private int? UserID;
+	private string? Username;
+	private string? Passwort;
+	private string? Rolle;
+
+	private string? OutputGetPostPutDelete;
+	private string? AusgabeUser;
+
+	private List<UserVerwaltungService.User> userlist;
+
+
+	private async void HoleAlleUsers()
+	{
+		UserVerwaltungService u1 = new UserVerwaltungService();
+		userlist = await u1.HoleAlleUser();
+		AusgabeUser += "Ausgabe";
+	}
+
+
+}
+
+
+	
+
+
+	

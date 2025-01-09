@@ -16,30 +16,42 @@
     <nav class="flex-column">
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Anmeldeseite
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span>Anmeldeseite
             </NavLink>
         </div>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="EinkaufBestellungen">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Einkauf Bestellungen
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span>Einkauf Bestellungen
+            </NavLink>
+        </div>
+         <div class="nav-item px-3">
+            <NavLink class="nav-link" href="Aufgaben">
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span>Aufgaben
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="UserVerwaltung">
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span>User Verwaltung
             </NavLink>
         </div>
     </nav>
 
-    <div class="linksunten">
-        <div class="divNavUserInfo">
-            @AppUserService.Username
+    <div class="nav-item px-3">
+        <div class="linksunten">
+            <div class="divNavUserInfo">
+                @AppUserService.Username
+            </div>
+            <div class="divNavUserInfo">
+                @Abteilung
+            </div>
+            <button @onclick="LogOut">Logout</button>
         </div>
-        <div class="divNavUserInfo">
-            @Abteilung
-        </div>
-        <button @onclick="LogOut">Logout</button>
-    </div>
+    </div>    
 </div>
 
 @code {
     private string UserName = "xxx";
-    private string Abteilung = "Ábteilung 1";
+    private string Abteilung = "Abteilung 1";
 
     protected override void OnInitialized()
     {

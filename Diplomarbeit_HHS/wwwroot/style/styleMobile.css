@@ -300,7 +300,7 @@ label {
 
 .linksunten {
     position: fixed;
-    width: 180px;
+    width: 250px;
     bottom: 0, //top: 0;
     left: 0;
     background-color: #018585;
@@ -313,4 +313,10 @@ label {
     margin: 0;
     padding: 0%;
     font-size: 1.5em;
+}
+
+.AusgewaehlteReihe {
+    background-color: #018585;
+    color: #FFEF23;
+    border: 0.1vh solid #FFEF23;
 }
