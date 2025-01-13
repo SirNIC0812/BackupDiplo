@@ -119,6 +119,7 @@
 		AufgabenListe a1 = new AufgabenListe();
 		aufgaben = await a1.HoleAlleAufgaben();
 
+
 		HttpClient client = new HttpClient();
 		var token = await SecureStorage.GetAsync("authToken");
 		client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
