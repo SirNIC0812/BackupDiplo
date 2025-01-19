@@ -267,7 +267,10 @@ label {
 
 #NavBild {
     height: 5vh;
-    text-align: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .nav-scrollable {
