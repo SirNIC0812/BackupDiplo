@@ -42,7 +42,7 @@
                 @AppUserService.Username
             </div>
             <div class="divNavUserInfo">
-                @Abteilung
+                @AppUserService.Rolle
             </div>
             <button @onclick="LogOut">Logout</button>
         </div>
@@ -51,7 +51,7 @@
 
 @code {
     private string UserName = "xxx";
-    private string Abteilung = "Abteilung 1";
+    private string Abteilung = "yyy";
 
     protected override void OnInitialized()
     {
@@ -67,6 +67,7 @@
         {
             Navigation.NavigateTo("/");
             AppUserService.Username = "";
+            AppUserService.Rolle = "";
         }
     }
 

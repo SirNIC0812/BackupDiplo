@@ -29,10 +29,13 @@
                 <tr>
                     <td>Position: </td>
                     <td>
-                        <select name="Admin" @bind="Position">
-                            <option value=""></option>
-                            <option value="Admin">Admin User</option>
-                            <option value="NonAdmin">Non-Admin User</option>
+                        <select name="Rolle" @bind="Rolle">
+                            <option value="Admin">Admin</option>
+                            <option value="Einkauf">Einkauf</option>
+                            <option value="IT">IT</option>
+                            <option value="Rechnungswesen">Rechnungswesen</option>
+                            <option value="Marketing">Marketing</option>
+                            <option value="Verkauf">Verkauf</option>
                         </select>
                     </td>
                 </tr>
@@ -65,14 +68,12 @@
     public class Inhalte
     {
         public int id { get; set; }
-        public string? uefa { get; set; }
         public string? position { get; set; }
         public string? username { get; set; }
         public string? passwort { get; set; }
     }
 
-    private string? UEFA;
-    private string? Position;
+    private string? Rolle;
     private string? Username;
     private string? Passwort;
     private string? OutputGetPostPutDelete;
@@ -122,22 +123,22 @@
 
     private async void TestenMitLogin()
     {
-		bool newLogin = await LoginVorgang(Username, Passwort);
+        bool newLogin = await LoginVorgang(Username, Passwort);
 
-		var token = await SecureStorage.GetAsync("authToken");
-		string janein = "";
-		if (token != null)
-		{
-			janein = "ja";
-		}
-		else
-		{
-			janein = "nein";
-		}
+        var token = await SecureStorage.GetAsync("authToken");
+        string janein = "";
+        if (token != null)
+        {
+            janein = "ja";
+        }
+        else
+        {
+            janein = "nein";
+        }
 
-		AusgabeUser = "LoginDIP: " + URLs.URLLogin + " || URLBestellung: " + URLs.URLEinkaufBestellung + " || Token: " + janein;
-		AusgabeUser += "\n Username: " + Username + " || Passwort: " + Passwort;
+        AusgabeUser += "\n Username: " + Username + " || Passwort: " + Passwort + " || Rolle: " + Rolle;
         AppUserService.Username = Username;
+        AppUserService.Rolle = Rolle;
 
 		if (newLogin == true)
 		{
@@ -148,14 +149,18 @@
 			{
 				//AusgabeUser = "ÜFA: " + UEFA + " || Position: " + Position + " || Username: " + Username + " || Passwort: " + Passwort;
 
-				if (Position == "Admin")
+                if (Rolle == "Admin")
 				{
-                    Navigation.NavigateTo("/Aufgaben"); // "/adminneu"
+                    Navigation.NavigateTo("/UserVerwaltung"); // "/adminneu"
 				}
-				else if (Position == "NonAdmin")
+                else if (Rolle == "Marketing")
 				{
+                    Navigation.NavigateTo("/Aufgaben");
+				}
+                else if (Rolle == "Einkauf")
+                {
                     Navigation.NavigateTo("/EinkaufBestellungen");
-				}
+                }
 				else
 				{
 					Navigation.NavigateTo("/");
