@@ -1,4 +1,4 @@
-* {
+﻿* {
     margin: 0;
     padding: 0;
 }
@@ -234,9 +234,9 @@ button {
 }
 
 
-.Hide {
-    //display: none;
-}
+/*.Hide {
+    display: none;
+}*/
 
 
 
@@ -301,7 +301,7 @@ label {
 .linksunten {
     position: fixed;
     width: 250px;
-    bottom: 0, //top: 0;
+    bottom: 0;
     left: 0;
     background-color: #018585;
 }
@@ -319,4 +319,27 @@ label {
     background-color: #018585;
     color: #FFEF23;
     border: 0.1vh solid #FFEF23;
+}
+
+
+
+@media (max-width: 1000px) {
+    .navbar-toggler {
+        display: block !important;
+        position: relative;
+        z-index: 1;
+        cursor: pointer;
+    }
+
+    .nav-scrollable {
+        display: none !important;
+        overflow-y: auto;
+        max-height: calc(100vh - 100px); /* Beispielh�he */
+    }
+
+    .navbar-toggler:checked + .nav-scrollable {
+        display: block !important;
+    }
+
+
 }

@@ -266,7 +266,7 @@ label {
 
 
 #NavBild {
-    height: 7vw;
+    height: 5vw;
 }
 
 .nav-scrollable {
@@ -299,4 +299,20 @@ label {
     background-color: #018585;
     color: #FFEF23;
     border: 0.1vh solid #FFEF23;
+}
+
+
+
+
+@media (min-width: 1000px) {
+    .navbar-toggler {
+        display: none !important;
+    }
+
+    .nav-scrollable {
+        display: block !important;
+        overflow-y: auto;
+        max-height: calc(100vh - 100px);
+    }
+
 }
