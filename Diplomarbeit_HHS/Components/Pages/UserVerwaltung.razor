@@ -23,10 +23,30 @@
 			<table id="InhaltOnClick">
 				<thead>
 					<tr>
-						<th>ID</th>
-						<th>Username</th>
-						<th>Passwort</th>
-						<th>Rolle</th>
+						<th @onclick="() => SortTable(nameof(User.uId))">
+							ID
+							@(currentSortColumn == nameof(User.uId)
+														? (sortAscending ? "↑" : "↓")
+														: string.Empty)
+						</th>
+						<th @onclick="() => SortTable(nameof(User.username))">
+							Username
+							@(currentSortColumn == nameof(User.username)
+														? (sortAscending ? "↑" : "↓")
+														: string.Empty)
+						</th>
+						<th @onclick="() => SortTable(nameof(User.passwort))">
+							Passwort
+							@(currentSortColumn == nameof(User.passwort)
+														? (sortAscending ? "↑" : "↓")
+														: string.Empty)
+						</th>
+						<th @onclick="() => SortTable(nameof(User.rolle))">
+							Rolle
+							@(currentSortColumn == nameof(User.rolle)
+														? (sortAscending ? "↑" : "↓")
+														: string.Empty)
+						</th>
 					</tr>
 				</thead>
 				<tfoot>
@@ -51,7 +71,8 @@
 					{
 						@foreach (var user in userlist)
 						{
-							<tr>
+
+							<tr @onclick="() => GetUserById(user.uId)" style="cursor: pointer;" class="@GetRowClass(user.uId)">
 								<td class="TableBestellungenID">@user.uId</td>
 								<td class="TableBestellungenUnternehmen">@user.username</td>
 								<td class="TableBestellungenBestelldatum">@user.passwort</td>
@@ -63,6 +84,43 @@
 			</table>
 		</article>
 		<p>@AusgabeUser</p>
+		<article class="AnzeigeInput">
+			<div class="LinkesDiv">
+				<div id="divEins">
+					<label class="divEinsBestellung" for="UserID">ID</label>
+					<input type="number" name="UserID" id="IDNumber" @bind="UserID" min="0" class="divEinsBestellung" />
+				</div>
+
+				<div id="DivButtons">
+					<button id="GETBestellungen" @onclick="TestAPIGET">Anzeigen</button>
+					<br>
+					<button id="POSTBestellungen" @onclick="TestAPIPOST">Erstellen</button>
+					<br>
+					<button id="PUTBestellungen" @onclick="TestAPIPUT">Ändern</button>
+					<br>
+					<button id="DELETEBestellungen" @onclick="TestAPIDELETE">Löschen</button>
+				</div>
+			</div>
+
+			<div class="RechtesDiv">
+				<div id="divZwei">
+					<label class="divZweiBestellung" for="Username">Username</label>
+					<label class="divZweiBestellung" for="Passwort">Passwort</label>
+					<label class="divZweiBestellung" for="Rolle">Rolle</label>
+					<br />
+					<input type="text" @bind="Username" name="Username" id="Bestelldatum" class="divZweiBestellung" />
+					<input type="text" @bind="Passwort" name="Passwort" id="Beschreibung" class="divZweiBestellung" />
+					<select @bind="Rolle" name="Rolle" id="Zahlungsart" class="divZweiBestellung">
+						<option value="Admin">Admin</option>
+						<option value="Einkauf">Einkauf</option>
+						<option value="IT">IT</option>
+						<option value="Rechnungswesen">Rechnungswesen</option>
+						<option value="Marketing">Marketing</option>
+						<option value="Verkauf">Verkauf</option>
+					</select>
+				</div>
+			</div>
+		</article>
 	</section>
 </body>
 
@@ -78,7 +136,7 @@
 	}
 
 	private string? Position;
-	private int? UserID;
+	private int UserID;
 	private string? Username;
 	private string? Passwort;
 	private string? Rolle;
@@ -86,7 +144,77 @@
 	private string? OutputGetPostPutDelete;
 	private string? AusgabeUser;
 
+	private int lastID;
 	private List<UserVerwaltungService.User> userlist;
+
+
+	private bool sortAscending = true;
+	private string? currentSortColumn;
+
+	private void SortTable(string columnName)
+	{
+		if (currentSortColumn == columnName)
+		{
+			sortAscending = !sortAscending; // Toggle sort direction
+		}
+		else
+		{
+			currentSortColumn = columnName;
+			sortAscending = true;
+		}
+
+		if (userlist != null)
+		{
+			userlist = columnName switch
+			{
+				nameof(User.uId) => sortAscending
+					? userlist.OrderBy(m => m.uId).ToList()
+					: userlist.OrderByDescending(m => m.uId).ToList(),
+				nameof(User.username) => sortAscending
+					? userlist.OrderBy(m => m.username).ToList()
+					: userlist.OrderByDescending(m => m.username).ToList(),
+				nameof(User.passwort) => sortAscending
+					? userlist.OrderBy(m => m.passwort).ToList()
+					: userlist.OrderByDescending(m => m.passwort).ToList(),
+				nameof(User.rolle) => sortAscending
+					? userlist.OrderBy(m => m.rolle).ToList()
+					: userlist.OrderByDescending(m => m.rolle).ToList(),
+				_ => userlist
+			};
+		}
+	}
+
+
+
+	protected override async Task OnInitializedAsync()
+	{
+		UserVerwaltungService u1 = new UserVerwaltungService();
+		userlist = await u1.HoleAlleUser();
+
+		HttpClient client = new HttpClient();
+		var token = await SecureStorage.GetAsync("authToken");
+		client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+		HttpResponseMessage GetResponse = await client.GetAsync($"{URLs.URLEinkaufBestellung}");
+
+		if (GetResponse.IsSuccessStatusCode)
+		{
+			var responseBody = await GetResponse.Content.ReadAsStringAsync();
+			//OutputResult = responseBody;
+			OutputGetPostPutDelete = "GETALL wurde erfolgreich ausgeführt!";
+
+			foreach (var bestellung in userlist)
+			{
+				lastID = bestellung.uId;
+				int newID = lastID + 1;
+				UserID = newID;
+			}
+		}
+		else
+		{
+			OutputGetPostPutDelete = "Error TestAPIGET: " + GetResponse.StatusCode;
+		}
+		JS.InvokeVoidAsync("setLastIDInJS", lastID);
+	}
 
 
 	private async void HoleAlleUsers()
@@ -96,6 +224,88 @@
 		AusgabeUser += "Ausgabe";
 	}
 
+
+	private int? selectedId; // Speichert die ID der ausgewählten Zeile
+
+	private string GetRowClass(int Id)
+	{
+		// Rückgabe der CSS-Klasse für die aktuelle Zeile
+		return selectedId == Id ? "AusgewaehlteReihe" : "";
+	}
+
+
+	private async void GetUserById(int IDNumberEingegeben)
+	{
+		selectedId = UserID; // Aktualisiert die ausgewählte ID
+
+		UserVerwaltungService u2 = new UserVerwaltungService();
+		var User = await u2.HoleUserById(IDNumberEingegeben);
+		OutputGetPostPutDelete = Convert.ToString(User);
+
+		if (User == null)
+		{
+			OutputGetPostPutDelete = "Ihre werte sind null, da hat was ned funkt";
+		}
+		else
+		{
+			UserID = User.uId;
+			Username = User.username;
+			Passwort = User.passwort;
+			Rolle = User.rolle;
+		}
+	}
+
+
+	public async Task TestAPIGET()
+	{
+		GetUserById(UserID);
+		OutputGetPostPutDelete = "GET wurde erfolgreich ausgeführt!";
+	}
+
+
+	public async Task TestAPIPOST()
+	{
+		UserVerwaltungService u3 = new UserVerwaltungService();
+		await u3.PostUser(UserID, Username, Passwort, Rolle);
+		await OnInitializedAsync();
+		OutputGetPostPutDelete = "POST wurde erfolgreich ausgeführt!";
+	}
+
+
+	public async Task TestAPIPUT()
+	{
+		UserVerwaltungService u4 = new UserVerwaltungService();
+		await u4.PutUser(UserID, Username, Passwort, Rolle);
+		await OnInitializedAsync();
+		OutputGetPostPutDelete = "PUT wurde erfolgreich ausgeführt!";
+	}
+
+
+	public async Task TestAPIDELETE()
+	{
+		UserVerwaltungService u5 = new UserVerwaltungService();
+		await u5.DeleteUser(UserID);
+		await OnInitializedAsync();
+		OutputGetPostPutDelete = "DELETE wurde erfolgreich ausgeführt!";
+	}
+
+
+	private async void LogOut()
+	{
+		await SecureStorage.SetAsync("authToken", "1");
+		OutputGetPostPutDelete = "Sie haben sich abgemeldet. Ihr Token ist gelöscht";
+
+		var token = await SecureStorage.GetAsync("authToken");
+		if (token == "1")
+		{
+			Navigation.NavigateTo("/");
+		}
+		else
+		{
+			OutputGetPostPutDelete = "Irgendwas hat beim Logout nicht funktioniert!";
+		}
+	}
+}
 
 }
 

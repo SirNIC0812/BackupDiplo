@@ -23,14 +23,54 @@
 			<table id ="InhaltOnClick">
 				<thead>
 					<tr>
-						<th class="TableBestellungenID">ID</th>
-						<th class="TableBestellungenUnternehmen">Unternehmen</th>
-						<th class="TableBestellungenBestelldatum">Bestelldatum</th>
-						<th class="TableBestellungenFertig"><span>✔</span></th>
-						<th class="TableBestellungenAnzahl">Anzahl</th>
-						<th class="TableBestellungenNetto">Netto</th>
-						<th class="TableBestellungenSteuer">Steuer</th>
-						<th class="TableBestellungenBrutto">Brutto</th>
+						<th class="TableBestellungenID" @onclick="() => SortTable(nameof(DIP.bId))">
+							ID
+							@(currentSortColumn == nameof(DIP.bId)
+														? (sortAscending ? "↑" : "↓")
+														: string.Empty)
+						</th>
+						<th class="TableBestellungenUnternehmen" @onclick="() => SortTable(nameof(DIP.beschreibung))">
+							Unternehmen
+							@(currentSortColumn == nameof(DIP.beschreibung)
+														? (sortAscending ? "↑" : "↓")
+														: string.Empty)
+						</th>
+						<th class="TableBestellungenBestelldatum" @onclick="() => SortTable(nameof(DIP.bestelldatum))">
+							Bestelldatum
+							@(currentSortColumn == nameof(DIP.bestelldatum)
+														? (sortAscending ? "↑" : "↓")
+														: string.Empty)
+						</th>
+						<th class="TableBestellungenFertig" @onclick="() => SortTable(nameof(DIP.isComplete))">
+							<span>✔</span>
+							@(currentSortColumn == nameof(DIP.isComplete)
+														? (sortAscending ? "↑" : "↓")
+														: string.Empty)
+						</th>
+						<th class="TableBestellungenAnzahl" @onclick="() => SortTable(nameof(DIP.anzahl))">
+							Anzahl
+							@(currentSortColumn == nameof(DIP.anzahl)
+														? (sortAscending ? "↑" : "↓")
+														: string.Empty)
+						</th>
+						<th class="TableBestellungenNetto" @onclick="() => SortTable(nameof(DIP.netto))">
+							Netto
+							@(currentSortColumn == nameof(DIP.netto)
+														? (sortAscending ? "↑" : "↓")
+														: string.Empty)
+						</th>
+						<th class="TableBestellungenSteuer" @onclick="() => SortTable(nameof(DIP.steuer))">
+							Steuer
+							@(currentSortColumn == nameof(DIP.steuer)
+														? (sortAscending ? "↑" : "↓")
+														: string.Empty)
+						</th>
+						<th class="TableBestellungenBrutto" @onclick="() => SortTable(nameof(DIP.brutto))">
+							Brutto
+							@(currentSortColumn == nameof(DIP.brutto)
+														? (sortAscending ? "↑" : "↓")
+														: string.Empty)
+						</th>
 					</tr>
 				</thead>
 				<tfoot>
@@ -85,11 +125,11 @@
 				<div id="DivButtons">
 					<button id="GETBestellungen" @onclick="TestAPIGET">Anzeigen</button>
 					<br>
-					<button id="POSTBestellungen" @onclick="TestAPIPOST">Erstellen</button>
+					<!--<button id="POSTBestellungen" @onclick="TestAPIPOST">Erstellen</button>
 					<br>
 					<button id="PUTBestellungen" @onclick="TestAPIPUT">Ändern</button>
 					<br>
-					<button id="DELETEBestellungen" @onclick="TestAPIDELETE">Löschen</button>
+					<button id="DELETEBestellungen" @onclick="TestAPIDELETE">Löschen</button>-->
 				</div>
 			</div>
 
@@ -178,6 +218,58 @@
 	private double Brutto;
 	private Boolean IsComplete;
 
+	private int lastID;
+	private List<Einkauf.DIP> bestellungen;
+
+	private bool sortAscending = true;
+	private string? currentSortColumn;
+
+	private void SortTable(string columnName)
+	{
+		if (currentSortColumn == columnName)
+		{
+			sortAscending = !sortAscending; // Toggle sort direction
+		}
+		else
+		{
+			currentSortColumn = columnName;
+			sortAscending = true;
+		}
+
+		if (bestellungen != null)
+		{
+			bestellungen = columnName switch
+			{
+				nameof(DIP.bId) => sortAscending
+					? bestellungen.OrderBy(m => m.bId).ToList()
+					: bestellungen.OrderByDescending(m => m.bId).ToList(),
+				nameof(DIP.bestelldatum) => sortAscending
+					? bestellungen.OrderBy(m => m.bestelldatum).ToList()
+					: bestellungen.OrderByDescending(m => m.bestelldatum).ToList(),
+				nameof(DIP.beschreibung) => sortAscending
+					? bestellungen.OrderBy(m => m.beschreibung).ToList()
+					: bestellungen.OrderByDescending(m => m.beschreibung).ToList(),
+				nameof(DIP.isComplete) => sortAscending
+					? bestellungen.OrderBy(m => m.isComplete).ToList()
+					: bestellungen.OrderByDescending(m => m.isComplete).ToList(),
+				nameof(DIP.anzahl) => sortAscending
+					? bestellungen.OrderBy(m => m.anzahl).ToList()
+					: bestellungen.OrderByDescending(m => m.anzahl).ToList(),
+				nameof(DIP.netto) => sortAscending
+					? bestellungen.OrderBy(m => m.netto).ToList()
+					: bestellungen.OrderByDescending(m => m.netto).ToList(),
+				nameof(DIP.steuer) => sortAscending
+					? bestellungen.OrderBy(m => m.steuer).ToList()
+					: bestellungen.OrderByDescending(m => m.steuer).ToList(),
+				nameof(DIP.brutto) => sortAscending
+					? bestellungen.OrderBy(m => m.brutto).ToList()
+					: bestellungen.OrderByDescending(m => m.brutto).ToList(),
+				_ => bestellungen
+			};
+		}
+	}
+
+
 
 	public async Task NettoSteuerBruttoErgebnis()
 	{
@@ -190,9 +282,7 @@
 		Brutto = await NewNettoSteuerBrutto.NettoBrutto(netto);		
 	}
 
-	private int lastID;
 
-	private List<Einkauf.DIP> bestellungen;
 
 	protected override async Task OnInitializedAsync()
 	{

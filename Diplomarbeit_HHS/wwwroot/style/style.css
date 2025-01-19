@@ -266,7 +266,8 @@ label {
 
 
 #NavBild {
-    height: 5vw;
+    height: 5vh;
+    text-align: center;
 }
 
 .nav-scrollable {
@@ -303,6 +304,9 @@ label {
 
 
 
+.ps-3 {
+    height: 8%;
+}
 
 @media (min-width: 1000px) {
     .navbar-toggler {
@@ -313,6 +317,6 @@ label {
         display: block !important;
         overflow-y: auto;
         max-height: calc(100vh - 100px);
+        height: 80%;
     }
-
 }

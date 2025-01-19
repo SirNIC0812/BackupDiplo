@@ -23,9 +23,24 @@
 			<table id ="InhaltOnClick">
 				<thead>
 					<tr>
-						<th class="TableBestellungenID">ID</th>
-						<th class="TableBestellungenUnternehmen">Aufgaben</th>
-						<th class="TableBestellungenBestelldatum">Abgabeterim</th>
+						<th class="TableBestellungenID" @onclick="() => SortTable(nameof(Aufgabe.aId))">
+							ID
+							@(currentSortColumn == nameof(Aufgabe.aId)
+														? (sortAscending ? "↑" : "↓")
+														: string.Empty)
+						</th>
+						<th class="TableBestellungenUnternehmen" @onclick="() => SortTable(nameof(Aufgabe.aufgabe))">
+							Aufgaben
+							@(currentSortColumn == nameof(Aufgabe.aufgabe)
+														? (sortAscending ? "↑" : "↓")
+														: string.Empty)
+						</th>
+						<th class="TableBestellungenBestelldatum" @onclick="() => SortTable(nameof(Aufgabe.expiryDate))">
+							Abgabetermin
+							@(currentSortColumn == nameof(Aufgabe.expiryDate)
+														? (sortAscending ? "↑" : "↓")
+														: string.Empty)
+						</th>
 					</tr>
 				</thead>
 				<tfoot>
@@ -113,6 +128,39 @@
 
 	private List<AufgabenListe.Aufgabe> aufgaben;
 
+
+	private bool sortAscending = true;
+	private string? currentSortColumn;
+
+	private void SortTable(string columnName)
+	{
+		if (currentSortColumn == columnName)
+		{
+			sortAscending = !sortAscending; // Toggle sort direction
+		}
+		else
+		{
+			currentSortColumn = columnName;
+			sortAscending = true;
+		}
+
+		if (aufgaben != null)
+		{
+			aufgaben = columnName switch
+			{
+				nameof(Aufgabe.aId) => sortAscending
+					? aufgaben.OrderBy(m => m.aId).ToList()
+					: aufgaben.OrderByDescending(m => m.aId).ToList(),
+				nameof(Aufgabe.aufgabe) => sortAscending
+					? aufgaben.OrderBy(m => m.aufgabe).ToList()
+					: aufgaben.OrderByDescending(m => m.aufgabe).ToList(),
+				nameof(Aufgabe.expiryDate) => sortAscending
+					? aufgaben.OrderBy(m => m.expiryDate).ToList()
+					: aufgaben.OrderByDescending(m => m.expiryDate).ToList(),
+				_ => aufgaben
+			};
+		}
+	}
 
 	protected override async Task OnInitializedAsync()
 	{
