@@ -1,0 +1,388 @@
+﻿@page "/UserInfo"
+@using System.Text.Json
+@using System.Text
+@using System.Net.Http.Headers
+@using Microsoft.Extensions.Configuration
+@using Diplomarbeit_HHS.Models
+@inject IConfiguration Configuration
+@inject NavigationManager Navigation
+@inject IJSRuntime JS //Schnittstelle zwischen c# und js
+
+<script src="javaScript/script.js"></script>
+<link rel="stylesheet" media="(min-width:0px)" href="style/styleMobile.css" />
+<link rel="stylesheet" media="(min-width:1000px)" href="style/style.css" />
+
+<body>
+	<header>
+		<h1 class="HeaderText">User Info</h1>
+	</header>
+	<nav>
+	</nav>
+	<section>
+		<article class="AnzeigeDaten">
+			<table id="InhaltOnClick">
+				<thead>
+					<tr>
+						<th @onclick="() => SortTable(nameof(Userinfo.uiId))">
+							ID
+							@(currentSortColumn == nameof(Userinfo.uId)
+												? (sortAscending ? "↑" : "↓")
+												: string.Empty)
+						</th>
+						<th @onclick="() => SortTable(nameof(Userinfo.katalognummer))">
+							Katalognummer
+							@(currentSortColumn == nameof(Userinfo.katalognummer)
+												? (sortAscending ? "↑" : "↓")
+												: string.Empty)
+						</th>
+						<th @onclick="() => SortTable(nameof(Userinfo.vorname))">
+							Vorname
+							@(currentSortColumn == nameof(Userinfo.vorname)
+												? (sortAscending ? "↑" : "↓")
+												: string.Empty)
+						</th>
+						<th @onclick="() => SortTable(nameof(Userinfo.nachname))">
+							Nachname
+							@(currentSortColumn == nameof(Userinfo.nachname)
+												? (sortAscending ? "↑" : "↓")
+												: string.Empty)
+						</th>
+						<th @onclick="() => SortTable(nameof(Userinfo.abteilung))">
+							Abteilung
+							@(currentSortColumn == nameof(Userinfo.abteilung)
+												? (sortAscending ? "↑" : "↓")
+												: string.Empty)
+						</th>
+						<th @onclick="() => SortTable(nameof(Userinfo.abteilungsleiter))">
+							Abteilungsleiter
+							@(currentSortColumn == nameof(Userinfo.abteilungsleiter)
+												? (sortAscending ? "↑" : "↓")
+												: string.Empty)
+						</th>
+						<th @onclick="() => SortTable(nameof(Userinfo.bruttogehalt))">
+							Bruttogehalt
+							@(currentSortColumn == nameof(Userinfo.bruttogehalt)
+												? (sortAscending ? "↑" : "↓")
+												: string.Empty)
+						</th>
+						<th @onclick="() => SortTable(nameof(Userinfo.uId))">
+							uId
+							@(currentSortColumn == nameof(Userinfo.uId)
+												? (sortAscending ? "↑" : "↓")
+												: string.Empty)
+						</th>
+					</tr>
+				</thead>
+				<tfoot>
+					<!--<tr>
+						<td colspan="8"><button id="AnmeldeButton" @onclick="HoleAlleUserInfos">Alle UserInfos</button></td>
+					</tr>-->
+				</tfoot>
+				<tbody id="TableBody">
+					@if (userinfolist == null)
+					{
+						<tr>
+							<td colspan="4">Es wird nach den Datensätzen gesucht.</td>
+						</tr>
+					}
+					else if (userinfolist.Count == 0)
+					{
+						<tr>
+							<td colspan="4">Es wurden keine Datensätze gefunden.</td>
+						</tr>
+					}
+					else
+					{
+						@foreach (var userinfo in userinfolist)
+						{
+
+							<tr @onclick="() => GetUserById(userinfo.uiId)" style="cursor: pointer;" class="@GetRowClass(userinfo.uiId)">
+								<td>@userinfo.uiId</td>
+								<td>@userinfo.katalognummer</td>
+								<td>@userinfo.vorname</td>
+								<td>@userinfo.nachname</td>
+								<td>@userinfo.abteilung</td>
+								<td>@userinfo.abteilungsleiter</td>
+								<td>@userinfo.bruttogehalt</td>
+								<td>@userinfo.uId</td>
+							</tr>
+						}
+					}
+				</tbody>
+			</table>
+		</article>
+		<p>@AusgabeUser</p>
+		<article class="AnzeigeInput">
+			<div class="LinkesDiv">
+				<div id="divEins">
+					<label class="divEinsBestellung" for="UserInfoID">UserInfoID</label>
+					<input type="number" name="UserInfoID" id="IDNumber" @bind="UserInfoID" min="0" class="divEinsBestellung" />
+				</div>
+
+				<div id="DivButtons">
+					<button id="GETBestellungen" @onclick="TestAPIGET">Anzeigen</button>
+					<br>
+					<button id="POSTBestellungen" @onclick="TestAPIPOST">Erstellen</button>
+					<br>
+					<button id="PUTBestellungen" @onclick="TestAPIPUT">Ändern</button>
+					<br>
+					<button id="DELETEBestellungen" @onclick="TestAPIDELETE">Löschen</button>
+				</div>
+			</div>
+
+			<div class="RechtesDiv">
+				<div id="divZwei">
+					<label class="divZweiBestellung" for="Katalognummer">Katalognummer</label>
+					<label class="divZweiBestellung" for="Vorname">Vorname</label>
+					<label class="divZweiBestellung" for="Nachname">Nachname</label>
+					<label class="divZweiBestellung" for="Abteilung">Abteilung</label>
+
+					<input type="number" @bind="Katalognummer" name="Katalognummer" id="Bestelldatum" class="divZweiBestellung" />
+					<input type="text" @bind="Vorname" name="Vorname" id="Beschreibung" class="divZweiBestellung" />
+					<input type="text" @bind="Nachname" name="Nachname" id="Beschreibung" class="divZweiBestellung" />
+					<!--<select @bind="Abteilung" name="Abteilung" id="Zahlungsart" class="divZweiBestellung">
+						<option value="Admin">Admin</option>
+						<option value="Einkauf">Einkauf</option>
+						<option value="IT">IT</option>
+						<option value="Rechnungswesen">Rechnungswesen</option>
+						<option value="Marketing">Marketing</option>
+						<option value="Verkauf">Verkauf</option>
+					</select>-->
+					<select @bind="Abteilung" name="Abteilung" id="Zahlungsart" class="divZweiBestellung">
+						<option value="Admin" selected="selected">Admin</option>
+						<option value="User">User</option>
+					</select>
+
+
+				</div>
+				<div id="divDrei">
+					<label class="divDreiBestellung" for="Abteilungsleiter">Abteilungsleiter</label>
+					<label class="divDreiBestellung" for="Bruttogehalt">Bruttogehalt</label>
+					<label class="divDreiBestellung" for="UId">UId</label>
+
+					<input type="checkbox" @bind="Abteilungsleiter" name="Abteilungsleiter" id="IsComplete" class="divDreiBestellung" />
+					<input type="number" @bind="Bruttogehalt" name="Bruttogehalt" id="BestellNrLieferant" class="divDreiBestellung" />
+					<input type="number" @bind="UId" name="UId" id="BestellNrLieferant" class="divDreiBestellung" />	
+				</div>				
+			</div>
+
+		</article>
+	</section>
+</body>
+
+
+@code {
+
+	public class Userinfo
+	{
+		public int uiId { get; set; }
+		public int katalognummer { get; set; }
+		public string? vorname { get; set; }
+		public string? nachname { get; set; }
+		public string? abteilung { get; set; }
+		public bool abteilungsleiter { get; set; }
+		public double bruttogehalt { get; set; }
+		public int uId { get; set; }
+	}
+
+
+
+	private int UserInfoID;
+	private int Katalognummer;
+	private string? Vorname;
+	private string? Nachname;
+	private string? Abteilung;
+	private bool Abteilungsleiter;
+	private double Bruttogehalt;
+	private int UId;
+
+
+	private string? OutputGetPostPutDelete;
+	private string? AusgabeUser;
+
+	private int lastID;
+	private List<UserVerwaltungService.UserInfo> userinfolist;
+
+
+	private bool sortAscending = true;
+	private string? currentSortColumn;
+
+	private void SortTable(string columnName)
+	{
+		if (currentSortColumn == columnName)
+		{
+			sortAscending = !sortAscending; // Toggle sort direction
+		}
+		else
+		{
+			currentSortColumn = columnName;
+			sortAscending = true;
+		}
+
+		if (userinfolist != null)
+		{
+			userinfolist = columnName switch
+			{
+				nameof(Userinfo.uiId) => sortAscending
+					? userinfolist.OrderBy(m => m.uiId).ToList()
+					: userinfolist.OrderByDescending(m => m.uiId).ToList(),
+				nameof(Userinfo.katalognummer) => sortAscending
+					? userinfolist.OrderBy(m => m.katalognummer).ToList()
+					: userinfolist.OrderByDescending(m => m.katalognummer).ToList(),
+				nameof(Userinfo.vorname) => sortAscending
+					? userinfolist.OrderBy(m => m.vorname).ToList()
+					: userinfolist.OrderByDescending(m => m.vorname).ToList(),
+				nameof(Userinfo.nachname) => sortAscending
+					? userinfolist.OrderBy(m => m.nachname).ToList()
+					: userinfolist.OrderByDescending(m => m.nachname).ToList(),
+				nameof(Userinfo.abteilung) => sortAscending
+					? userinfolist.OrderBy(m => m.abteilung).ToList()
+					: userinfolist.OrderByDescending(m => m.abteilung).ToList(),
+				nameof(Userinfo.abteilungsleiter) => sortAscending
+					? userinfolist.OrderBy(m => m.abteilungsleiter).ToList()
+					: userinfolist.OrderByDescending(m => m.abteilungsleiter).ToList(),
+				nameof(Userinfo.bruttogehalt) => sortAscending
+					? userinfolist.OrderBy(m => m.bruttogehalt).ToList()
+					: userinfolist.OrderByDescending(m => m.bruttogehalt).ToList(),
+				nameof(Userinfo.uId) => sortAscending
+					? userinfolist.OrderBy(m => m.uId).ToList()
+					: userinfolist.OrderByDescending(m => m.uId).ToList(),
+				_ => userinfolist
+			};
+		}
+	}
+
+
+
+	protected override async Task OnInitializedAsync()
+	{
+		UserVerwaltungService ui1 = new UserVerwaltungService();
+		userinfolist = await ui1.HoleAlleUserInfo();
+
+		HttpClient client = new HttpClient();
+		var token = await SecureStorage.GetAsync("authToken");
+		client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+		HttpResponseMessage GetResponse = await client.GetAsync($"{URLs.URLEinkaufBestellung}");
+
+		if (GetResponse.IsSuccessStatusCode)
+		{
+			var responseBody = await GetResponse.Content.ReadAsStringAsync();
+			//OutputResult = responseBody;
+			OutputGetPostPutDelete = "GETALL wurde erfolgreich ausgeführt!";
+
+			foreach (var userinfo in userinfolist)
+			{
+				lastID = userinfo.uId;
+				int newID = lastID + 1;
+				UserInfoID = newID;
+			}
+		}
+		else
+		{
+			OutputGetPostPutDelete = "Error TestAPIGET: " + GetResponse.StatusCode;
+		}
+		JS.InvokeVoidAsync("setLastIDInJS", lastID);
+	}
+
+
+	private async void HoleAlleUserInfos()
+	{
+		UserVerwaltungService ui1 = new UserVerwaltungService();
+		userinfolist = await ui1.HoleAlleUserInfo();
+		AusgabeUser += "Ausgabe";
+	}
+
+
+	private int? selectedId; // Speichert die ID der ausgewählten Zeile
+
+	private string GetRowClass(int Id)
+	{
+		// Rückgabe der CSS-Klasse für die aktuelle Zeile
+		return selectedId == Id ? "AusgewaehlteReihe" : "";
+	}
+
+
+	private async void GetUserById(int IDNumberEingegeben)
+	{
+		selectedId = UserInfoID; // Aktualisiert die ausgewählte ID
+
+		UserVerwaltungService ui2 = new UserVerwaltungService();
+		var UserInfo = await ui2.HoleUserInfoById(IDNumberEingegeben);
+		OutputGetPostPutDelete = Convert.ToString(UserInfo);
+
+		if (UserInfo == null)
+		{
+			OutputGetPostPutDelete = "Ihre werte sind null, da hat was ned funkt";
+		}
+		else
+		{
+			UserInfoID = UserInfo.uiId;
+			Katalognummer = UserInfo.katalognummer;
+			Vorname = UserInfo.vorname;
+			Nachname = UserInfo.nachname;
+			Abteilung = UserInfo.abteilung;
+			Abteilungsleiter = UserInfo.abteilungsleiter;
+			Bruttogehalt = UserInfo.bruttogehalt;
+			UId = UserInfo.uId;
+		}
+	}
+
+
+	public async Task TestAPIGET()
+	{
+		GetUserById(UserInfoID);
+		OutputGetPostPutDelete = "GET wurde erfolgreich ausgeführt!";
+	}
+
+
+	public async Task TestAPIPOST()
+	{
+		UserVerwaltungService ui3 = new UserVerwaltungService();
+		await ui3.PostUserInfo(UserInfoID, Katalognummer, Vorname, Nachname, Abteilung, Abteilungsleiter, Bruttogehalt, UId);
+		await OnInitializedAsync();
+		OutputGetPostPutDelete = "POST wurde erfolgreich ausgeführt!";
+	}
+
+
+	public async Task TestAPIPUT()
+	{
+		UserVerwaltungService ui4 = new UserVerwaltungService();
+		await ui4.PutUserInfo(UserInfoID, Katalognummer, Vorname, Nachname, Abteilung, Abteilungsleiter, Bruttogehalt, UId);
+		await OnInitializedAsync();
+		OutputGetPostPutDelete = "PUT wurde erfolgreich ausgeführt!";
+	}
+
+
+	public async Task TestAPIDELETE()
+	{
+		UserVerwaltungService ui5 = new UserVerwaltungService();
+		await ui5.DeleteUserInfo(UserInfoID);
+		await OnInitializedAsync();
+		OutputGetPostPutDelete = "DELETE wurde erfolgreich ausgeführt!";
+	}
+
+
+	private async void LogOut()
+	{
+		await SecureStorage.SetAsync("authToken", "1");
+		OutputGetPostPutDelete = "Sie haben sich abgemeldet. Ihr Token ist gelöscht";
+
+		var token = await SecureStorage.GetAsync("authToken");
+		if (token == "1")
+		{
+			Navigation.NavigateTo("/");
+		}
+		else
+		{
+			OutputGetPostPutDelete = "Irgendwas hat beim Logout nicht funktioniert!";
+		}
+	}
+}
+
+}
+
+
+	
+
+
+	

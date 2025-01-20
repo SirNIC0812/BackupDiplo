@@ -42,11 +42,11 @@
 
 
 	//User
-	public const string URLUserGetUser = $"{AnfangURL}/User/getUser";							//Brauch ich ned unbedingt1
-	public const string URLUserGetUserAdmin = $"{AnfangURL}/User/getUser/Admin";	//wird dann User/getUser			//Zeigt alle User + Admin	
-	public const string URLUserPostUser = $"{AnfangURL}/User/PostUser";							//Post User
-	public const string URLUserPutDelete = $"{AnfangURL}/User";										//Put User
-	public const string URLUserInfo = $"{AnfangURL}/User/Userinfo";								//Mehr Informationen über User
+	public const string URLUserGetUser = $"{AnfangURL}/User/getUser";                           //Brauch ich ned unbedingt || Schon Verwendet
+	public const string URLUserGetUserAdmin = $"{AnfangURL}/User/getUser/Admin";				//wird dann User/getUser || Zeigt alle User + Admin	
+	public const string URLUserPostUser = $"{AnfangURL}/User/PostUser";                         //Post User || Schon Verwendet
+	public const string URLUserPutDelete = $"{AnfangURL}/User";                                 //Put User || Schon Verwendet
+	public const string URLUserInfo = $"{AnfangURL}/User/Userinfo";                             //Mehr Informationen über User || Schon Verwendet
 
 
 	//Verkauf	
