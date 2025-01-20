@@ -122,7 +122,7 @@ namespace Diplomarbeit_HHS.Models
 			User newUser = new User { uId = IDNumber, username= Username, passwort = Passwort, rolle = Rolle };
 			string jsonData = JsonSerializer.Serialize(newUser);
 			var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
-			HttpResponseMessage response = await client.PostAsync($"{URLs.URLUserGetUser}/", content);
+			HttpResponseMessage response = await client.PostAsync($"{URLs.URLUserPostUser}/", content);
 
 			if (response.IsSuccessStatusCode)
 			{
@@ -149,7 +149,7 @@ namespace Diplomarbeit_HHS.Models
 			User newUser = new User { uId = IDNumber, username = Username, passwort = Passwort, rolle = Rolle };
 			string jsonData = JsonSerializer.Serialize(newUser);
 			var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
-			HttpResponseMessage response = await client.PutAsync($"{URLs.URLUserGetUser}/{IDNumber}", content);
+			HttpResponseMessage response = await client.PutAsync($"{URLs.URLUserPutDelete}/{IDNumber}", content);
 
 			if (response.IsSuccessStatusCode)
 			{
@@ -172,7 +172,7 @@ namespace Diplomarbeit_HHS.Models
 			var token = await SecureStorage.GetAsync("authToken");
 			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-			HttpResponseMessage response = await client.DeleteAsync($"{URLs.URLUserGetUser}/{IDNumber}");
+			HttpResponseMessage response = await client.DeleteAsync($"{URLs.URLUserPutDelete}/{IDNumber}");
 
 			if (response.IsSuccessStatusCode)
 			{

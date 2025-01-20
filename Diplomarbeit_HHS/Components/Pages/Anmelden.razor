@@ -32,9 +32,9 @@
                         <select name="Rolle" @bind="Rolle">
                             <option value="Admin">Admin</option>
                             <option value="Einkauf">Einkauf</option>
-                            <option value="IT">IT</option>
+                            <option value="Office">Office</option>
+                            <option value="Personal">Personal</option>
                             <option value="Rechnungswesen">Rechnungswesen</option>
-                            <option value="Marketing">Marketing</option>
                             <option value="Verkauf">Verkauf</option>
                         </select>
                     </td>
@@ -84,9 +84,6 @@
         public string? username { get; set; }
         public string? passwort { get; set; }
     }
-
-    private string username;
-
 
     HttpClientHandler handler = new HttpClientHandler
 	{
@@ -147,13 +144,12 @@
 
 			if (Username != null)
 			{
-				//AusgabeUser = "ÜFA: " + UEFA + " || Position: " + Position + " || Username: " + Username + " || Passwort: " + Passwort;
 
                 if (Rolle == "Admin")
 				{
-                    Navigation.NavigateTo("/UserVerwaltung"); // "/adminneu"
+                    Navigation.NavigateTo("/UserVerwaltung");   //"/adminneu"
 				}
-                else if (Rolle == "Marketing")
+                else if (Rolle == "Personal")
 				{
                     Navigation.NavigateTo("/Aufgaben");
 				}

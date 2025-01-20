@@ -51,7 +51,7 @@ tr {
 
 th {
     margin: 2%;
-    text-align: center;
+    text-align: center !important;
     color: #018585;
     font-size: 2vh;
     background-color: #FFEF23;
@@ -94,6 +94,7 @@ td {
     width: 30%;
     padding: 0.5% 1% 0.5% 1%;
     border-bottom: 0.1vh solid #018585;
+    text-align: center;
 }
 
 .TableBestellungenFertig {
@@ -338,7 +339,7 @@ label {
         display: none !important;
         overflow-y: auto;
         max-height: calc(100vh - 100px);
-        background-color: red;
+        /*background-color: red;*/
     }
 
     .navbar-toggler:checked + .nav-scrollable {

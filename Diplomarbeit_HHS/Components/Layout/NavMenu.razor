@@ -50,8 +50,8 @@
 </div>
 
 @code {
-    private string UserName = "xxx";
-    private string Abteilung = "yyy";
+    private string UserName = "-";
+    private string Abteilung = "-";
 
     protected override void OnInitialized()
     {
@@ -66,8 +66,8 @@
         if (token == "1")
         {
             Navigation.NavigateTo("/");
-            AppUserService.Username = "";
-            AppUserService.Rolle = "";
+            AppUserService.Username = "-";
+            AppUserService.Rolle = "-";
         }
     }
 

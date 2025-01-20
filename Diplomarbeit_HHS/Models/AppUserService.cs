@@ -8,8 +8,8 @@ namespace Diplomarbeit_HHS.Models
 {
 	public class AppUserService
 	{
-		private string _username = "xxx"; //string.Empty;
-		private string _rolle = "yyy"; //string.Empty;
+		private string _username = "";
+		private string _rolle = "";
 
 
 		public string Username

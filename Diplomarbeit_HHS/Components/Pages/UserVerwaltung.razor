@@ -107,16 +107,22 @@
 					<label class="divZweiBestellung" for="Username">Username</label>
 					<label class="divZweiBestellung" for="Passwort">Passwort</label>
 					<label class="divZweiBestellung" for="Rolle">Rolle</label>
-					<br />
+				</div>
+
+				<div id="divZwei">
 					<input type="text" @bind="Username" name="Username" id="Bestelldatum" class="divZweiBestellung" />
 					<input type="text" @bind="Passwort" name="Passwort" id="Beschreibung" class="divZweiBestellung" />
-					<select @bind="Rolle" name="Rolle" id="Zahlungsart" class="divZweiBestellung">
+					<!--<select @bind="Rolle" name="Rolle" id="Zahlungsart" class="divZweiBestellung">
 						<option value="Admin">Admin</option>
 						<option value="Einkauf">Einkauf</option>
 						<option value="IT">IT</option>
 						<option value="Rechnungswesen">Rechnungswesen</option>
 						<option value="Marketing">Marketing</option>
 						<option value="Verkauf">Verkauf</option>
+					</select>-->
+					<select @bind="Rolle" name="Rolle" id="Zahlungsart" class="divZweiBestellung">
+						<option value="Admin" selected="selected">Admin</option>
+						<option value="User">User</option>
 					</select>
 				</div>
 			</div>
