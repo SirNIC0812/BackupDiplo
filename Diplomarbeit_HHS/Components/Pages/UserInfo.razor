@@ -66,7 +66,7 @@
 												: string.Empty)
 						</th>
 						<th @onclick="() => SortTable(nameof(Userinfo.uId))">
-							uId
+							UId
 							@(currentSortColumn == nameof(Userinfo.uId)
 												? (sortAscending ? "↑" : "↓")
 												: string.Empty)
@@ -102,7 +102,12 @@
 								<td>@userinfo.vorname</td>
 								<td>@userinfo.nachname</td>
 								<td>@userinfo.abteilung</td>
-								<td>@userinfo.abteilungsleiter</td>
+								<td>
+									@if (userinfo.abteilungsleiter)
+									{
+										<span>✔</span>
+									}
+								</td>
 								<td>@userinfo.bruttogehalt</td>
 								<td>@userinfo.uId</td>
 							</tr>

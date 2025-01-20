@@ -12,20 +12,6 @@ namespace Diplomarbeit_HHS.Models
 	
 	internal class Einkauf
 	{
-		private int IDNumber;
-		private DateTime? Bestelldatum;
-		private string? Beschreibung;
-		private string? Zahlungsart;
-		private int BestellNRLieferant;
-		private int Uiid;
-		private int Lid;
-		private int Anzahl;
-		private double Netto;
-		private double Steuer;
-		private double Skonto;
-		private double Brutto;
-		private Boolean IsComplete;
-
 		//EinkaufBestellungen
 		public class DIP
 		{
@@ -46,12 +32,12 @@ namespace Diplomarbeit_HHS.Models
 
 		public async Task<List<DIP>> HoleAlleBestellungen()
 		{
-			HttpClient GetBestellungen = new HttpClient();
+			HttpClient client = new HttpClient();
 			var token = await SecureStorage.GetAsync("authToken");
-			GetBestellungen.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 			string BestellungURL = URLs.URLEinkaufBestellung;
 
-			HttpResponseMessage response = await GetBestellungen.GetAsync(BestellungURL);
+			HttpResponseMessage response = await client.GetAsync(BestellungURL);
 
 			if (response.IsSuccessStatusCode)
 			{
@@ -71,12 +57,12 @@ namespace Diplomarbeit_HHS.Models
 
 		public async Task<List<DIP>> ZeigeNeueIdAn()
 		{
-			HttpClient GetBestellungen = new HttpClient();
+			HttpClient client = new HttpClient();
 			var token = await SecureStorage.GetAsync("authToken");
-			GetBestellungen.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 			string BestellungURL = URLs.URLEinkaufBestellung;
 
-			HttpResponseMessage response = await GetBestellungen.GetAsync(BestellungURL);
+			HttpResponseMessage response = await client.GetAsync(BestellungURL);
 
 			if (response.IsSuccessStatusCode)
 			{

@@ -22,12 +22,12 @@ namespace Diplomarbeit_HHS.Models
 
 		public async Task<List<User>> HoleAlleUser()
 		{
-			HttpClient GetBestellungen = new HttpClient();
+			HttpClient client = new HttpClient();
 			var token = await SecureStorage.GetAsync("authToken");
-			GetBestellungen.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-			string BestellungURL = URLs.URLUserGetUser;
+			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+			string UserURL = URLs.URLUserGetUser;
 
-			HttpResponseMessage response = await GetBestellungen.GetAsync(BestellungURL);
+			HttpResponseMessage response = await client.GetAsync(UserURL);
 
 			if (response.IsSuccessStatusCode)
 			{
@@ -48,12 +48,12 @@ namespace Diplomarbeit_HHS.Models
 
 		public async Task<List<User>> ZeigeNeueIdAn()
 		{
-			HttpClient GetBestellungen = new HttpClient();
+			HttpClient client = new HttpClient();
 			var token = await SecureStorage.GetAsync("authToken");
-			GetBestellungen.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-			string BestellungURL = URLs.URLUserGetUser;
+			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+			string UserURL = URLs.URLUserGetUser;
 
-			HttpResponseMessage response = await GetBestellungen.GetAsync(BestellungURL);
+			HttpResponseMessage response = await client.GetAsync(UserURL);
 
 			if (response.IsSuccessStatusCode)
 			{
@@ -77,9 +77,7 @@ namespace Diplomarbeit_HHS.Models
 			HttpClient client = new HttpClient();
 			var token = await SecureStorage.GetAsync("authToken");
 			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-			//Der obrige code bleibt immer gleich (Klasse erstellen ig)
 			HttpResponseMessage GetResponse = await client.GetAsync($"{URLs.URLUserGetUser}/{id}");
-			//OutputGetPostPutDelete = $"{URLs.URLEinkaufBestellung}/{IDNumber}";
 
 			if (GetResponse.IsSuccessStatusCode)
 			{
@@ -95,9 +93,9 @@ namespace Diplomarbeit_HHS.Models
 		}
 
 
-		public async Task<User> GetUserById(int UId)
+		public async Task<User> GetUserById(int IDNumber)
 		{
-			var UserInfo = await HoleUserById(UId);
+			var UserInfo = await HoleUserById(IDNumber);
 
 			if (UserInfo == null)
 			{
@@ -115,12 +113,12 @@ namespace Diplomarbeit_HHS.Models
 		}
 
 
-		public async Task<string> PostUser(int UId, string Username, string Passwort, string Rolle)
+		public async Task<string> PostUser(int IDNumber, string Username, string Passwort, string Rolle)
 		{
 			HttpClient client = new HttpClient();
 			var token = await SecureStorage.GetAsync("authToken");
 			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-			User newUser = new User { uId = UId, username= Username, passwort = Passwort, rolle = Rolle };
+			User newUser = new User { uId = IDNumber, username= Username, passwort = Passwort, rolle = Rolle };
 			string jsonData = JsonSerializer.Serialize(newUser);
 			var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
 			HttpResponseMessage response = await client.PostAsync($"{URLs.URLUserPostUser}/", content);
@@ -142,15 +140,15 @@ namespace Diplomarbeit_HHS.Models
 		}
 
 
-		public async Task<String> PutUser(int UId, string Username, string Passwort, string Rolle)
+		public async Task<String> PutUser(int IDNumber, string Username, string Passwort, string Rolle)
 		{
 			HttpClient client = new HttpClient();
 			var token = await SecureStorage.GetAsync("authToken");
 			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-			User newUser = new User { uId = UId, username = Username, passwort = Passwort, rolle = Rolle };
+			User newUser = new User { uId = IDNumber, username = Username, passwort = Passwort, rolle = Rolle };
 			string jsonData = JsonSerializer.Serialize(newUser);
 			var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
-			HttpResponseMessage response = await client.PutAsync($"{URLs.URLUserPutDelete}/{UId}", content);
+			HttpResponseMessage response = await client.PutAsync($"{URLs.URLUserPutDelete}/{IDNumber}", content);
 
 			if (response.IsSuccessStatusCode)
 			{
@@ -167,13 +165,13 @@ namespace Diplomarbeit_HHS.Models
 		}
 
 
-		public async Task<String> DeleteUser(int UId)
+		public async Task<String> DeleteUser(int IDNumber)
 		{
 			HttpClient client = new HttpClient();
 			var token = await SecureStorage.GetAsync("authToken");
 			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-			HttpResponseMessage response = await client.DeleteAsync($"{URLs.URLUserPutDelete}/{UId}");
+			HttpResponseMessage response = await client.DeleteAsync($"{URLs.URLUserPutDelete}/{IDNumber}");
 
 			if (response.IsSuccessStatusCode)
 			{
@@ -207,12 +205,12 @@ namespace Diplomarbeit_HHS.Models
 
 		public async Task<List<UserInfo>> HoleAlleUserInfo()
 		{
-			HttpClient GetBestellungen = new HttpClient();
+			HttpClient client = new HttpClient();
 			var token = await SecureStorage.GetAsync("authToken");
-			GetBestellungen.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-			string BestellungURL = URLs.URLUserInfo;
+			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+			string UserInfoURL = URLs.URLUserInfo;
 
-			HttpResponseMessage response = await GetBestellungen.GetAsync(BestellungURL);
+			HttpResponseMessage response = await client.GetAsync(UserInfoURL);
 
 			if (response.IsSuccessStatusCode)
 			{
@@ -233,12 +231,12 @@ namespace Diplomarbeit_HHS.Models
 
 		public async Task<List<UserInfo>> ZeigeNeueUserInfoIdAn()
 		{
-			HttpClient GetBestellungen = new HttpClient();
+			HttpClient client = new HttpClient();
 			var token = await SecureStorage.GetAsync("authToken");
-			GetBestellungen.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-			string BestellungURL = URLs.URLUserInfo;
+			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+			string UserInfoURL = URLs.URLUserInfo;
 
-			HttpResponseMessage response = await GetBestellungen.GetAsync(BestellungURL);
+			HttpResponseMessage response = await client.GetAsync(UserInfoURL);
 
 			if (response.IsSuccessStatusCode)
 			{
@@ -257,14 +255,12 @@ namespace Diplomarbeit_HHS.Models
 		}
 
 
-		public async Task<UserInfo> HoleUserInfoById(int UiId)
+		public async Task<UserInfo> HoleUserInfoById(int id)
 		{
 			HttpClient client = new HttpClient();
 			var token = await SecureStorage.GetAsync("authToken");
 			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-			//Der obrige code bleibt immer gleich (Klasse erstellen ig)
-			HttpResponseMessage GetResponse = await client.GetAsync($"{URLs.URLUserInfo}/{UiId}");
-			//OutputGetPostPutDelete = $"{URLs.URLEinkaufBestellung}/{IDNumber}";
+			HttpResponseMessage GetResponse = await client.GetAsync($"{URLs.URLUserInfo}/{id}");
 
 			if (GetResponse.IsSuccessStatusCode)
 			{
@@ -280,9 +276,9 @@ namespace Diplomarbeit_HHS.Models
 		}
 
 
-		public async Task<UserInfo> GetUserInfoById(int UiId)
+		public async Task<UserInfo> GetUserInfoById(int IDNumber)
 		{
-			var UserInfo = await HoleUserInfoById(UiId);
+			var UserInfo = await HoleUserInfoById(IDNumber);
 
 			if (UserInfo == null)
 			{
@@ -304,12 +300,12 @@ namespace Diplomarbeit_HHS.Models
 		}
 
 
-		public async Task<string> PostUserInfo(int UiId, int Katalognummer, string Vorname, string Nachname, string Abteilung, bool Abteilungsleiter, double Bruttogehalt, int UId)
+		public async Task<string> PostUserInfo(int IDNumber, int Katalognummer, string Vorname, string Nachname, string Abteilung, bool Abteilungsleiter, double Bruttogehalt, int UId)
 		{
 			HttpClient client = new HttpClient();
 			var token = await SecureStorage.GetAsync("authToken");
 			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-			UserInfo newUserInfo = new UserInfo { uiId = UiId, katalognummer = Katalognummer, vorname = Vorname, nachname = Nachname, abteilung=Abteilung, abteilungsleiter=Abteilungsleiter, bruttogehalt=Bruttogehalt, uId=UId };
+			UserInfo newUserInfo = new UserInfo { uiId = IDNumber, katalognummer = Katalognummer, vorname = Vorname, nachname = Nachname, abteilung=Abteilung, abteilungsleiter=Abteilungsleiter, bruttogehalt=Bruttogehalt, uId=UId };
 			string jsonData = JsonSerializer.Serialize(newUserInfo);
 			var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
 			HttpResponseMessage response = await client.PostAsync($"{URLs.URLUserInfo}/", content);
@@ -331,15 +327,15 @@ namespace Diplomarbeit_HHS.Models
 		}
 
 
-		public async Task<String> PutUserInfo(int UiId, int Katalognummer, string Vorname, string Nachname, string Abteilung, bool Abteilungsleiter, double Bruttogehalt, int UId)
+		public async Task<String> PutUserInfo(int IDNumber, int Katalognummer, string Vorname, string Nachname, string Abteilung, bool Abteilungsleiter, double Bruttogehalt, int UId)
 		{
 			HttpClient client = new HttpClient();
 			var token = await SecureStorage.GetAsync("authToken");
 			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-			UserInfo newUserInfo = new UserInfo { uiId = UiId, katalognummer = Katalognummer, vorname = Vorname, nachname = Nachname, abteilung = Abteilung, abteilungsleiter = Abteilungsleiter, bruttogehalt = Bruttogehalt, uId = UId };
+			UserInfo newUserInfo = new UserInfo { uiId = IDNumber, katalognummer = Katalognummer, vorname = Vorname, nachname = Nachname, abteilung = Abteilung, abteilungsleiter = Abteilungsleiter, bruttogehalt = Bruttogehalt, uId = UId };
 			string jsonData = JsonSerializer.Serialize(newUserInfo);
 			var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
-			HttpResponseMessage response = await client.PutAsync($"{URLs.URLUserInfo}/{UiId}", content);
+			HttpResponseMessage response = await client.PutAsync($"{URLs.URLUserInfo}/{IDNumber}", content);
 
 			if (response.IsSuccessStatusCode)
 			{
@@ -356,13 +352,13 @@ namespace Diplomarbeit_HHS.Models
 		}
 
 
-		public async Task<String> DeleteUserInfo(int UiId)
+		public async Task<String> DeleteUserInfo(int IDNumber)
 		{
 			HttpClient client = new HttpClient();
 			var token = await SecureStorage.GetAsync("authToken");
 			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-			HttpResponseMessage response = await client.DeleteAsync($"{URLs.URLUserInfo}/{UiId}");
+			HttpResponseMessage response = await client.DeleteAsync($"{URLs.URLUserInfo}/{IDNumber}");
 
 			if (response.IsSuccessStatusCode)
 			{

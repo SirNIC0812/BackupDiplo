@@ -1,0 +1,462 @@
+﻿@page "/Verkauf"
+@using System.Text.Json
+@using System.Text
+@using System.Net.Http.Headers
+@using Microsoft.Extensions.Configuration
+@using Diplomarbeit_HHS.Models
+@inject IConfiguration Configuration
+@inject NavigationManager Navigation
+@inject IJSRuntime JS //Schnittstelle zwischen c# und js
+
+<script src="javaScript/script.js"></script>
+<link rel="stylesheet" media="(min-width:0px)" href="style/styleMobile.css" />
+<link rel="stylesheet" media="(min-width:1000px)" href="style/style.css" />
+
+<body>
+	<header>
+		<h1 class="HeaderText">Verkauf (Stefan sagen aufpassen datumformat (Einmal DateTime dann DateOnly)</h1>
+	</header>
+	<nav>
+	</nav>
+	<section>
+		<article class="AnzeigeDaten">
+			<table id="InhaltOnClick">
+				<thead>
+					<tr>
+						<th @onclick="() => SortTable(nameof(Verkaufinfo.vId))">
+							ID
+							@(currentSortColumn == nameof(Verkaufinfo.vId)
+																									? (sortAscending ? "↑" : "↓")
+																									: string.Empty)
+						</th>
+						<th @onclick="() => SortTable(nameof(Verkaufinfo.webshop))">
+							Webshop
+							@(currentSortColumn == nameof(Verkaufinfo.webshop)
+																									? (sortAscending ? "↑" : "↓")
+																									: string.Empty)
+						</th>
+						<th @onclick="() => SortTable(nameof(Verkaufinfo.email))">
+							EMail
+							@(currentSortColumn == nameof(Verkaufinfo.email)
+																									? (sortAscending ? "↑" : "↓")
+																									: string.Empty)
+						</th>
+						<th @onclick="() => SortTable(nameof(Verkaufinfo.bestellNr))">
+							Bestellnummer
+							@(currentSortColumn == nameof(Verkaufinfo.bestellNr)
+																									? (sortAscending ? "↑" : "↓")
+																									: string.Empty)
+						</th>
+						<th @onclick="() => SortTable(nameof(Verkaufinfo.zahlungsart))">
+							Zahlungsart
+							@(currentSortColumn == nameof(Verkaufinfo.zahlungsart)
+																									? (sortAscending ? "↑" : "↓")
+																									: string.Empty)
+						</th>
+						<th @onclick="() => SortTable(nameof(Verkaufinfo.bestelldatum))">
+							Bestelldatum
+							@(currentSortColumn == nameof(Verkaufinfo.bestelldatum)
+																									? (sortAscending ? "↑" : "↓")
+																									: string.Empty)
+						</th>
+						<th @onclick="() => SortTable(nameof(Verkaufinfo.brutto))">
+							Brutto
+							@(currentSortColumn == nameof(Verkaufinfo.brutto)
+																									? (sortAscending ? "↑" : "↓")
+																									: string.Empty)
+						</th>
+						<th @onclick="() => SortTable(nameof(Verkaufinfo.netto))">
+							Netto
+							@(currentSortColumn == nameof(Verkaufinfo.netto)
+																									? (sortAscending ? "↑" : "↓")
+																									: string.Empty)
+						</th>
+						<th @onclick="() => SortTable(nameof(Verkaufinfo.skonto))">
+							Skonto
+							@(currentSortColumn == nameof(Verkaufinfo.skonto)
+																									? (sortAscending ? "↑" : "↓")
+																									: string.Empty)
+						</th>
+						<th @onclick="() => SortTable(nameof(Verkaufinfo.relSerstellt))">
+							RelSerstellt
+							@(currentSortColumn == nameof(Verkaufinfo.relSerstellt)
+																									? (sortAscending ? "↑" : "↓")
+																									: string.Empty)
+						</th>
+						<th @onclick="() => SortTable(nameof(Verkaufinfo.eMailversendet))">
+							E-Mail versendet
+							@(currentSortColumn == nameof(Verkaufinfo.eMailversendet)
+																									? (sortAscending ? "↑" : "↓")
+																									: string.Empty)
+						</th>
+						<th @onclick="() => SortTable(nameof(Verkaufinfo.bezahlt))">
+							Bezahlt
+							@(currentSortColumn == nameof(Verkaufinfo.bezahlt)
+																									? (sortAscending ? "↑" : "↓")
+																									: string.Empty)
+						</th>
+						<th @onclick="() => SortTable(nameof(Verkaufinfo.kid))">
+							KId
+							@(currentSortColumn == nameof(Verkaufinfo.kid)
+																									? (sortAscending ? "↑" : "↓")
+																									: string.Empty)
+						</th>
+						<th @onclick="() => SortTable(nameof(Verkaufinfo.uiid))">
+							UiId
+							@(currentSortColumn == nameof(Verkaufinfo.uiid)
+																									? (sortAscending ? "↑" : "↓")
+																									: string.Empty)
+						</th>
+					</tr>
+				</thead>
+				<tfoot>
+					<!--<tr>
+					<td colspan="8"><button id="AnmeldeButton" @onclick="HoleAlleVerkaufe">Alle Verkaeufe</button></td>
+					</tr>-->
+				</tfoot>
+				<tbody id="TableBody">
+					@if (verkauflist == null)
+					{
+						<tr>
+							<td colspan="4">Es wird nach den Datensätzen gesucht.</td>
+						</tr>
+					}
+					else if (verkauflist.Count == 0)
+					{
+						<tr>
+							<td colspan="4">Es wurden keine Datensätze gefunden.</td>
+						</tr>
+					}
+					else
+					{
+						@foreach (var verkauf in verkauflist)
+						{
+
+							<tr @onclick="() => GetUserById(verkauf.vId)" style="cursor: pointer;" class="@GetRowClass(verkauf.vId)">
+								<td>@verkauf.vId</td>
+								<td>@verkauf.webshop</td>
+								<td>@verkauf.email</td>
+								<td>@verkauf.bestellNr</td>
+								<td>@verkauf.zahlungsart</td>
+								<td>@verkauf.bestelldatum.Value.ToString("yyyy-MM-dd")</td>
+								<td>@verkauf.brutto</td>
+								<td>@verkauf.netto</td>
+								<td>@verkauf.skonto</td>
+								<td>
+									@if (verkauf.relSerstellt)
+									{
+										<span>✔</span>
+									}
+								</td>
+								<td>
+									@if (verkauf.eMailversendet)
+									{
+										<span>✔</span>
+									}
+								</td>
+								<td>
+									@if (verkauf.bezahlt)
+									{
+										<span>✔</span>
+									}
+								</td>
+								<td>@verkauf.kid</td>
+								<td>@verkauf.uiid</td>
+							</tr>
+						}
+					}
+				</tbody>
+			</table>
+		</article>
+		<p>@AusgabeUser</p>
+		<article class="AnzeigeInput">
+			<div class="LinkesDiv">
+				<div id="divEins">
+					<label class="divEinsBestellung" for="UserInfoID">UserInfoID</label>
+					<input type="number" name="UserInfoID" id="IDNumber" @bind="VId" min="0" class="divEinsBestellung" />
+				</div>
+
+				<div id="DivButtons">
+					<button id="GETBestellungen" @onclick="TestAPIGET">Anzeigen</button>
+					<br>
+					<button id="POSTBestellungen" @onclick="TestAPIPOST">Erstellen</button>
+					<br>
+					<button id="PUTBestellungen" @onclick="TestAPIPUT">Ändern</button>
+					<br>
+					<button id="DELETEBestellungen" @onclick="TestAPIDELETE">Löschen</button>
+				</div>
+			</div>
+
+			<div class="RechtesDiv">
+				<div id="divZwei">
+					<label class="divZweiBestellung" for="Webshop">Webshop</label>
+					<label class="divZweiBestellung" for="Email">Email</label>
+					<label class="divZweiBestellung" for="BestellNr">Bestellnummer</label>
+					<label class="divZweiBestellung" for="Zahlungsart">Zahlungsart</label>
+
+					<input type="text" @bind="Webshop" name="Webshop" id="Bestelldatum" class="divZweiBestellung" />
+					<input type="text" @bind="Email" name="Email" id="Beschreibung" class="divZweiBestellung" />
+					<input type="number" @bind="BestellNr" name="BestellNr" id="Beschreibung" class="divZweiBestellung" />
+					<select @bind="Zahlungsart" name="Zahlungsart" id="Zahlungsart" class="divZweiBestellung">
+						<option value="BK" selected="selected">Bankomartkarte</option>
+						<option value="KK">Kreditkarte</option>
+					</select>
+
+				</div>
+				<div id="divDrei">
+					<label class="divZweiBestellung" for="Bestelldatum">Bestelldatum</label>
+					<label class="divZweiBestellung" for="Brutto">Brutto</label>
+					<label class="divZweiBestellung" for="Netto">Netto</label>
+					<label class="divZweiBestellung" for="Skonto">Skonto</label>
+
+
+					<input type="date" @bind="Bestelldatum" name="Bestelldatum" id="IsComplete" class="divZweiBestellung" />
+					<input type="number" @bind="Brutto" name="Brutto" id="BestellNrLieferant" class="divZweiBestellung" />
+					<input type="number" @bind="Netto" name="Netto" id="Netto" class="divZweiBestellung" />
+					<input type="number" @bind="Skonto" name="Skonto" id="BestellNrLieferant" class="divZweiBestellung" />
+
+				</div>
+				<div id="divVier">
+					<label for="RelSerstellt">RelSerstellt</label>
+					<label for="EMailversendet">EMailversendet</label>
+					<label for="Bezahlt">Bezahlt</label>
+					<label for="Kid">Kid</label>
+					<label for="Uiid">Uiid</label>
+
+					<input type="checkbox" @bind="RelSerstellt" name="RelSerstellt" id="IsComplete" />
+					<input type="checkbox" @bind="EMailversendet" name="EMailversendet" id="IsComplete" />
+					<input type="checkbox" @bind="Bezahlt" name="Bezahlt" id="IsComplete" />
+					<input type="number" @bind="Kid" name="Kid" id="Netto" />
+					<input type="number" @bind="Uiid" name="Uiid" id="BestellNrLieferant" />
+				</div>
+			</div>
+		</article>
+	</section>
+</body>
+
+
+@code {
+
+	public class Verkaufinfo
+	{
+		public int vId;
+		public string? webshop;
+		public string? email;
+		public int bestellNr;
+		public string? zahlungsart;
+		public DateOnly? bestelldatum;
+		public double brutto;
+		public double netto;
+		public double skonto;
+		public Boolean relSerstellt;
+		public Boolean eMailversendet;
+		public Boolean bezahlt;
+		public int kid;
+		public int uiid;
+	}
+
+
+	private int VId;
+	private string? Webshop;
+	private string? Email;
+	private int BestellNr;
+	private string? Zahlungsart;
+	private DateOnly? Bestelldatum;
+	private double Brutto;
+	private double Netto;
+	private double Skonto;
+	private Boolean RelSerstellt;
+	private Boolean EMailversendet;
+	private Boolean Bezahlt;
+	private int Kid;
+	private int Uiid;
+
+	private string? OutputGetPostPutDelete;
+	private string? AusgabeUser;
+
+	private int lastID;
+	private List<Verkauf.VerkaufInhalt> verkauflist;
+
+	private bool sortAscending = true;
+	private string? currentSortColumn;
+
+	private void SortTable(string columnName)
+	{
+		if (currentSortColumn == columnName)
+		{
+			sortAscending = !sortAscending; // Toggle sort direction
+		}
+		else
+		{
+			currentSortColumn = columnName;
+			sortAscending = true;
+		}
+
+		if (verkauflist != null)
+		{
+			verkauflist = columnName switch
+			{
+				nameof(Verkaufinfo.vId) => sortAscending
+					? verkauflist.OrderBy(m => m.vId).ToList()
+					: verkauflist.OrderByDescending(m => m.vId).ToList(),
+				nameof(Verkaufinfo.webshop) => sortAscending
+					? verkauflist.OrderBy(m => m.webshop).ToList()
+					: verkauflist.OrderByDescending(m => m.webshop).ToList(),
+				nameof(Verkaufinfo.email) => sortAscending
+					? verkauflist.OrderBy(m => m.email).ToList()
+					: verkauflist.OrderByDescending(m => m.email).ToList(),
+				nameof(Verkaufinfo.bestellNr) => sortAscending
+					? verkauflist.OrderBy(m => m.bestellNr).ToList()
+					: verkauflist.OrderByDescending(m => m.bestellNr).ToList(),
+				nameof(Verkaufinfo.zahlungsart) => sortAscending
+					? verkauflist.OrderBy(m => m.zahlungsart).ToList()
+					: verkauflist.OrderByDescending(m => m.zahlungsart).ToList(),
+				nameof(Verkaufinfo.bestelldatum) => sortAscending
+					? verkauflist.OrderBy(m => m.bestelldatum).ToList()
+					: verkauflist.OrderByDescending(m => m.bestelldatum).ToList(),
+				nameof(Verkaufinfo.brutto) => sortAscending
+					? verkauflist.OrderBy(m => m.brutto).ToList()
+					: verkauflist.OrderByDescending(m => m.brutto).ToList(),
+				nameof(Verkaufinfo.netto) => sortAscending
+					? verkauflist.OrderBy(m => m.netto).ToList()
+					: verkauflist.OrderByDescending(m => m.netto).ToList(),
+				nameof(Verkaufinfo.skonto) => sortAscending
+					? verkauflist.OrderBy(m => m.skonto).ToList()
+					: verkauflist.OrderByDescending(m => m.skonto).ToList(),
+				nameof(Verkaufinfo.relSerstellt) => sortAscending
+					? verkauflist.OrderBy(m => m.relSerstellt).ToList()
+					: verkauflist.OrderByDescending(m => m.relSerstellt).ToList(),
+				nameof(Verkaufinfo.eMailversendet) => sortAscending
+					? verkauflist.OrderBy(m => m.eMailversendet).ToList()
+					: verkauflist.OrderByDescending(m => m.eMailversendet).ToList(),
+				nameof(Verkaufinfo.bezahlt) => sortAscending
+					? verkauflist.OrderBy(m => m.bezahlt).ToList()
+					: verkauflist.OrderByDescending(m => m.bezahlt).ToList(),
+				nameof(Verkaufinfo.kid) => sortAscending
+					? verkauflist.OrderBy(m => m.kid).ToList()
+					: verkauflist.OrderByDescending(m => m.kid).ToList(),
+				nameof(Verkaufinfo.uiid) => sortAscending
+					? verkauflist.OrderBy(m => m.uiid).ToList()
+					: verkauflist.OrderByDescending(m => m.uiid).ToList(),
+				_ => verkauflist
+			};
+		}
+	}
+
+
+
+	protected override async Task OnInitializedAsync()
+	{
+		Verkauf v1 = new Verkauf();
+		verkauflist = await v1.HoleAlleVerkaeufe();
+
+		HttpClient client = new HttpClient();
+		var token = await SecureStorage.GetAsync("authToken");
+		client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+		HttpResponseMessage GetResponse = await client.GetAsync($"{URLs.URLEinkaufBestellung}");
+
+		if (GetResponse.IsSuccessStatusCode)
+		{
+			var responseBody = await GetResponse.Content.ReadAsStringAsync();
+			//OutputResult = responseBody;
+			OutputGetPostPutDelete = "GETALL wurde erfolgreich ausgeführt!";
+
+			foreach (var verkauf in verkauflist)
+			{
+				lastID = verkauf.vId;
+				int newID = lastID + 1;
+				VId = newID;
+			}
+		}
+		else
+		{
+			OutputGetPostPutDelete = "Error TestAPIGET: " + GetResponse.StatusCode;
+		}
+		JS.InvokeVoidAsync("setLastIDInJS", lastID);
+	}
+
+
+	private async void HoleAlleVerkaufe()
+	{
+		Verkauf v1 = new Verkauf();
+		verkauflist = await v1.HoleAlleVerkaeufe();
+		AusgabeUser += "Ausgabe";
+	}
+
+
+	private int? selectedId; // Speichert die ID der ausgewählten Zeile
+
+	private string GetRowClass(int Id)
+	{
+		// Rückgabe der CSS-Klasse für die aktuelle Zeile
+		return selectedId == Id ? "AusgewaehlteReihe" : "";
+	}
+
+
+	private async void GetUserById(int IDNumberEingegeben)
+	{
+		selectedId = VId; // Aktualisiert die ausgewählte ID
+
+		Verkauf v2 = new Verkauf();
+		var Verkauf = await v2.HoleVerkaufById(IDNumberEingegeben);
+		OutputGetPostPutDelete = Convert.ToString(Verkauf);
+
+		if (Verkauf == null)
+		{
+			OutputGetPostPutDelete = "Ihre werte sind null, da hat was ned funkt";
+		}
+		else
+		{
+			VId = Verkauf.vId;
+			Webshop = Verkauf.webshop;
+			Email = Verkauf.email;
+			BestellNr = Verkauf.bestellNr;
+			Zahlungsart = Verkauf.zahlungsart;
+			Bestelldatum = Verkauf.bestelldatum;
+			Brutto = Verkauf.brutto;
+			Netto = Verkauf.netto;
+			Skonto = Verkauf.skonto;
+			RelSerstellt = Verkauf.relSerstellt;
+			EMailversendet = Verkauf.eMailversendet;
+			Bezahlt = Verkauf.bezahlt;
+			Kid = Verkauf.kid;
+			Uiid = Verkauf.uiid;
+
+		}
+	}
+
+
+	public async Task TestAPIGET()
+	{
+		GetUserById(VId);
+		OutputGetPostPutDelete = "GET wurde erfolgreich ausgeführt!";
+	}
+
+
+	public async Task TestAPIPOST()
+	{
+		Verkauf v3 = new Verkauf();
+		await v3.PostVerkauf(VId, Webshop, Email, BestellNr, Zahlungsart, Bestelldatum, Brutto, Netto, Skonto, RelSerstellt, EMailversendet, Bezahlt , Kid, Uiid);
+		await OnInitializedAsync();
+		OutputGetPostPutDelete = "POST wurde erfolgreich ausgeführt!";
+	}
+
+
+	public async Task TestAPIPUT()
+	{
+		Verkauf v4 = new Verkauf();
+		await v4.PutVerkauf(VId, Webshop, Email, BestellNr, Zahlungsart, Bestelldatum, Brutto, Netto, Skonto, RelSerstellt, EMailversendet, Bezahlt, Kid, Uiid);
+		await OnInitializedAsync();
+		OutputGetPostPutDelete = "PUT wurde erfolgreich ausgeführt!";
+	}
+
+
+	public async Task TestAPIDELETE()
+	{
+		Verkauf v5 = new Verkauf();
+		await v5.DeleteVerkauf(VId);
+		await OnInitializedAsync();
+		OutputGetPostPutDelete = "DELETE wurde erfolgreich ausgeführt!";
+	}
+
+}	

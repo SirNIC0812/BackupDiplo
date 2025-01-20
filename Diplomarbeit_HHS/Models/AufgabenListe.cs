@@ -23,12 +23,12 @@ namespace Diplomarbeit_HHS.Models
 
 		public async Task<List<Aufgabe>> HoleAlleAufgaben()
 		{
-			HttpClient GetAufgabe = new HttpClient();
+			HttpClient client = new HttpClient();
 			var token = await SecureStorage.GetAsync("authToken");
-			GetAufgabe.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 			string AufgabengURL = URLs.URLAufgaben;
 
-			HttpResponseMessage response = await GetAufgabe.GetAsync(AufgabengURL);
+			HttpResponseMessage response = await client.GetAsync(AufgabengURL);
 
 			if (response.IsSuccessStatusCode)
 			{
@@ -48,12 +48,12 @@ namespace Diplomarbeit_HHS.Models
 
 		public async Task<List<Aufgabe>> ZeigeNeueIdAn()
 		{
-			HttpClient GetAufgaben = new HttpClient();
+			HttpClient client = new HttpClient();
 			var token = await SecureStorage.GetAsync("authToken");
-			GetAufgaben.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 			string AufgabengURL = URLs.URLAufgaben;
 
-			HttpResponseMessage response = await GetAufgaben.GetAsync(AufgabengURL);
+			HttpResponseMessage response = await client.GetAsync(AufgabengURL);
 
 			if (response.IsSuccessStatusCode)
 			{
@@ -76,9 +76,7 @@ namespace Diplomarbeit_HHS.Models
 			HttpClient client = new HttpClient();
 			var token = await SecureStorage.GetAsync("authToken");
 			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-			//Der obrige code bleibt immer gleich (Klasse erstellen ig)
 			HttpResponseMessage GetResponse = await client.GetAsync($"{URLs.URLAufgaben}/{id}");
-			//OutputGetPostPutDelete = $"{URLs.URLEinkaufBestellung}/{IDNumber}";
 
 			if (GetResponse.IsSuccessStatusCode)
 			{
