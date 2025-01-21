@@ -23,7 +23,7 @@
 
 
 	//Lieferant
-	public const string URLLieferant = $"{AnfangURL}/Lieferant";								//NOCH NICHT VERWENDET
+	public const string URLLieferant = $"{AnfangURL}/Lieferant";								//NOCH NICHT VERWENDET //Kopieren von Kunde
 
 
 	//Office

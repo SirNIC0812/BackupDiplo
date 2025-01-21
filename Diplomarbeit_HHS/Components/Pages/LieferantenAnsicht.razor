@@ -1,4 +1,4 @@
-﻿@page "/Kunden"
+﻿@page "/Lieferanten"
 @using System.Text.Json
 @using System.Text
 @using System.Net.Http.Headers
@@ -14,7 +14,7 @@
 
 <body>
 	<header>
-		<h1 class="HeaderText">Kunden</h1>
+		<h1 class="HeaderText">Lieferanten</h1>
 	</header>
 	<nav>
 	</nav>
@@ -23,51 +23,51 @@
 			<table id ="InhaltOnClick">
 				<thead>
 					<tr>
-						<th class="TableBestellungenID" @onclick="() => SortTable(nameof(Kunde.kId))">
+						<th class="TableBestellungenID" @onclick="() => SortTable(nameof(Lieferant.lId))">
 							ID
-							@(currentSortColumn == nameof(Kunde.kId)
+							@(currentSortColumn == nameof(Lieferant.lId)
 										? (sortAscending ? "↑" : "↓")
 										: string.Empty)
 						</th>
-						<th class="TableBestellungenUnternehmen" @onclick="() => SortTable(nameof(Kunde.fbNr))">
+						<th class="TableBestellungenUnternehmen" @onclick="() => SortTable(nameof(Lieferant.fbNr))">
 							FbNr
-							@(currentSortColumn == nameof(Kunde.fbNr)
+							@(currentSortColumn == nameof(Lieferant.fbNr)
 										? (sortAscending ? "↑" : "↓")
 										: string.Empty)
 						</th>
-						<th class="TableBestellungenBestelldatum" @onclick="() => SortTable(nameof(Kunde.kdNrSap))">
-							KdNrSap
-							@(currentSortColumn == nameof(Kunde.kdNrSap)
+						<th class="TableBestellungenBestelldatum" @onclick="() => SortTable(nameof(Lieferant.lieferantenNrSap))">
+							LieferantenNrSap
+							@(currentSortColumn == nameof(Lieferant.lieferantenNrSap)
 										? (sortAscending ? "↑" : "↓")
 										: string.Empty)
 						</th>
-						<th class="TableBestellungenID" @onclick="() => SortTable(nameof(Kunde.firmenname))">
+						<th class="TableBestellungenID" @onclick="() => SortTable(nameof(Lieferant.firmenname))">
 							Firmenname
-							@(currentSortColumn == nameof(Kunde.firmenname)
+							@(currentSortColumn == nameof(Lieferant.firmenname)
 										? (sortAscending ? "↑" : "↓")
 										: string.Empty)
 						</th>
-						<th class="TableBestellungenUnternehmen" @onclick="() => SortTable(nameof(Kunde.suchbegriff))">
+						<th class="TableBestellungenUnternehmen" @onclick="() => SortTable(nameof(Lieferant.suchbegriff))">
 							Suchbegriff
-							@(currentSortColumn == nameof(Kunde.suchbegriff)
+							@(currentSortColumn == nameof(Lieferant.suchbegriff)
 										? (sortAscending ? "↑" : "↓")
 										: string.Empty)
 						</th>
-						<th class="TableBestellungenBestelldatum" @onclick="() => SortTable(nameof(Kunde.adresse))">
+						<th class="TableBestellungenBestelldatum" @onclick="() => SortTable(nameof(Lieferant.adresse))">
 							Adresse
-							@(currentSortColumn == nameof(Kunde.adresse)
+							@(currentSortColumn == nameof(Lieferant.adresse)
 										? (sortAscending ? "↑" : "↓")
 										: string.Empty)
 						</th>
-						<th class="TableBestellungenID" @onclick="() => SortTable(nameof(Kunde.email))">
+						<th class="TableBestellungenID" @onclick="() => SortTable(nameof(Lieferant.email))">
 							Email
-							@(currentSortColumn == nameof(Kunde.email)
+							@(currentSortColumn == nameof(Lieferant.email)
 										? (sortAscending ? "↑" : "↓")
 										: string.Empty)
 						</th>
-						<th class="TableBestellungenUnternehmen" @onclick="() => SortTable(nameof(Kunde.iban))">
+						<th class="TableBestellungenUnternehmen" @onclick="() => SortTable(nameof(Lieferant.iban))">
 							IBAN
-							@(currentSortColumn == nameof(Kunde.iban)
+							@(currentSortColumn == nameof(Lieferant.iban)
 										? (sortAscending ? "↑" : "↓")
 										: string.Empty)
 						</th>
@@ -79,13 +79,13 @@
 					</tr>-->
 				</tfoot>
 				<tbody id="TableBody">
-					@if (kunden == null)
+					@if (lieferanten == null)
 					{
 						<tr>
 							<td colspan="8">Es wird nach den Datensätzen gesucht.</td>
 						</tr>
 					}
-					else if (kunden.Count == 0)
+					else if (lieferanten.Count == 0)
 					{
 						<tr>
 							<td colspan="8">Es wurden keine Datensätze gefunden.</td>
@@ -93,17 +93,17 @@
 					}
 					else
 					{
-						@foreach (var kunde in kunden)
+						@foreach (var lieferant in lieferanten)
 						{
-							<tr @onclick="() => GetKundeById(kunde.kId)" style="cursor: pointer;" class="@GetRowClass(kunde.kId)">
-								<td >@kunde.kId</td>
-								<td>@kunde.fbNr</td>
-								<td>@kunde.kdNrSap</td>
-								<td>@kunde.firmenname</td>
-								<td>@kunde.suchbegriff</td>
-								<td>@kunde.adresse</td>
-								<td>@kunde.email</td>
-								<td>@kunde.iban</td>
+							<tr @onclick="() => GetLieferantById(lieferant.lId)" style="cursor: pointer;" class="@GetRowClass(lieferant.lId)">
+								<td>@lieferant.lId</td>
+								<td>@lieferant.fbNr</td>
+								<td>@lieferant.lieferantenNrSap</td>
+								<td>@lieferant.firmenname</td>
+								<td>@lieferant.suchbegriff</td>
+								<td>@lieferant.adresse</td>
+								<td>@lieferant.email</td>
+								<td>@lieferant.iban</td>
 							</tr>
 						}
 					}
@@ -113,30 +113,30 @@
 		<article class="AnzeigeInput">
 			<div class="LinkesDiv">
 				<div id="divEins">
-					<label class="divEinsBestellung" for="KId">ID</label>
-					<input type="number" name="KId" id="KId" @bind="KId" min="0" class="divEinsBestellung" />
+					<label class="divEinsBestellung" for="LId">ID</label>
+					<input type="number" name="LId" id="LId" @bind="LId" min="0" class="divEinsBestellung" />
 				</div>
 
 				<div id="DivButtons">
-					<button id="GETAufgaben" @onclick="GETKunde">Anzeigen</button>
+					<button id="GETAufgaben" @onclick="GETLieferant">Anzeigen</button>
 					<br>
-					<button id="POSTAufgaben" @onclick="POSTKunde">Erstellen</button>
+					<button id="POSTAufgaben" @onclick="POSTLieferant">Erstellen</button>
 					<br>
-					<button id="PUTAufgaben" @onclick="PUTKunde">Ändern</button>
+					<button id="PUTAufgaben" @onclick="PUTLieferant">Ändern</button>
 					<br>
-					<button id="DELETEAufgaben" @onclick="DELETEKunde">Löschen</button>
+					<button id="DELETEAufgaben" @onclick="DELETELieferant">Löschen</button>
 				</div>
 			</div>
 
 			<div class="RechtesDiv">
 				<div id="divZwei">
 					<label class="divZweiBestellung" for="FbNr">FbNr</label>
-					<label class="divZweiBestellung" for="KdNrSap">KdNrSap</label>
+					<label class="divZweiBestellung" for="LieferantenNrSap">LieferantenNrSap</label>
 					<label class="divZweiBestellung" for="Firmenname">Firmenname</label>
 					<label class="divZweiBestellung" for="Suchbegriff">Suchbegriff</label>
 
 					<input type="number" @bind="FbNr" name="FbNr" id="Aufgaben" class="divZweiBestellung" />
-					<input type="number" @bind="KdNrSap" name="KdNrSap" id="Abgabeterim" class="divZweiBestellung" />
+					<input type="number" @bind="LieferantenNrSap" name="LieferantenNrSap" id="Abgabeterim" class="divZweiBestellung" />
 					<input type="text" @bind="Firmenname" name="Firmenname" id="Aufgaben" class="divZweiBestellung" />
 					<input type="text" @bind="Suchbegriff" name="Suchbegriff" id="Abgabeterim" class="divZweiBestellung" />
 				</div>
@@ -161,11 +161,11 @@
 	private string OutputGetPostPutDelete = "";
 
 
-	public class Kunde
+	public class Lieferant
 	{
-		public int kId { get; set; }
+		public int lId { get; set; }
 		public int fbNr { get; set; }
-		public int kdNrSap { get; set; }
+		public int lieferantenNrSap { get; set; }
 		public string? firmenname { get; set; }
 		public string? suchbegriff { get; set; }
 		public string? adresse { get; set; }
@@ -173,9 +173,9 @@
 		public string? iban { get; set; }
 	}
 
-	private int KId;
+	private int LId;
 	private int FbNr;
-	private int KdNrSap;
+	private int LieferantenNrSap;
 	private string? Firmenname;
 	private string? Suchbegriff;
 	private string? Adresse;
@@ -184,7 +184,7 @@
 	
 	private int lastID;
 
-	private List<Kunden.KundenInhalt> kunden;
+	private List<Lieferanten.LieferantenInhalt> lieferanten;
 
 
 	private bool sortAscending = true;
@@ -202,43 +202,43 @@
 			sortAscending = true;
 		}
 
-		if (kunden != null)
+		if (lieferanten != null)
 		{
-			kunden = columnName switch
+			lieferanten = columnName switch
 			{
-				nameof(Kunde.kId) => sortAscending
-					? kunden.OrderBy(m => m.kId).ToList()
-					: kunden.OrderByDescending(m => m.kId).ToList(),
-				nameof(Kunde.fbNr) => sortAscending
-					? kunden.OrderBy(m => m.fbNr).ToList()
-					: kunden.OrderByDescending(m => m.fbNr).ToList(),
-				nameof(Kunde.kdNrSap) => sortAscending
-					? kunden.OrderBy(m => m.kdNrSap).ToList()
-					: kunden.OrderByDescending(m => m.kdNrSap).ToList(),
-				nameof(Kunde.firmenname) => sortAscending
-					? kunden.OrderBy(m => m.firmenname).ToList()
-					: kunden.OrderByDescending(m => m.firmenname).ToList(),
-				nameof(Kunde.suchbegriff) => sortAscending
-					? kunden.OrderBy(m => m.suchbegriff).ToList()
-					: kunden.OrderByDescending(m => m.suchbegriff).ToList(),
-				nameof(Kunde.adresse) => sortAscending
-					? kunden.OrderBy(m => m.adresse).ToList()
-					: kunden.OrderByDescending(m => m.adresse).ToList(),
-				nameof(Kunde.email) => sortAscending
-					? kunden.OrderBy(m => m.email).ToList()
-					: kunden.OrderByDescending(m => m.email).ToList(),
-				nameof(Kunde.iban) => sortAscending
-					? kunden.OrderBy(m => m.iban).ToList()
-					: kunden.OrderByDescending(m => m.iban).ToList(),
-				_ => kunden
+				nameof(Lieferant.lId) => sortAscending
+					? lieferanten.OrderBy(m => m.lId).ToList()
+					: lieferanten.OrderByDescending(m => m.lId).ToList(),
+				nameof(Lieferant.fbNr) => sortAscending
+					? lieferanten.OrderBy(m => m.fbNr).ToList()
+					: lieferanten.OrderByDescending(m => m.fbNr).ToList(),
+				nameof(Lieferant.lieferantenNrSap) => sortAscending
+					? lieferanten.OrderBy(m => m.lieferantenNrSap).ToList()
+					: lieferanten.OrderByDescending(m => m.lieferantenNrSap).ToList(),
+				nameof(Lieferant.firmenname) => sortAscending
+					? lieferanten.OrderBy(m => m.firmenname).ToList()
+					: lieferanten.OrderByDescending(m => m.firmenname).ToList(),
+				nameof(Lieferant.suchbegriff) => sortAscending
+					? lieferanten.OrderBy(m => m.suchbegriff).ToList()
+					: lieferanten.OrderByDescending(m => m.suchbegriff).ToList(),
+				nameof(Lieferant.adresse) => sortAscending
+					? lieferanten.OrderBy(m => m.adresse).ToList()
+					: lieferanten.OrderByDescending(m => m.adresse).ToList(),
+				nameof(Lieferant.email) => sortAscending
+					? lieferanten.OrderBy(m => m.email).ToList()
+					: lieferanten.OrderByDescending(m => m.email).ToList(),
+				nameof(Lieferant.iban) => sortAscending
+					? lieferanten.OrderBy(m => m.iban).ToList()
+					: lieferanten.OrderByDescending(m => m.iban).ToList(),
+				_ => lieferanten
 			};
 		}
 	}
 
 	protected override async Task OnInitializedAsync()
 	{
-		Kunden k1 = new Kunden();
-		kunden = await k1.HoleAlleKunden();
+		Lieferanten l1 = new Lieferanten();
+		lieferanten = await l1.HoleAlleLieferanten();
 
 
 		HttpClient client = new HttpClient();
@@ -251,11 +251,11 @@
 			var responseBody = await GetResponse.Content.ReadAsStringAsync();
 			OutputGetPostPutDelete = "GETALL wurde erfolgreich ausgeführt!";
 
-			foreach (var kunde in kunden)
+			foreach (var lieferant in lieferanten)
 			{
-				lastID = kunde.kId;
+				lastID = lieferant.lId;
 				int newID = lastID + 1;
-				KId = newID;
+				LId = newID;
 			}
 		}
 		else
@@ -275,61 +275,61 @@
 		return selectedId == Id ? "AusgewaehlteReihe" : "";
 	}
 
-	private async void GetKundeById(int IDNumberEingegeben)
+	private async void GetLieferantById(int IDNumberEingegeben)
 	{
-		selectedId = KId; // Aktualisiert die ausgewählte ID
+		selectedId = LId; // Aktualisiert die ausgewählte ID
 
-		Kunden k2 = new Kunden();
-		var Kunde = await k2.HoleKundeById(IDNumberEingegeben);
-		OutputGetPostPutDelete = Convert.ToString(Kunde);
+		Lieferanten l2 = new Lieferanten();
+		var Lieferant = await l2.HoleLieferantById(IDNumberEingegeben);
+		OutputGetPostPutDelete = Convert.ToString(Lieferant);
 
-		if (Kunde == null)
+		if (Lieferant == null)
 		{
 			OutputGetPostPutDelete = "Ihre werte sind null, da hat was ned funkt";
 		}
 		else
 		{
-			KId = Kunde.kId;
-			FbNr = Kunde.fbNr;
-			KdNrSap = Kunde.kdNrSap;
-			Firmenname = Kunde.firmenname;
-			Suchbegriff = Kunde.suchbegriff;
-			Adresse = Kunde.adresse;
-			Email = Kunde.email;
-			Iban = Kunde.iban;
+			LId = Lieferant.lId;
+			FbNr = Lieferant.fbNr;
+			LieferantenNrSap= Lieferant.lieferantenNrSap;
+			Firmenname = Lieferant.firmenname;
+			Suchbegriff = Lieferant.suchbegriff;
+			Adresse = Lieferant.adresse;
+			Email = Lieferant.email;
+			Iban = Lieferant.iban;
 		}
 	}
 
 
-	public async Task GETKunde()
+	public async Task GETLieferant()
 	{
-		GetKundeById(KId);
+		GetLieferantById(LId);
 		OutputGetPostPutDelete = "GET wurde erfolgreich ausgeführt!";
 	}
 
 
-	public async Task POSTKunde()
+	public async Task POSTLieferant()
 	{
-		Kunden k3 = new Kunden();
-		await k3.PostKunde(KId, FbNr, KdNrSap, Firmenname, Suchbegriff, Adresse, Email, Iban);
+		Lieferanten l3 = new Lieferanten();
+		await l3.PostKunde(LId, FbNr, LieferantenNrSap, Firmenname, Suchbegriff, Adresse, Email, Iban);
 		await OnInitializedAsync();
 		OutputGetPostPutDelete = "POST wurde erfolgreich ausgeführt!";
 	}
 
 
-	public async Task PUTKunde()
+	public async Task PUTLieferant()
 	{
-		Kunden k4 = new Kunden();
-		await k4.PutKunde(KId, FbNr, KdNrSap, Firmenname, Suchbegriff, Adresse, Email, Iban);
+		Lieferanten l4 = new Lieferanten();
+		await l4.PutKunde(LId, FbNr, LieferantenNrSap, Firmenname, Suchbegriff, Adresse, Email, Iban);
 		await OnInitializedAsync();
 		OutputGetPostPutDelete = "PUT wurde erfolgreich ausgeführt!";
 	}
 
 
-	public async Task DELETEKunde()
+	public async Task DELETELieferant()
 	{
-		Kunden k5 = new Kunden();
-		await k5.DeleteKunde(KId);
+		Lieferanten l5 = new Lieferanten();
+		await l5.DeleteKunde(LId);
 		await OnInitializedAsync();
 		OutputGetPostPutDelete = "DELETE wurde erfolgreich ausgeführt!";
 	}
