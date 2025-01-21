@@ -1,0 +1,389 @@
+﻿@page "/EinkaufRechnungen"
+@using System.Text.Json
+@using System.Text
+@using System.Net.Http.Headers
+@using Microsoft.Extensions.Configuration
+@using Diplomarbeit_HHS.Models
+@inject IConfiguration Configuration
+@inject NavigationManager Navigation
+@inject IJSRuntime JS //Schnittstelle zwischen c# und js
+
+<script src="javaScript/script.js"></script>
+<link rel="stylesheet" media="(min-width:0px)" href="style/styleMobile.css" />
+<link rel="stylesheet" media="(min-width:1000px)" href="style/style.css" />
+
+<body>
+	<header>
+		<h1 class="HeaderText">Rechnungen</h1>
+	</header>
+	<nav>
+	</nav>
+	<section>
+		<article class="AnzeigeDaten">
+			<table id ="InhaltOnClick">
+				<thead>
+					<tr>
+						<th class="TableBestellungenID" @onclick="() => SortTable(nameof(EinkaufRechnung.rId))">
+							ID
+							@(currentSortColumn == nameof(EinkaufRechnung.rId)
+														? (sortAscending ? "↑" : "↓")
+														: string.Empty)
+						</th>
+						<th class="TableBestellungenUnternehmen" @onclick="() => SortTable(nameof(EinkaufRechnung.beschreibung))">
+							Unternehmen
+							@(currentSortColumn == nameof(EinkaufRechnung.beschreibung)
+														? (sortAscending ? "↑" : "↓")
+														: string.Empty)
+						</th>
+						<th class="TableBestellungenBestelldatum" @onclick="() => SortTable(nameof(EinkaufRechnung.rechnungsdatum))">
+							Rechnungsdatum
+							@(currentSortColumn == nameof(EinkaufRechnung.rechnungsdatum)
+														? (sortAscending ? "↑" : "↓")
+														: string.Empty)
+						</th>
+						<th class="TableBestellungenFertig" @onclick="() => SortTable(nameof(EinkaufRechnung.gezahlt))">
+							Gezahlt
+							@(currentSortColumn == nameof(EinkaufRechnung.gezahlt)
+														? (sortAscending ? "↑" : "↓")
+														: string.Empty)
+						</th>
+						<th class="TableBestellungenAnzahl" @onclick="() => SortTable(nameof(EinkaufRechnung.anzahl))">
+							Anzahl
+							@(currentSortColumn == nameof(EinkaufRechnung.anzahl)
+														? (sortAscending ? "↑" : "↓")
+														: string.Empty)
+						</th>
+						<th class="TableBestellungenNetto" @onclick="() => SortTable(nameof(EinkaufRechnung.netto))">
+							Netto
+							@(currentSortColumn == nameof(EinkaufRechnung.netto)
+														? (sortAscending ? "↑" : "↓")
+														: string.Empty)
+						</th>
+						<th class="TableBestellungenSteuer" @onclick="() => SortTable(nameof(EinkaufRechnung.steuer))">
+							Steuer
+							@(currentSortColumn == nameof(EinkaufRechnung.steuer)
+														? (sortAscending ? "↑" : "↓")
+														: string.Empty)
+						</th>
+						<th class="TableBestellungenBrutto" @onclick="() => SortTable(nameof(EinkaufRechnung.brutto))">
+							Brutto
+							@(currentSortColumn == nameof(EinkaufRechnung.brutto)
+														? (sortAscending ? "↑" : "↓")
+														: string.Empty)
+						</th>
+					</tr>
+				</thead>
+				<tfoot>
+					<!--<tr>
+						<td colspan="8">@OutputGetPostPutDelete</td>
+					</tr>-->
+				</tfoot>
+				<tbody id="TableBody">
+					@if (rechnungen == null)
+					{
+						<tr>
+							<td colspan="8">Es wird nach den Datensätzen gesucht.</td>
+						</tr>
+					}
+					else if (rechnungen.Count == 0)
+					{
+						<tr>
+							<td colspan="8">Es wurden keine Datensätze gefunden.</td>
+						</tr>
+					}
+					else
+					{
+						@foreach (var rechnung in rechnungen)
+						{
+							<tr @onclick="() => GetEinkaufRechnungById(rechnung.rId)" style="cursor: pointer;" class="@GetRowClass(rechnung.rId)">
+								<td class="TableBestellungenID">@rechnung.rId</td>
+								<td class="TableBestellungenUnternehmen">@rechnung.beschreibung</td>
+								<td class="TableBestellungenBestelldatum">@rechnung.rechnungsdatum.Value.ToString("yyyy-MM-dd")</td>
+								<td class="TableBestellungenFertig">
+									@if (rechnung.gezahlt)
+									{
+										<span>✔</span>
+									}
+								</td>
+								<td class="TableBestellungenAnzahl">@rechnung.anzahl</td>
+								<td class="TableBestellungenNetto">@rechnung.netto</td>
+								<td class="TableBestellungenSteuer">@rechnung.steuer</td>
+								<td class="TableBestellungenBrutto">@rechnung.brutto</td>
+							</tr>
+						}
+					}
+				</tbody>
+			</table>
+		</article>
+		<article class="AnzeigeInput">
+			<div class="LinkesDiv">
+				<div id="divEins">
+					<label class="divEinsBestellung" for="RId">ID</label>
+					<input type="number" name="RId" id="RId" @bind="RId" min="0" class="divEinsBestellung" />
+				</div>
+
+				<div id="DivButtons">
+					<button id="GETBestellungen" @onclick="GETEinkaufRechnung">Anzeigen</button>
+					<br>
+					<button id="POSTBestellungen" @onclick="POSTEinkaufRechnung">Erstellen</button>
+					<br>
+					<button id="PUTBestellungen" @onclick="PUTEinkaufRechnung">Ändern</button>
+					<br>
+					<button id="DELETEBestellungen" @onclick="DELETEEinkaufRechnung">Löschen</button>
+				</div>
+			</div>
+
+			<div class="RechtesDiv">
+				<div id="divZwei">
+					<label class="divZweiBestellung" for="Rechnungsdatum">Rechnungsdatum</label>
+					<label class="divZweiBestellung" for="Beschreibung">Beschreibung</label>
+					<label class="divZweiBestellung" for="Zahlungsart">Zahlungsart</label>
+					<label class="divZweiBestellung" for="Gezahlt">Gezahlt</label>
+
+					<input type="date" @bind="Rechnungsdatum" name="Rechnungsdatum" id="Rechnungsdatum" class="divZweiBestellung" />
+					<input type="text" @bind="Beschreibung" name="Beschreibung" id="Beschreibung" class="divZweiBestellung" />
+					<select @bind="Zahlungsart" name="Zahlungsart" id="Zahlungsart" class="divZweiBestellung">
+						<option value="BK" selected="selected">Bankomartkarte</option>
+						<option value="KK">Kreditkarte</option>
+					</select>
+					<input type="checkbox" @bind="Gezahlt" name="Gezahlt" id="Gezahlt" class="divZweiBestellung" />
+				</div>
+				<div id="divDrei">
+					<label class="divDreiBestellung" for="RechnungsNRLieferant">RechnungsNRLieferant</label>
+					<label class="divDreiBestellung" for="UUID">UUID</label>
+					<label class="divDreiBestellung" for="LID">LID</label>
+
+					<input type="number" @bind="RechnungsNRLieferant" name="RechnungsNRLieferant" id="RechnungsNRLieferant" class="divDreiBestellung" />
+					<input type="number" @bind="Uiid" name="UUID" id="UUID" class="divDreiBestellung" />
+					<input type="number" @bind="Lid" name="LID" id="LID" class="divDreiBestellung" />
+				</div>
+
+				<div id="divVier">
+					<label class="divVierBestellung" for="Anzahl">Anzahl</label>
+					<label class="divVierBestellung" for="Netto">Netto</label>
+					<label class="divVierBestellung" for="Steuer">Steuer</label>
+					<label class="divVierBestellung" for="Brutto">Brutto</label>
+					<label class="divVierBestellung" for="Skonto">Skonto</label>
+
+					<input type="number" @bind="Anzahl" name="Anzahl" id="Anzahl" class="divVierBestellung" />
+					<input type="number" @bind="Netto" name="Netto" id="Netto" class="divVierBestellung" />
+					<input type="number" @bind="Steuer" name="Steuer" id="Steuer" class="divVierBestellung" />
+					<input type="number" @bind="Brutto" name="Brutto" id="Brutto" class="divVierBestellung" />
+					<input type="number" @bind="Skonto" name="Skonto" id="Skonto" class="divVierBestellung" />
+
+
+					<button id="BruttoNettoRechnerBestellungen" @onclick="NettoSteuerBruttoErgebnis">Netto-zu-Brutto Rechner</button>
+					<p id="AusgabeTest">@NettoSteuerBrutto</p>
+				</div>
+			</div>
+		</article>
+	</section>
+</body>
+
+
+@code {
+
+	private string NettoSteuerBrutto = "";
+	private string OutputResult = "";
+	private string OutputGetPostPutDelete = "";
+
+	public class EinkaufRechnung
+	{
+		public int rId { get; set; }//
+		public DateTime? rechnungsdatum { get; set; }//
+		public string? beschreibung { get; set; }
+		public string? zahlungsart { get; set; }
+		public int rechnungsNRLieferant { get; set; }//
+		public int uiid { get; set; }
+		public int lid { get; set; }
+		public int anzahl { get; set; }
+		public double netto { get; set; }
+		public double steuer { get; set; }
+		public double skonto { get; set; }
+		public double brutto { get; set; }
+		public Boolean gezahlt { get; set; }//
+	}
+
+	private int RId;
+	private DateTime? Rechnungsdatum;
+	private string? Beschreibung;
+	private string? Zahlungsart;
+	private int RechnungsNRLieferant;
+	private int Uiid;
+	private int Lid;
+	private int Anzahl;
+	private double Netto;
+	private double Steuer;
+	private double Skonto;
+	private double Brutto;
+	private Boolean Gezahlt;
+
+	private int lastID;
+	private List<Einkauf.EinkaufRechnung> rechnungen;
+
+	private bool sortAscending = true;
+	private string? currentSortColumn;
+
+	private void SortTable(string columnName)
+	{
+		if (currentSortColumn == columnName)
+		{
+			sortAscending = !sortAscending; // Toggle sort direction
+		}
+		else
+		{
+			currentSortColumn = columnName;
+			sortAscending = true;
+		}
+
+		if (rechnungen != null)
+		{
+			rechnungen = columnName switch
+			{
+				nameof(EinkaufRechnung.rId) => sortAscending
+					? rechnungen.OrderBy(m => m.rId).ToList()
+					: rechnungen.OrderByDescending(m => m.rId).ToList(),
+				nameof(EinkaufRechnung.rechnungsdatum) => sortAscending
+					? rechnungen.OrderBy(m => m.rechnungsdatum).ToList()
+					: rechnungen.OrderByDescending(m => m.rechnungsdatum).ToList(),
+				nameof(EinkaufRechnung.beschreibung) => sortAscending
+					? rechnungen.OrderBy(m => m.beschreibung).ToList()
+					: rechnungen.OrderByDescending(m => m.beschreibung).ToList(),
+				nameof(EinkaufRechnung.gezahlt) => sortAscending
+					? rechnungen.OrderBy(m => m.gezahlt).ToList()
+					: rechnungen.OrderByDescending(m => m.gezahlt).ToList(),
+				nameof(EinkaufRechnung.anzahl) => sortAscending
+					? rechnungen.OrderBy(m => m.anzahl).ToList()
+					: rechnungen.OrderByDescending(m => m.anzahl).ToList(),
+				nameof(EinkaufRechnung.netto) => sortAscending
+					? rechnungen.OrderBy(m => m.netto).ToList()
+					: rechnungen.OrderByDescending(m => m.netto).ToList(),
+				nameof(EinkaufRechnung.steuer) => sortAscending
+					? rechnungen.OrderBy(m => m.steuer).ToList()
+					: rechnungen.OrderByDescending(m => m.steuer).ToList(),
+				nameof(EinkaufRechnung.brutto) => sortAscending
+					? rechnungen.OrderBy(m => m.brutto).ToList()
+					: rechnungen.OrderByDescending(m => m.brutto).ToList(),
+				_ => rechnungen
+			};
+		}
+	}
+
+
+
+	public async Task NettoSteuerBruttoErgebnis()
+	{
+		double netto = Netto;
+
+		NettoSteuerBrutto NewNettoSteuerBrutto = new NettoSteuerBrutto();
+		string zahlen = Convert.ToString(await NewNettoSteuerBrutto.NettoBruttoRechnerRechnen(netto));
+		NettoSteuerBrutto = zahlen;
+		Steuer = await NewNettoSteuerBrutto.NettoSteuer(netto);
+		Brutto = await NewNettoSteuerBrutto.NettoBrutto(netto);		
+	}
+
+
+
+	protected override async Task OnInitializedAsync()
+	{
+		Einkauf e1 = new Einkauf();
+		rechnungen = await e1.HoleAlleEinkaufRechnungen();
+
+		HttpClient client = new HttpClient();
+		var token = await SecureStorage.GetAsync("authToken");
+		client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+		HttpResponseMessage GetResponse = await client.GetAsync($"{URLs.URLEinkaufRechnung}");
+
+		if (GetResponse.IsSuccessStatusCode)
+		{
+			var responseBody = await GetResponse.Content.ReadAsStringAsync();
+			//OutputResult = responseBody;
+			OutputGetPostPutDelete = "GETALL wurde erfolgreich ausgeführt!";
+
+			foreach (var rechnung in rechnungen)
+			{
+				lastID = rechnung.rId;
+				int newID = lastID + 1;
+				RId = newID;
+			}
+		}
+		else
+		{
+			OutputGetPostPutDelete = "Error TestAPIGET: " + GetResponse.StatusCode;
+		}
+		JS.InvokeVoidAsync("setLastIDInJS", lastID);
+	}
+
+
+	private int? selectedId; // Speichert die ID der ausgewählten Zeile
+
+	private string GetRowClass(int Id)
+	{
+		// Rückgabe der CSS-Klasse für die aktuelle Zeile
+		return selectedId == Id ? "AusgewaehlteReihe" : "";
+	}
+
+	private async void GetEinkaufRechnungById(int IDNumberEingegeben)
+	{
+		selectedId = RId; // Aktualisiert die ausgewählte ID
+
+		Einkauf e2 = new Einkauf();
+		var Rechnung = await e2.HoleEinkaufRechnungById(IDNumberEingegeben);
+		OutputGetPostPutDelete = Convert.ToString(Rechnung);
+
+		if (Rechnung == null)
+		{
+			OutputGetPostPutDelete = "Ihre werte sind null, da hat was ned funkt";
+		}
+		else
+		{
+			RId = Rechnung.rId;
+			Rechnungsdatum = Rechnung.rechnungsdatum;
+			Beschreibung = Rechnung.beschreibung;
+			Zahlungsart = Rechnung.zahlungsart; ;
+			RechnungsNRLieferant = Rechnung.rechnungsNRLieferant;
+			Uiid = Rechnung.uiid;
+			Lid = Rechnung.lid;
+			Anzahl = Rechnung.anzahl;
+			Netto = Rechnung.netto;
+			Steuer = Rechnung.steuer;
+			Skonto = Rechnung.skonto;
+			Brutto = Rechnung.brutto;
+			Gezahlt = Rechnung.gezahlt;
+		}
+	}
+
+
+	public async Task GETEinkaufRechnung()
+	{
+		GetEinkaufRechnungById(RId);
+		OutputGetPostPutDelete = "GET wurde erfolgreich ausgeführt!";
+	}
+
+
+	public async Task POSTEinkaufRechnung()
+	{
+		Einkauf e3 = new Einkauf();
+		await e3.PostEinkaufRechnung(RId, Rechnungsdatum, Beschreibung, Zahlungsart, RechnungsNRLieferant, Uiid, Lid, Anzahl, Netto, Steuer, Skonto, Brutto, Gezahlt);
+		await OnInitializedAsync();
+		OutputGetPostPutDelete = "POST wurde erfolgreich ausgeführt!";
+	}
+
+
+	public async Task PUTEinkaufRechnung()
+	{
+		Einkauf e4 = new Einkauf();
+		await e4.PutEinkaufRechnung(RId, Rechnungsdatum, Beschreibung, Zahlungsart, RechnungsNRLieferant, Uiid, Lid, Anzahl, Netto, Steuer, Skonto, Brutto, Gezahlt);
+		await OnInitializedAsync();
+		OutputGetPostPutDelete = "PUT wurde erfolgreich ausgeführt!";
+	}
+
+
+	public async Task DELETEEinkaufRechnung()
+	{
+		Einkauf e5 = new Einkauf();
+		await e5.DeleteEinkaufRechnung(RId);
+		await OnInitializedAsync();
+		OutputGetPostPutDelete = "DELETE wurde erfolgreich ausgeführt!";
+	}
+}

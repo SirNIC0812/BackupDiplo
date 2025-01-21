@@ -23,7 +23,7 @@
 
 
 	//Lieferant
-	public const string URLLieferant = $"{AnfangURL}/Lieferant";								//NOCH NICHT VERWENDET //Kopieren von Kunde
+	public const string URLLieferant = $"{AnfangURL}/Lieferant";                                //Schon Verwendet
 
 
 	//Office
@@ -32,11 +32,11 @@
 
 
 	//Personal
-	public const string URLPersonal = $"{AnfangURL}/Personal";									//NOCH NICHT VERWENDET
+	public const string URLPersonal = $"{AnfangURL}/Personal";									//In Arbeit
 
 
 	//Rechnungswesen
-	public const string URLRechnungswesenEinkauf = $"{AnfangURL}/Rechnungswesen/Einkauf";		//IN Arbeit //funkt ned (irgendwie keine Daten)
+	public const string URLRechnungswesenEinkauf = $"{AnfangURL}/Rechnungswesen/Einkauf";       //Schon Verwendet
 	public const string URLRechnungswesenVerkauf = $"{AnfangURL}/Rechnungswesen/Verkauf";       //NOCH NICHT VERWENDET
 	public const string URLRechnungswesenPersonal = $"{AnfangURL}/Rechnungswesen/Personal";     //NOCH NICHT VERWENDET
 

@@ -1,0 +1,361 @@
+﻿@page "/RechnungswesenPersonal"
+@using System.Text.Json
+@using System.Text
+@using System.Net.Http.Headers
+@using Microsoft.Extensions.Configuration
+@using Diplomarbeit_HHS.Models
+@inject IConfiguration Configuration
+@inject NavigationManager Navigation
+@inject IJSRuntime JS //Schnittstelle zwischen c# und js
+
+<script src="javaScript/script.js"></script>
+<link rel="stylesheet" media="(min-width:0px)" href="style/styleMobile.css" />
+<link rel="stylesheet" media="(min-width:1000px)" href="style/style.css" />
+
+<body>
+	<header>
+		<h1 class="HeaderText">Rechnungswesen Personal</h1>
+	</header>
+	<nav>
+	</nav>
+	<section>
+		<article class="AnzeigeDaten">
+			<table id ="InhaltOnClick">
+				<thead>
+					<tr>
+						<th class="TableBestellungenID" @onclick="() => SortTable(nameof(RWEK.prrId))">
+							ID
+							@(currentSortColumn == nameof(RWEK.prrId)
+										? (sortAscending ? "↑" : "↓")
+										: string.Empty)
+						</th>
+						<th class="TableBestellungenUnternehmen" @onclick="() => SortTable(nameof(RWEK.art))">
+							art
+							@(currentSortColumn == nameof(RWEK.art)
+										? (sortAscending ? "↑" : "↓")
+										: string.Empty)
+						</th>
+						<th class="TableBestellungenBestelldatum" @onclick="() => SortTable(nameof(RWEK.prid))">
+							prid
+							@(currentSortColumn == nameof(RWEK.prid)
+										? (sortAscending ? "↑" : "↓")
+										: string.Empty)
+						</th>
+						<th class="TableBestellungenFertig" @onclick="() => SortTable(nameof(RWEK.lid))">
+							lid
+							@(currentSortColumn == nameof(RWEK.lid)
+										? (sortAscending ? "↑" : "↓")
+										: string.Empty)
+						</th>
+						<th class="TableBestellungenAnzahl" @onclick="() => SortTable(nameof(RWEK.brutto))">
+							brutto
+							@(currentSortColumn == nameof(RWEK.brutto)
+										? (sortAscending ? "↑" : "↓")
+										: string.Empty)
+						</th>
+						<th class="TableBestellungenNetto" @onclick="() => SortTable(nameof(RWEK.rechnungordung))">
+							rechnunginordung
+							@(currentSortColumn == nameof(RWEK.rechnungordung)
+										? (sortAscending ? "↑" : "↓")
+										: string.Empty)
+						</th>
+						<th class="TableBestellungenSteuer" @onclick="() => SortTable(nameof(RWEK.skonto))">
+							skonto
+							@(currentSortColumn == nameof(RWEK.skonto)
+										? (sortAscending ? "↑" : "↓")
+										: string.Empty)
+						</th>
+						<th class="TableBestellungenBrutto" @onclick="() => SortTable(nameof(RWEK.verbucht))">
+							verbucht
+							@(currentSortColumn == nameof(RWEK.verbucht)
+										? (sortAscending ? "↑" : "↓")
+										: string.Empty)
+						</th>
+						<th class="TableBestellungenBrutto" @onclick="() => SortTable(nameof(RWEK.uiid))">
+							uiid
+							@(currentSortColumn == nameof(RWEK.uiid)
+										? (sortAscending ? "↑" : "↓")
+										: string.Empty)
+						</th>
+					</tr>
+				</thead>
+				<tfoot>
+					<!--<tr>
+					<td colspan="8">@OutputGetPostPutDelete</td>
+					</tr>-->
+				</tfoot>
+				<tbody id="TableBody">
+					@if (rwpe == null)
+					{
+						<tr>
+							<td colspan="8">Es wird nach den Datensätzen gesucht.</td>
+						</tr>
+					}
+					else if (rwpe.Count == 0)
+					{
+						<tr>
+							<td colspan="8">Es wurden keine Datensätze gefunden.</td>
+						</tr>
+					}
+					else
+					{
+						@foreach (var rwpe in rwpe)
+						{
+							<tr @onclick="() => GetRWPEById(rwpe.prrId)" style="cursor: pointer;" class="@GetRowClass(rwpe.prrId)">
+								<td class="TableBestellungenID">@rwpe.prrId</td>
+								<td class="TableBestellungenUnternehmen">@rwpe.art</td>
+								<td class="TableBestellungenBestelldatum">@rwpe.prid</td>
+								<td class="TableBestellungenAnzahl">@rwpe.lid</td>
+								<td class="TableBestellungenNetto">@rwpe.brutto</td>
+								<td class="TableBestellungenFertig">
+									@if (rwpe.rechnungordung)
+									{
+										<span>✔</span>
+									}
+								</td>
+								<td class="TableBestellungenSteuer">@rwpe.skonto</td>
+								<td class="TableBestellungenFertig">
+									@if (rwpe.verbucht)
+									{
+										<span>✔</span>
+									}
+								</td>
+								<td class="TableBestellungenBrutto">@rwpe.uiid</td>
+							</tr>
+						}
+					}
+				</tbody>
+			</table>
+		</article>
+		<article class="AnzeigeInput">
+			<div class="LinkesDiv">
+				<div id="divEins">
+					<label class="divEinsBestellung" for="PrrId">ID</label>
+					<input type="number" name="PrrId" id="PrrId" @bind="PrrId" min="0" class="divEinsBestellung" />
+				</div>
+
+				<div id="DivButtons">
+					<button id="GETBestellungen" @onclick="GETRWPE">Anzeigen</button>
+					<br>
+					<button id="POSTBestellungen" @onclick="POSTRWPE">Erstellen</button>
+					<br>
+					<button id="PUTBestellungen" @onclick="PUTRWPE">Ändern</button>
+					<br>
+					<button id="DELETEBestellungen" @onclick="DELETERWPE">Löschen</button>
+				</div>
+			</div>
+
+			<div class="RechtesDiv">
+				<div id="divZwei">
+					<label class="divZweiBestellung" for="Art">Art</label>
+					<label class="divZweiBestellung" for="Prid">Prid</label>
+					<label class="divZweiBestellung" for="Lid">Lid</label>
+					<label class="divZweiBestellung" for="Brutto">Brutto</label>
+
+					<input type="text" @bind="Art" name="Art" id="Art" class="divZweiBestellung" />
+					<input type="number" @bind="Prid" name="Prid" id="Prid" class="divZweiBestellung" />
+					<input type="number" @bind="Lid" name="Lid" id="Lid" class="divZweiBestellung" />
+					<input type="number" @bind="Brutto" name="Brutto" id="Brutto" class="divZweiBestellung" />
+				</div>
+
+				<div id="divDrei">
+					<label class="divDreiBestellung" for="Rechnunginordung">Rechnunginordung</label>
+					<label class="divDreiBestellung" for="Skonto">Skonto</label>
+					<label class="divDreiBestellung" for="Verbucht">Verbucht</label>
+					<label class="divDreiBestellung" for="UUID">UUID</label>
+
+					<input type="checkbox" @bind="Rechnunginordung" name="Rechnunginordung" id="Rechnunginordung" class="divZweiBestellung" />
+					<input type="number" @bind="Skonto" name="Skonto" id="Skonto" class="divDreiBestellung" />
+					<input type="checkbox" @bind="Verbucht" name="Verbucht" id="Verbucht" class="divZweiBestellung" />
+					<input type="number" @bind="Uiid" name="UUID" id="UUID" class="divDreiBestellung" />
+				</div>
+			</div>
+		</article>
+	</section>
+</body>
+
+
+@code {
+
+	private string NettoSteuerBrutto = "";
+	private string OutputResult = "";
+	private string OutputGetPostPutDelete = "";
+
+	public class RWEK
+	{
+		public int prrId { get; set; }
+		public string? art { get; set; }
+		public int prid { get; set; }
+		public int lid { get; set; }
+		public double brutto { get; set; }
+		public Boolean rechnungordung { get; set; }
+		public double skonto { get; set; }
+		public Boolean verbucht { get; set; }
+		public int uiid { get; set; }
+	}
+
+	private int PrrId;
+	private string? Art;
+	private int Prid;
+	private int Lid;
+	private double Brutto;
+	private Boolean Rechnunginordung;
+	private double Skonto;
+	private Boolean Verbucht;
+	private int Uiid;
+
+	private int lastID;
+	private List<Rechnungswesen.RechnungwesenPersonal> rwpe;
+
+	private bool sortAscending = true;
+	private string? currentSortColumn;
+
+	private void SortTable(string columnName)
+	{
+		if (currentSortColumn == columnName)
+		{
+			sortAscending = !sortAscending; // Toggle sort direction
+		}
+		else
+		{
+			currentSortColumn = columnName;
+			sortAscending = true;
+		}
+
+		if (rwpe != null)
+		{
+			rwpe = columnName switch
+			{
+				nameof(RWEK.prrId) => sortAscending
+					? rwpe.OrderBy(m => m.prrId).ToList()
+					: rwpe.OrderByDescending(m => m.prrId).ToList(),
+				nameof(RWEK.art) => sortAscending
+					? rwpe.OrderBy(m => m.art).ToList()
+					: rwpe.OrderByDescending(m => m.art).ToList(),
+				nameof(RWEK.prid) => sortAscending
+					? rwpe.OrderBy(m => m.prid).ToList()
+					: rwpe.OrderByDescending(m => m.prid).ToList(),
+				nameof(RWEK.lid) => sortAscending
+					? rwpe.OrderBy(m => m.lid).ToList()
+					: rwpe.OrderByDescending(m => m.lid).ToList(),
+				nameof(RWEK.brutto) => sortAscending
+					? rwpe.OrderBy(m => m.brutto).ToList()
+					: rwpe.OrderByDescending(m => m.brutto).ToList(),
+				nameof(RWEK.rechnungordung) => sortAscending
+					? rwpe.OrderBy(m => m.rechnungordung).ToList()
+					: rwpe.OrderByDescending(m => m.rechnungordung).ToList(),
+				nameof(RWEK.skonto) => sortAscending
+					? rwpe.OrderBy(m => m.skonto).ToList()
+					: rwpe.OrderByDescending(m => m.skonto).ToList(),
+				nameof(RWEK.verbucht) => sortAscending
+					? rwpe.OrderBy(m => m.verbucht).ToList()
+					: rwpe.OrderByDescending(m => m.verbucht).ToList(),
+				nameof(RWEK.uiid) => sortAscending
+					? rwpe.OrderBy(m => m.uiid).ToList()
+					: rwpe.OrderByDescending(m => m.uiid).ToList(),
+				_ => rwpe
+			};
+		}
+	}
+
+
+	protected override async Task OnInitializedAsync()
+	{
+		Rechnungswesen rwpe1 = new Rechnungswesen();
+		rwpe = await rwpe1.HoleAlleRWPE();
+
+		HttpClient client = new HttpClient();
+		var token = await SecureStorage.GetAsync("authToken");
+		client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+		HttpResponseMessage GetResponse = await client.GetAsync($"{URLs.URLRechnungswesenPersonal}");
+
+		if (GetResponse.IsSuccessStatusCode)
+		{
+			var responseBody = await GetResponse.Content.ReadAsStringAsync();
+			//OutputResult = responseBody;
+			OutputGetPostPutDelete = "GETALL wurde erfolgreich ausgeführt!";
+
+			foreach (var rwpe in rwpe)
+			{
+				lastID = rwpe.prrId;
+				int newID = lastID + 1;
+				PrrId = newID;
+			}
+		}
+		else
+		{
+			OutputGetPostPutDelete = "Error TestAPIGET: " + GetResponse.StatusCode;
+		}
+		JS.InvokeVoidAsync("setLastIDInJS", lastID);
+	}
+
+
+	private int? selectedId; // Speichert die ID der ausgewählten Zeile
+
+	private string GetRowClass(int Id)
+	{
+		// Rückgabe der CSS-Klasse für die aktuelle Zeile
+		return selectedId == Id ? "AusgewaehlteReihe" : "";
+	}
+
+	private async void GetRWPEById(int IDNumberEingegeben)
+	{
+		selectedId = PrrId; // Aktualisiert die ausgewählte ID
+
+		Rechnungswesen rwpe2 = new Rechnungswesen();
+		var rwpe = await rwpe2.HoleRWPEById(IDNumberEingegeben);
+		OutputGetPostPutDelete = Convert.ToString(rwpe);
+
+		if (rwpe == null)
+		{
+			OutputGetPostPutDelete = "Ihre werte sind null, da hat was ned funkt";
+		}
+		else
+		{
+			PrrId = rwpe.prrId;
+			Art = rwpe.art;
+			Prid = rwpe.prid;
+			Lid = rwpe.lid;
+			Brutto = rwpe.brutto;
+			Rechnunginordung = rwpe.rechnungordung;
+			Skonto = rwpe.skonto;
+			Verbucht = rwpe.verbucht;
+			Uiid = rwpe.uiid;
+		}
+	}
+
+
+	public async Task GETRWPE()
+	{
+		GetRWPEById(PrrId);
+		OutputGetPostPutDelete = "GET wurde erfolgreich ausgeführt!";
+	}
+
+
+	public async Task POSTRWPE()
+	{
+		Rechnungswesen rwpe3 = new Rechnungswesen();
+		await rwpe3.PostRWPE(PrrId, Art, Prid, Lid, Brutto, Rechnunginordung, Skonto, Verbucht, Uiid);
+		await OnInitializedAsync();
+		OutputGetPostPutDelete = "POST wurde erfolgreich ausgeführt!";
+	}
+
+
+	public async Task PUTRWPE()
+	{
+		Rechnungswesen rwpe4 = new Rechnungswesen();
+		await rwpe4.PutRWPE(PrrId, Art, Prid, Lid, Brutto, Rechnunginordung, Skonto, Verbucht, Uiid);
+		await OnInitializedAsync();
+		OutputGetPostPutDelete = "PUT wurde erfolgreich ausgeführt!";
+	}
+
+
+	public async Task DELETERWPE()
+	{
+		Rechnungswesen rwpe5 = new Rechnungswesen();
+		await rwpe5.DeleteRWPE(PrrId);
+		await OnInitializedAsync();
+		OutputGetPostPutDelete = "DELETE wurde erfolgreich ausgeführt!";
+	}
+
+}

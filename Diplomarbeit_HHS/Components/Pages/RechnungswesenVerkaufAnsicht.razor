@@ -1,0 +1,376 @@
+﻿@page "/RechnungswesenVerkauf"
+@using System.Text.Json
+@using System.Text
+@using System.Net.Http.Headers
+@using Microsoft.Extensions.Configuration
+@using Diplomarbeit_HHS.Models
+@inject IConfiguration Configuration
+@inject NavigationManager Navigation
+@inject IJSRuntime JS //Schnittstelle zwischen c# und js
+
+<script src="javaScript/script.js"></script>
+<link rel="stylesheet" media="(min-width:0px)" href="style/styleMobile.css" />
+<link rel="stylesheet" media="(min-width:1000px)" href="style/style.css" />
+
+<body>
+	<header>
+		<h1 class="HeaderText">Rechnungswesen Verkauf</h1>
+	</header>
+	<nav>
+	</nav>
+	<section>
+		<article class="AnzeigeDaten">
+			<table id ="InhaltOnClick">
+				<thead>
+					<tr>
+						<th class="TableBestellungenID" @onclick="() => SortTable(nameof(RWVK.vrrId))">
+							ID
+							@(currentSortColumn == nameof(RWVK.vrrId)
+											? (sortAscending ? "↑" : "↓")
+											: string.Empty)
+						</th>
+						<th class="TableBestellungenUnternehmen" @onclick="() => SortTable(nameof(RWVK.art))">
+							art
+							@(currentSortColumn == nameof(RWVK.art)
+											? (sortAscending ? "↑" : "↓")
+											: string.Empty)
+						</th>
+						<th class="TableBestellungenBestelldatum" @onclick="() => SortTable(nameof(RWVK.rid))">
+							rid
+							@(currentSortColumn == nameof(RWVK.rid)
+											? (sortAscending ? "↑" : "↓")
+											: string.Empty)
+						</th>
+						<th class="TableBestellungenFertig" @onclick="() => SortTable(nameof(RWVK.kid))">
+							kid
+							@(currentSortColumn == nameof(RWVK.kid)
+											? (sortAscending ? "↑" : "↓")
+											: string.Empty)
+						</th>
+						<th class="TableBestellungenAnzahl" @onclick="() => SortTable(nameof(RWVK.brutto))">
+							brutto
+							@(currentSortColumn == nameof(RWVK.brutto)
+											? (sortAscending ? "↑" : "↓")
+											: string.Empty)
+						</th>
+						<th class="TableBestellungenNetto" @onclick="() => SortTable(nameof(RWVK.rechnungordung))">
+							rechnunginordung
+							@(currentSortColumn == nameof(RWVK.rechnungordung)
+											? (sortAscending ? "↑" : "↓")
+											: string.Empty)
+						</th>
+						<th class="TableBestellungenSteuer" @onclick="() => SortTable(nameof(RWVK.skonto))">
+							skonto
+							@(currentSortColumn == nameof(RWVK.skonto)
+											? (sortAscending ? "↑" : "↓")
+											: string.Empty)
+						</th>
+						<th class="TableBestellungenSteuer" @onclick="() => SortTable(nameof(RWVK.dvid))">
+							dvid
+							@(currentSortColumn == nameof(RWVK.dvid)
+														? (sortAscending ? "↑" : "↓")
+														: string.Empty)
+						</th>
+						<th class="TableBestellungenBrutto" @onclick="() => SortTable(nameof(RWVK.verbucht))">
+							verbucht
+							@(currentSortColumn == nameof(RWVK.verbucht)
+											? (sortAscending ? "↑" : "↓")
+											: string.Empty)
+						</th>
+						<th class="TableBestellungenBrutto" @onclick="() => SortTable(nameof(RWVK.uiid))">
+							uiid
+							@(currentSortColumn == nameof(RWVK.uiid)
+											? (sortAscending ? "↑" : "↓")
+											: string.Empty)
+						</th>
+					</tr>
+				</thead>
+				<tfoot>
+					<!--<tr>
+					<td colspan="8">@OutputGetPostPutDelete</td>
+					</tr>-->
+				</tfoot>
+				<tbody id="TableBody">
+					@if (rwvk == null)
+					{
+						<tr>
+							<td colspan="8">Es wird nach den Datensätzen gesucht.</td>
+						</tr>
+					}
+					else if (rwvk.Count == 0)
+					{
+						<tr>
+							<td colspan="8">Es wurden keine Datensätze gefunden.</td>
+						</tr>
+					}
+					else
+					{
+						@foreach (var rwvk in rwvk)
+						{
+							<tr @onclick="() => GetRWVKById(rwvk.vrrId)" style="cursor: pointer;" class="@GetRowClass(rwvk.vrrId)">
+								<td class="TableBestellungenID">@rwvk.vrrId</td>
+								<td class="TableBestellungenUnternehmen">@rwvk.art</td>
+								<td class="TableBestellungenBestelldatum">@rwvk.rid</td>
+								<td class="TableBestellungenAnzahl">@rwvk.kid</td>
+								<td class="TableBestellungenNetto">@rwvk.brutto</td>
+								<td class="TableBestellungenFertig">
+									@if (rwvk.rechnungordung)
+									{
+										<span>✔</span>
+									}
+								</td>
+								<td class="TableBestellungenSteuer">@rwvk.skonto</td>
+								<td class="TableBestellungenSteuer">@rwvk.dvid</td>
+								<td class="TableBestellungenFertig">
+									@if (rwvk.verbucht)
+									{
+										<span>✔</span>
+									}
+								</td>
+								<td class="TableBestellungenBrutto">@rwvk.uiid</td>
+							</tr>
+						}
+					}
+				</tbody>
+			</table>
+		</article>
+		<article class="AnzeigeInput">
+			<div class="LinkesDiv">
+				<div id="divEins">
+					<label class="divEinsBestellung" for="VrrId">ID</label>
+					<input type="number" name="VrrId" id="VrrId" @bind="VrrId" min="0" class="divEinsBestellung" />
+				</div>
+
+				<div id="DivButtons">
+					<button id="GETBestellungen" @onclick="GETRWEK">Anzeigen</button>
+					<br>
+					<button id="POSTBestellungen" @onclick="POSTRWEK">Erstellen</button>
+					<br>
+					<button id="PUTBestellungen" @onclick="PUTRWEK">Ändern</button>
+					<br>
+					<button id="DELETEBestellungen" @onclick="DELETERWEK">Löschen</button>
+				</div>
+			</div>
+
+			<div class="RechtesDiv">
+				<div id="divZwei">
+					<label class="divZweiBestellung" for="Art">Art</label>
+					<label class="divZweiBestellung" for="Rid">Rid</label>
+					<label class="divZweiBestellung" for="Kid">Kid</label>
+					<label class="divZweiBestellung" for="Brutto">Brutto</label>
+
+					<input type="text" @bind="Art" name="Art" id="Art" class="divZweiBestellung" />
+					<input type="number" @bind="Rid" name="Rid" id="Rid" class="divZweiBestellung" />
+					<input type="number" @bind="Kid" name="Kid" id="Kid" class="divZweiBestellung" />
+					<input type="number" @bind="Brutto" name="Brutto" id="Brutto" class="divZweiBestellung" />
+				</div>
+
+				<div id="divDrei">
+					<label class="divDreiBestellung" for="Rechnunginordung">Rechnunginordung</label>
+					<label class="divDreiBestellung" for="Skonto">Skonto</label>
+					<label class="divDreiBestellung" for="Dvid">Dvid</label>
+					<label class="divDreiBestellung" for="Verbucht">Verbucht</label>
+					<label class="divDreiBestellung" for="UUID">UUID</label>
+
+					<input type="checkbox" @bind="Rechnunginordung" name="Rechnunginordung" id="Rechnunginordung" class="divZweiBestellung" />
+					<input type="number" @bind="Skonto" name="Skonto" id="Skonto" class="divDreiBestellung" />
+					<input type="number" @bind="Dvid" name="Dvid" id="Dvid" class="divDreiBestellung" />
+					<input type="checkbox" @bind="Verbucht" name="Verbucht" id="Verbucht" class="divZweiBestellung" />
+					<input type="number" @bind="Uiid" name="UUID" id="UUID" class="divDreiBestellung" />
+				</div>
+			</div>
+		</article>
+	</section>
+</body>
+
+
+@code {
+
+	private string NettoSteuerBrutto = "";
+	private string OutputResult = "";
+	private string OutputGetPostPutDelete = "";
+
+	public class RWVK
+	{
+		public int vrrId { get; set; }
+		public string? art { get; set; }
+		public int rid { get; set; }
+		public int kid { get; set; }
+		public double brutto { get; set; }
+		public Boolean rechnungordung { get; set; }
+		public double skonto { get; set; }
+		public int dvid { get; set; }
+		public Boolean verbucht { get; set; }
+		public int uiid { get; set; }
+	}
+
+	private int VrrId;
+	private string? Art;
+	private int Rid;
+	private int Kid;
+	private double Brutto;
+	private Boolean Rechnunginordung;
+	private double Skonto;
+	private int Dvid;
+	private Boolean Verbucht;
+	private int Uiid;
+
+	private int lastID;
+	private List<Rechnungswesen.RechnungwesenVerkauf> rwvk;
+
+	private bool sortAscending = true;
+	private string? currentSortColumn;
+
+	private void SortTable(string columnName)
+	{
+		if (currentSortColumn == columnName)
+		{
+			sortAscending = !sortAscending; // Toggle sort direction
+		}
+		else
+		{
+			currentSortColumn = columnName;
+			sortAscending = true;
+		}
+
+		if (rwvk != null)
+		{
+			rwvk = columnName switch
+			{
+				nameof(RWVK.vrrId) => sortAscending
+					? rwvk.OrderBy(m => m.vrrId).ToList()
+					: rwvk.OrderByDescending(m => m.vrrId).ToList(),
+				nameof(RWVK.art) => sortAscending
+					? rwvk.OrderBy(m => m.art).ToList()
+					: rwvk.OrderByDescending(m => m.art).ToList(),
+				nameof(RWVK.rid) => sortAscending
+					? rwvk.OrderBy(m => m.rid).ToList()
+					: rwvk.OrderByDescending(m => m.rid).ToList(),
+				nameof(RWVK.kid) => sortAscending
+					? rwvk.OrderBy(m => m.kid).ToList()
+					: rwvk.OrderByDescending(m => m.kid).ToList(),
+				nameof(RWVK.brutto) => sortAscending
+					? rwvk.OrderBy(m => m.brutto).ToList()
+					: rwvk.OrderByDescending(m => m.brutto).ToList(),
+				nameof(RWVK.rechnungordung) => sortAscending
+					? rwvk.OrderBy(m => m.rechnungordung).ToList()
+					: rwvk.OrderByDescending(m => m.rechnungordung).ToList(),
+				nameof(RWVK.skonto) => sortAscending
+					? rwvk.OrderBy(m => m.skonto).ToList()
+					: rwvk.OrderByDescending(m => m.skonto).ToList(),
+				nameof(RWVK.dvid) => sortAscending
+					? rwvk.OrderBy(m => m.dvid).ToList()
+					: rwvk.OrderByDescending(m => m.dvid).ToList(),
+				nameof(RWVK.verbucht) => sortAscending
+					? rwvk.OrderBy(m => m.verbucht).ToList()
+					: rwvk.OrderByDescending(m => m.verbucht).ToList(),
+				nameof(RWVK.uiid) => sortAscending
+					? rwvk.OrderBy(m => m.uiid).ToList()
+					: rwvk.OrderByDescending(m => m.uiid).ToList(),
+				_ => rwvk
+			};
+		}
+	}
+
+
+	protected override async Task OnInitializedAsync()
+	{
+		Rechnungswesen rwvk1 = new Rechnungswesen();
+		rwvk = await rwvk1.HoleAlleRWVK();
+
+		HttpClient client = new HttpClient();
+		var token = await SecureStorage.GetAsync("authToken");
+		client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+		HttpResponseMessage GetResponse = await client.GetAsync($"{URLs.URLRechnungswesenVerkauf}");
+
+		if (GetResponse.IsSuccessStatusCode)
+		{
+			var responseBody = await GetResponse.Content.ReadAsStringAsync();
+			//OutputResult = responseBody;
+			OutputGetPostPutDelete = "GETALL wurde erfolgreich ausgeführt!";
+
+			foreach (var rwvk in rwvk)
+			{
+				lastID = rwvk.vrrId;
+				int newID = lastID + 1;
+				VrrId = newID;
+			}
+		}
+		else
+		{
+			OutputGetPostPutDelete = "Error TestAPIGET: " + GetResponse.StatusCode;
+		}
+		JS.InvokeVoidAsync("setLastIDInJS", lastID);
+	}
+
+
+	private int? selectedId; // Speichert die ID der ausgewählten Zeile
+
+	private string GetRowClass(int Id)
+	{
+		// Rückgabe der CSS-Klasse für die aktuelle Zeile
+		return selectedId == Id ? "AusgewaehlteReihe" : "";
+	}
+
+	private async void GetRWVKById(int IDNumberEingegeben)
+	{
+		selectedId = VrrId; // Aktualisiert die ausgewählte ID
+
+		Rechnungswesen rwvk2 = new Rechnungswesen();
+		var rwvk = await rwvk2.HoleRWVKById(IDNumberEingegeben);
+		OutputGetPostPutDelete = Convert.ToString(rwvk);
+
+		if (rwvk == null)
+		{
+			OutputGetPostPutDelete = "Ihre werte sind null, da hat was ned funkt";
+		}
+		else
+		{
+			VrrId = rwvk.vrrId;
+			Art = rwvk.art;
+			Rid = rwvk.rid;
+			Kid = rwvk.kid;
+			Brutto = rwvk.brutto;
+			Rechnunginordung = rwvk.rechnungordung;
+			Skonto = rwvk.skonto;
+			Dvid = rwvk.dvid;
+			Verbucht = rwvk.verbucht;
+			Uiid = rwvk.uiid;
+		}
+	}
+
+
+	public async Task GETRWEK()
+	{
+		GetRWVKById(VrrId);
+		OutputGetPostPutDelete = "GET wurde erfolgreich ausgeführt!";
+	}
+
+
+	public async Task POSTRWEK()
+	{
+		Rechnungswesen rwvk3 = new Rechnungswesen();
+		await rwvk3.PostRWVK(VrrId, Art, Rid, Kid, Brutto, Rechnunginordung, Skonto, Dvid, Verbucht, Uiid);
+		await OnInitializedAsync();
+		OutputGetPostPutDelete = "POST wurde erfolgreich ausgeführt!";
+	}
+
+
+	public async Task PUTRWEK()
+	{
+		Rechnungswesen rwvk4 = new Rechnungswesen();
+		await rwvk4.PutRWVK(VrrId, Art, Rid, Kid, Brutto, Rechnunginordung, Skonto, Dvid, Verbucht, Uiid);
+		await OnInitializedAsync();
+		OutputGetPostPutDelete = "PUT wurde erfolgreich ausgeführt!";
+	}
+
+
+	public async Task DELETERWEK()
+	{
+		Rechnungswesen rwvk5 = new Rechnungswesen();
+		await rwvk5.DeleteRWVK(VrrId);
+		await OnInitializedAsync();
+		OutputGetPostPutDelete = "DELETE wurde erfolgreich ausgeführt!";
+	}
+
+}

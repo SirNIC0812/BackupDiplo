@@ -1,0 +1,440 @@
+﻿@page "/Personal"
+@using System.Text.Json
+@using System.Text
+@using System.Net.Http.Headers
+@using Microsoft.Extensions.Configuration
+@using Diplomarbeit_HHS.Models
+@inject IConfiguration Configuration
+@inject NavigationManager Navigation
+@inject IJSRuntime JS //Schnittstelle zwischen c# und js
+
+<script src="javaScript/script.js"></script>
+<link rel="stylesheet" media="(min-width:0px)" href="style/styleMobile.css" />
+<link rel="stylesheet" media="(min-width:1000px)" href="style/style.css" />
+
+<body>
+	<header>
+		<h1 class="HeaderText">Personal [funkt ned ganz; POST/PUT NOT WORKING]</h1>
+	</header>
+	<nav>
+	</nav>
+	<section>
+		<article class="AnzeigeDaten">
+			<table id ="InhaltOnClick">
+				<thead>
+					<tr>
+						<th class="TableBestellungenID" @onclick="() => SortTable(nameof(Personalinfo.pId))">
+							ID
+							@(currentSortColumn == nameof(Personalinfo.pId)
+												? (sortAscending ? "↑" : "↓")
+												: string.Empty)																																																																														
+
+						</th>
+						<th class="TableBestellungenUnternehmen" @onclick="() => SortTable(nameof(Personalinfo.sv))">
+							sv
+							@(currentSortColumn == nameof(Personalinfo.sv)
+												? (sortAscending ? "↑" : "↓")
+												: string.Empty)
+						</th>
+						<th class="TableBestellungenUnternehmen" @onclick="() => SortTable(nameof(Personalinfo.lStbemaessung))">
+							lStbemaessung
+							@(currentSortColumn == nameof(Personalinfo.lStbemaessung)
+												? (sortAscending ? "↑" : "↓")
+												: string.Empty)
+						</th>
+						<th class="TableBestellungenBestelldatum" @onclick="() => SortTable(nameof(Personalinfo.lSt))">
+							lSt
+							@(currentSortColumn == nameof(Personalinfo.lSt)
+												? (sortAscending ? "↑" : "↓")
+												: string.Empty)
+						</th>
+						<th class="TableBestellungenID" @onclick="() => SortTable(nameof(Personalinfo.nettoG))">
+							nettoG
+							@(currentSortColumn == nameof(Personalinfo.nettoG)
+												? (sortAscending ? "↑" : "↓")
+												: string.Empty)
+						</th>
+						<th class="TableBestellungenUnternehmen" @onclick="() => SortTable(nameof(Personalinfo.dga))">
+							dga
+							@(currentSortColumn == nameof(Personalinfo.dga)
+												? (sortAscending ? "↑" : "↓")
+												: string.Empty)
+						</th>
+						<th class="TableBestellungenBestelldatum" @onclick="() => SortTable(nameof(Personalinfo.mvk))">
+							mvk
+							@(currentSortColumn == nameof(Personalinfo.mvk)
+												? (sortAscending ? "↑" : "↓")
+												: string.Empty)
+						</th>
+						<th class="TableBestellungenID" @onclick="() => SortTable(nameof(Personalinfo.db))">
+							db
+							@(currentSortColumn == nameof(Personalinfo.db)
+												? (sortAscending ? "↑" : "↓")
+												: string.Empty)
+						</th>
+						<th class="TableBestellungenUnternehmen" @onclick="() => SortTable(nameof(Personalinfo.dz))">
+							dz
+							@(currentSortColumn == nameof(Personalinfo.dz)
+												? (sortAscending ? "↑" : "↓")
+												: string.Empty)
+						</th>
+						<th class="TableBestellungenID" @onclick="() => SortTable(nameof(Personalinfo.kSt))">
+							kSt
+							@(currentSortColumn == nameof(Personalinfo.kSt)
+												? (sortAscending ? "↑" : "↓")
+												: string.Empty)
+						</th>
+						<th class="TableBestellungenUnternehmen" @onclick="() => SortTable(nameof(Personalinfo.ubAbgabe))">
+							ubAbgabe
+							@(currentSortColumn == nameof(Personalinfo.ubAbgabe)
+												? (sortAscending ? "↑" : "↓")
+												: string.Empty)
+						</th>
+						<th class="TableBestellungenBestelldatum" @onclick="() => SortTable(nameof(Personalinfo.uiid))">
+							uiid
+							@(currentSortColumn == nameof(Personalinfo.uiid)
+												? (sortAscending ? "↑" : "↓")
+												: string.Empty)
+						</th>
+						<th class="TableBestellungenID" @onclick="() => SortTable(nameof(Personalinfo.zeitraum))">
+							zeitraum
+							@(currentSortColumn == nameof(Personalinfo.zeitraum)
+												? (sortAscending ? "↑" : "↓")
+												: string.Empty)
+						</th>
+						<th class="TableBestellungenUnternehmen" @onclick="() => SortTable(nameof(Personalinfo.gezahlt))">
+							gezahlt
+							@(currentSortColumn == nameof(Personalinfo.gezahlt)
+												? (sortAscending ? "↑" : "↓")
+												: string.Empty)
+						</th>
+					</tr>
+				</thead>
+				<tfoot>
+					<!--<tr>
+					<td colspan="3">@OutputGetPostPutDelete</td>
+					</tr>-->
+				</tfoot>
+				<tbody id="TableBody">
+					@if (personal == null)
+					{
+						<tr>
+							<td colspan="8">Es wird nach den Datensätzen gesucht.</td>
+						</tr>
+					}
+					else if (personal.Count == 0)
+					{
+						<tr>
+							<td colspan="8">Es wurden keine Datensätze gefunden.</td>
+						</tr>
+					}
+					else
+					{
+						@foreach (var personale in personal)
+						{
+							<tr @onclick="() => GetPersonalById(personale.pId)" style="cursor: pointer;" class="@GetRowClass(personale.pId)">
+								<td>@personale.pId</td>
+								<td>@personale.sv</td>
+								<td>@personale.lStbemaessung</td>
+								<td>@personale.lSt</td>
+								<td>@personale.nettoG</td>
+								<td>@personale.dga</td>
+								<td>@personale.mvk</td>
+								<td>@personale.db</td>
+								<td>@personale.dz</td>
+								<td>@personale.kSt</td>
+								<td>@personale.ubAbgabe</td>
+								<td>@personale.uiid</td>
+								<td>@personale.zeitraum</td>
+								<td>@personale.gezahlt</td>
+							</tr>
+						}
+					}
+				</tbody>
+			</table>
+		</article>
+		<article class="AnzeigeInput">
+			<div class="LinkesDiv">
+				<div id="divEins">
+					<label class="divEinsBestellung" for="PId">ID</label>
+					<input type="number" name="PId" id="PId" @bind="PId" min="0" class="divEinsBestellung" />
+				</div>
+
+				<div id="DivButtons">
+					<button id="GETAufgaben" @onclick="GETPersonal">Anzeigen</button>
+					<br>
+					<button id="POSTAufgaben" @onclick="POSTPersonal">Erstellen</button>
+					<br>
+					<button id="PUTAufgaben" @onclick="PUTPersonal">Ändern</button>
+					<br>
+					<button id="DELETEAufgaben" @onclick="DELETEPersonal">Löschen</button>
+				</div>
+			</div>
+
+			<div class="RechtesDiv">
+				<div id="divZwei">
+					<label class="divZweiBestellung" for="Sv">Sv</label>
+					<label class="divZweiBestellung" for="LStbemaessung">LStbemaessung</label>
+					<label class="divZweiBestellung" for="LSt">LSt</label>
+					<label class="divZweiBestellung" for="NettoG">NettoG</label>
+
+					<input type="number" @bind="Sv" name="Sv" id="Sv" class="divZweiBestellung" />
+					<input type="number" @bind="LStbemaessung" name="LStbemaessung" id="Abgabeterim" class="divZweiBestellung" />
+					<input type="number" @bind="LSt" name="LSt" id="Aufgaben" class="divZweiBestellung" />
+					<input type="number" @bind="NettoG" name="NettoG" id="Abgabeterim" class="divZweiBestellung" />
+
+					<label class="divZweiBestellung" for="Dga">Dga</label>
+					<label class="divZweiBestellung" for="Mvk">Mvk</label>
+					<label class="divZweiBestellung" for="Db">Db</label>
+					<label class="divZweiBestellung" for="Dz">Dz</label>
+
+					<input type="number" @bind="Dga" name="Dga" id="Dga" class="divZweiBestellung" />
+					<input type="number" @bind="Mvk" name="Mvk" id="Mvk" class="divZweiBestellung" />
+					<input type="number" @bind="Db" name="Db" id="Db" class="divZweiBestellung" />
+					<input type="number" @bind="Dz" name="Dz" id="Dz" class="divZweiBestellung" />
+				</div>
+				<div id="divDrei">
+					<label class="divDreiBestellung" for="KSt">Adresse</label>
+					<label class="divDreiBestellung" for="UbAbgabe">UbAbgabe</label>
+					<label class="divDreiBestellung" for="Uiid">Uiid</label>
+
+					<input type="number" @bind="KSt" name="KSt" id="KSt" class="divDreiBestellung" />
+					<input type="number" @bind="UbAbgabe" name="UbAbgabe" id="UbAbgabe" class="divDreiBestellung" />
+					<input type="number" @bind="Uiid" name="Uiid" id="Uiid" class="divDreiBestellung" />
+
+					<label class="divDreiBestellung" for="Zeitraum">Zeitraum</label>
+					<label class="divDreiBestellung" for="Gezahlt">Gezahlt</label>
+
+					<input type="text" @bind="Zeitraum" name="Zeitraum" id="Zeitraum" class="divDreiBestellung" />
+					<input type="checkbox" @bind="Gezahlt" name="Gezahlt" id="Gezahlt" class="divDreiBestellung" />
+				</div>
+			</div>
+		</article>
+	</section>
+</body>
+
+
+@code {
+
+	private string OutputResult = "";
+	private string OutputGetPostPutDelete = "";
+
+
+	public class Personalinfo
+	{
+		public int pId { get; set; }
+		public int sv { get; set; }
+		public double lStbemaessung { get; set; }
+		public double lSt { get; set; }
+		public double nettoG { get; set; }
+		public double dga { get; set; }
+		public double mvk { get; set; }
+		public double db { get; set; }
+		public double dz { get; set; }
+		public double kSt { get; set; }
+		public double ubAbgabe { get; set; }
+		public int uiid { get; set; }
+		public string? zeitraum { get; set; }
+		public bool gezahlt { get; set; }
+	}
+
+	private int PId;
+	private int Sv;
+	private double LStbemaessung;
+	private double LSt;
+	private double NettoG;
+	private double Dga;
+	private double Mvk;
+	private double Db;
+	private double Dz;
+	private double KSt;
+	private double UbAbgabe;
+	private int Uiid;
+	private string? Zeitraum;
+	private bool Gezahlt;
+
+
+
+	private int lastID;
+
+	private List<Personal.PersonalInhalt> personal;
+
+
+	private bool sortAscending = true;
+	private string? currentSortColumn;
+
+	private void SortTable(string columnName)
+	{
+		if (currentSortColumn == columnName)
+		{
+			sortAscending = !sortAscending; // Toggle sort direction
+		}
+		else
+		{
+			currentSortColumn = columnName;
+			sortAscending = true;
+		}
+
+		if (personal != null)
+		{
+			personal = columnName switch
+			{
+				nameof(Personalinfo.pId) => sortAscending
+					? personal.OrderBy(m => m.pId).ToList()
+					: personal.OrderByDescending(m => m.pId).ToList(),
+				nameof(Personalinfo.sv) => sortAscending
+					? personal.OrderBy(m => m.sv).ToList()
+					: personal.OrderByDescending(m => m.sv).ToList(),
+				nameof(Personalinfo.lStbemaessung) => sortAscending
+					? personal.OrderBy(m => m.lStbemaessung).ToList()
+					: personal.OrderByDescending(m => m.lStbemaessung).ToList(),
+				nameof(Personalinfo.lSt) => sortAscending
+					? personal.OrderBy(m => m.lSt).ToList()
+					: personal.OrderByDescending(m => m.lSt).ToList(),
+				nameof(Personalinfo.nettoG) => sortAscending
+					? personal.OrderBy(m => m.nettoG).ToList()
+					: personal.OrderByDescending(m => m.nettoG).ToList(),
+				nameof(Personalinfo.dga) => sortAscending
+					? personal.OrderBy(m => m.dga).ToList()
+					: personal.OrderByDescending(m => m.dga).ToList(),
+				nameof(Personalinfo.mvk) => sortAscending
+					? personal.OrderBy(m => m.mvk).ToList()
+					: personal.OrderByDescending(m => m.mvk).ToList(),
+				nameof(Personalinfo.db) => sortAscending
+					? personal.OrderBy(m => m.db).ToList()
+					: personal.OrderByDescending(m => m.db).ToList(),
+				nameof(Personalinfo.dz) => sortAscending
+					? personal.OrderBy(m => m.dz).ToList()
+					: personal.OrderByDescending(m => m.dz).ToList(),
+				nameof(Personalinfo.kSt) => sortAscending
+					? personal.OrderBy(m => m.kSt).ToList()
+					: personal.OrderByDescending(m => m.kSt).ToList(),
+				nameof(Personalinfo.ubAbgabe) => sortAscending
+					? personal.OrderBy(m => m.ubAbgabe).ToList()
+					: personal.OrderByDescending(m => m.ubAbgabe).ToList(),
+				nameof(Personalinfo.uiid) => sortAscending
+					? personal.OrderBy(m => m.uiid).ToList()
+					: personal.OrderByDescending(m => m.uiid).ToList(),
+				nameof(Personalinfo.zeitraum) => sortAscending
+					? personal.OrderBy(m => m.zeitraum).ToList()
+					: personal.OrderByDescending(m => m.zeitraum).ToList(),
+				nameof(Personalinfo.gezahlt) => sortAscending
+					? personal.OrderBy(m => m.gezahlt).ToList()
+					: personal.OrderByDescending(m => m.gezahlt).ToList(),
+				_ => personal
+			};
+		}
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		Personal p1 = new Personal();
+		personal = await p1.HoleAllePersonalInhalt();
+
+
+		HttpClient client = new HttpClient();
+		var token = await SecureStorage.GetAsync("authToken");
+		client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+		HttpResponseMessage GetResponse = await client.GetAsync($"{URLs.URLPersonal}");
+
+		if (GetResponse.IsSuccessStatusCode)
+		{
+			var responseBody = await GetResponse.Content.ReadAsStringAsync();
+			OutputGetPostPutDelete = "GETALL wurde erfolgreich ausgeführt!";
+
+			if (personal == null)
+			{
+				PId = 1;
+			} else
+			{
+				foreach (var personale in personal)
+				{
+					lastID = personale.pId;
+					int newID = lastID + 1;
+					PId = newID;
+				}	
+			}
+		}
+		else
+		{
+			OutputGetPostPutDelete = "Error TestAPIGET: " + GetResponse.StatusCode;
+		}
+		JS.InvokeVoidAsync("setLastIDInJS", lastID);
+
+	}
+
+
+	private int? selectedId; // Speichert die ID der ausgewählten Zeile
+
+	private string GetRowClass(int Id)
+	{
+		// Rückgabe der CSS-Klasse für die aktuelle Zeile
+		return selectedId == Id ? "AusgewaehlteReihe" : "";
+	}
+
+	private async void GetPersonalById(int IDNumberEingegeben)
+	{
+		selectedId = PId; // Aktualisiert die ausgewählte ID
+
+		Personal p2 = new Personal();
+		var Personale = await p2.HolePersonalById(IDNumberEingegeben);
+		OutputGetPostPutDelete = Convert.ToString(Personale);
+
+		if (Personale == null)
+		{
+			OutputGetPostPutDelete = "Ihre werte sind null, da hat was ned funkt";
+		}
+		else
+		{
+			PId = Personale.pId;
+			Sv = Personale.sv;
+			LStbemaessung = Personale.lStbemaessung;
+			LSt = Personale.lSt;
+			NettoG = Personale.nettoG;
+			Dga = Personale.dga;
+			Mvk = Personale.mvk;
+			Db = Personale.db;
+			Dz = Personale.dz;
+			KSt = Personale.kSt;
+			UbAbgabe = Personale.ubAbgabe;
+			Uiid = Personale.uiid;
+			Zeitraum = Personale.zeitraum;
+			Gezahlt = Personale.gezahlt;
+		}
+	}
+
+
+	public async Task GETPersonal()
+	{
+		GetPersonalById(PId);
+		OutputGetPostPutDelete = "GET wurde erfolgreich ausgeführt!";
+	}
+
+
+	public async Task POSTPersonal()
+	{
+		Personal p3 = new Personal();
+		await p3.PostPersonal(PId, Sv, LStbemaessung, LSt, NettoG, Dga, Mvk, Db, Dz, KSt, UbAbgabe, Uiid, Zeitraum, Gezahlt);
+		await OnInitializedAsync();
+		OutputGetPostPutDelete = "POST wurde erfolgreich ausgeführt!";
+	}
+
+
+	public async Task PUTPersonal()
+	{
+		Personal p4 = new Personal();
+		await p4.PutPersonal(PId, Sv, LStbemaessung, LSt, NettoG, Dga, Mvk, Db, Dz, KSt, UbAbgabe, Uiid, Zeitraum, Gezahlt);
+		await OnInitializedAsync();
+		OutputGetPostPutDelete = "PUT wurde erfolgreich ausgeführt!";
+	}
+
+
+	public async Task DELETEPersonal()
+	{
+		Personal p5 = new Personal();
+		await p5.DeletePersonal(PId);
+		await OnInitializedAsync();
+		OutputGetPostPutDelete = "DELETE wurde erfolgreich ausgeführt!";
+	}
+
+}

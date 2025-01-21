@@ -23,51 +23,51 @@
 			<table id ="InhaltOnClick">
 				<thead>
 					<tr>
-						<th class="TableBestellungenID" @onclick="() => SortTable(nameof(DIP.bId))">
+						<th class="TableBestellungenID" @onclick="() => SortTable(nameof(EinkaufBestellung.bId))">
 							ID
-							@(currentSortColumn == nameof(DIP.bId)
+							@(currentSortColumn == nameof(EinkaufBestellung.bId)
 														? (sortAscending ? "↑" : "↓")
 														: string.Empty)
 						</th>
-						<th class="TableBestellungenUnternehmen" @onclick="() => SortTable(nameof(DIP.beschreibung))">
+						<th class="TableBestellungenUnternehmen" @onclick="() => SortTable(nameof(EinkaufBestellung.beschreibung))">
 							Unternehmen
-							@(currentSortColumn == nameof(DIP.beschreibung)
+							@(currentSortColumn == nameof(EinkaufBestellung.beschreibung)
 														? (sortAscending ? "↑" : "↓")
 														: string.Empty)
 						</th>
-						<th class="TableBestellungenBestelldatum" @onclick="() => SortTable(nameof(DIP.bestelldatum))">
+						<th class="TableBestellungenBestelldatum" @onclick="() => SortTable(nameof(EinkaufBestellung.bestelldatum))">
 							Bestelldatum
-							@(currentSortColumn == nameof(DIP.bestelldatum)
+							@(currentSortColumn == nameof(EinkaufBestellung.bestelldatum)
 														? (sortAscending ? "↑" : "↓")
 														: string.Empty)
 						</th>
-						<th class="TableBestellungenFertig" @onclick="() => SortTable(nameof(DIP.isComplete))">
+						<th class="TableBestellungenFertig" @onclick="() => SortTable(nameof(EinkaufBestellung.isComplete))">
 							<span>✔</span>
-							@(currentSortColumn == nameof(DIP.isComplete)
+							@(currentSortColumn == nameof(EinkaufBestellung.isComplete)
 														? (sortAscending ? "↑" : "↓")
 														: string.Empty)
 						</th>
-						<th class="TableBestellungenAnzahl" @onclick="() => SortTable(nameof(DIP.anzahl))">
+						<th class="TableBestellungenAnzahl" @onclick="() => SortTable(nameof(EinkaufBestellung.anzahl))">
 							Anzahl
-							@(currentSortColumn == nameof(DIP.anzahl)
+							@(currentSortColumn == nameof(EinkaufBestellung.anzahl)
 														? (sortAscending ? "↑" : "↓")
 														: string.Empty)
 						</th>
-						<th class="TableBestellungenNetto" @onclick="() => SortTable(nameof(DIP.netto))">
+						<th class="TableBestellungenNetto" @onclick="() => SortTable(nameof(EinkaufBestellung.netto))">
 							Netto
-							@(currentSortColumn == nameof(DIP.netto)
+							@(currentSortColumn == nameof(EinkaufBestellung.netto)
 														? (sortAscending ? "↑" : "↓")
 														: string.Empty)
 						</th>
-						<th class="TableBestellungenSteuer" @onclick="() => SortTable(nameof(DIP.steuer))">
+						<th class="TableBestellungenSteuer" @onclick="() => SortTable(nameof(EinkaufBestellung.steuer))">
 							Steuer
-							@(currentSortColumn == nameof(DIP.steuer)
+							@(currentSortColumn == nameof(EinkaufBestellung.steuer)
 														? (sortAscending ? "↑" : "↓")
 														: string.Empty)
 						</th>
-						<th class="TableBestellungenBrutto" @onclick="() => SortTable(nameof(DIP.brutto))">
+						<th class="TableBestellungenBrutto" @onclick="() => SortTable(nameof(EinkaufBestellung.brutto))">
 							Brutto
-							@(currentSortColumn == nameof(DIP.brutto)
+							@(currentSortColumn == nameof(EinkaufBestellung.brutto)
 														? (sortAscending ? "↑" : "↓")
 														: string.Empty)
 						</th>
@@ -95,7 +95,7 @@
 					{
 						@foreach (var bestellung in bestellungen)
 						{
-							<tr @onclick="() => GetBestellungById(bestellung.bId)" style="cursor: pointer;" class="@GetRowClass(bestellung.bId)">
+							<tr @onclick="() => GetEinkaufBestellungById(bestellung.bId)" style="cursor: pointer;" class="@GetRowClass(bestellung.bId)">
 								<td class="TableBestellungenID">@bestellung.bId</td>
 								<td class="TableBestellungenUnternehmen">@bestellung.beschreibung</td>
 								<td class="TableBestellungenBestelldatum">@bestellung.bestelldatum.Value.ToString("yyyy-MM-dd")</td>
@@ -118,8 +118,8 @@
 		<article class="AnzeigeInput">
 			<div class="LinkesDiv">
 				<div id="divEins">
-					<label class="divEinsBestellung" for="IDNumber">ID</label>
-					<input type="number" name="IDNumber" id="IDNumber" @bind="IDNumber" min="0" class="divEinsBestellung" />
+					<label class="divEinsBestellung" for="BId">ID</label>
+					<input type="number" name="BId" id="BId" @bind="BId" min="0" class="divEinsBestellung" />
 				</div>
 
 				<div id="DivButtons">
@@ -187,7 +187,7 @@
 	private string OutputResult = "";
 	private string OutputGetPostPutDelete = "";
 
-	public class DIP
+	public class EinkaufBestellung
 	{
 		public int bId { get; set; }
 		public DateTime? bestelldatum { get; set; }
@@ -204,7 +204,7 @@
 		public Boolean isComplete { get; set; }
 	}
 
-	private int IDNumber;
+	private int BId;
 	private DateTime? Bestelldatum;
 	private string? Beschreibung;
 	private string? Zahlungsart;
@@ -219,7 +219,7 @@
 	private Boolean IsComplete;
 
 	private int lastID;
-	private List<Einkauf.DIP> bestellungen;
+	private List<Einkauf.EinkaufBestellungen> bestellungen;
 
 	private bool sortAscending = true;
 	private string? currentSortColumn;
@@ -240,28 +240,28 @@
 		{
 			bestellungen = columnName switch
 			{
-				nameof(DIP.bId) => sortAscending
+				nameof(EinkaufBestellung.bId) => sortAscending
 					? bestellungen.OrderBy(m => m.bId).ToList()
 					: bestellungen.OrderByDescending(m => m.bId).ToList(),
-				nameof(DIP.bestelldatum) => sortAscending
+				nameof(EinkaufBestellung.bestelldatum) => sortAscending
 					? bestellungen.OrderBy(m => m.bestelldatum).ToList()
 					: bestellungen.OrderByDescending(m => m.bestelldatum).ToList(),
-				nameof(DIP.beschreibung) => sortAscending
+				nameof(EinkaufBestellung.beschreibung) => sortAscending
 					? bestellungen.OrderBy(m => m.beschreibung).ToList()
 					: bestellungen.OrderByDescending(m => m.beschreibung).ToList(),
-				nameof(DIP.isComplete) => sortAscending
+				nameof(EinkaufBestellung.isComplete) => sortAscending
 					? bestellungen.OrderBy(m => m.isComplete).ToList()
 					: bestellungen.OrderByDescending(m => m.isComplete).ToList(),
-				nameof(DIP.anzahl) => sortAscending
+				nameof(EinkaufBestellung.anzahl) => sortAscending
 					? bestellungen.OrderBy(m => m.anzahl).ToList()
 					: bestellungen.OrderByDescending(m => m.anzahl).ToList(),
-				nameof(DIP.netto) => sortAscending
+				nameof(EinkaufBestellung.netto) => sortAscending
 					? bestellungen.OrderBy(m => m.netto).ToList()
 					: bestellungen.OrderByDescending(m => m.netto).ToList(),
-				nameof(DIP.steuer) => sortAscending
+				nameof(EinkaufBestellung.steuer) => sortAscending
 					? bestellungen.OrderBy(m => m.steuer).ToList()
 					: bestellungen.OrderByDescending(m => m.steuer).ToList(),
-				nameof(DIP.brutto) => sortAscending
+				nameof(EinkaufBestellung.brutto) => sortAscending
 					? bestellungen.OrderBy(m => m.brutto).ToList()
 					: bestellungen.OrderByDescending(m => m.brutto).ToList(),
 				_ => bestellungen
@@ -287,7 +287,7 @@
 	protected override async Task OnInitializedAsync()
 	{
 		Einkauf e1 = new Einkauf();
-		bestellungen = await e1.HoleAlleBestellungen();
+		bestellungen = await e1.HoleAlleEinkaufBestellungen();
 
 		HttpClient client = new HttpClient();
 		var token = await SecureStorage.GetAsync("authToken");
@@ -304,7 +304,7 @@
 			{
 				lastID = bestellung.bId;
 				int newID = lastID + 1;
-				IDNumber = newID;
+				BId = newID;
 			}
 		}
 		else
@@ -323,12 +323,12 @@
 		return selectedId == Id ? "AusgewaehlteReihe" : "";
 	}
 
-	private async void GetBestellungById(int IDNumberEingegeben)
+	private async void GetEinkaufBestellungById(int IDNumberEingegeben)
 	{
-		selectedId = IDNumber; // Aktualisiert die ausgewählte ID
+		selectedId = BId; // Aktualisiert die ausgewählte ID
 
 		Einkauf e2 = new Einkauf();
-		var Bestellung = await e2.HoleBestellungById(IDNumberEingegeben);
+		var Bestellung = await e2.HoleEinkaufBestellungById(IDNumberEingegeben);
 		OutputGetPostPutDelete = Convert.ToString(Bestellung);
 
 		if (Bestellung == null)
@@ -337,7 +337,7 @@
 		}
 		else
 		{
-			IDNumber = Bestellung.bId;
+			BId = Bestellung.bId;
 			Bestelldatum = Bestellung.bestelldatum;
 			Beschreibung = Bestellung.beschreibung;
 			Zahlungsart = Bestellung.zahlungsart; ;
@@ -356,7 +356,7 @@
 
 	public async Task GETEinkaufBestellung()
 	{
-		GetBestellungById(IDNumber);
+		GetEinkaufBestellungById(BId);
 		OutputGetPostPutDelete = "GET wurde erfolgreich ausgeführt!";
 	}
 
@@ -364,7 +364,7 @@
 	public async Task POSTEinkaufBestellung()
 	{
 		Einkauf e3 = new Einkauf();
-		await e3.PostBestellung(IDNumber, Bestelldatum, Beschreibung, Zahlungsart, BestellNRLieferant, Uiid, Lid, Anzahl, Netto, Steuer, Skonto, Brutto, IsComplete);
+		await e3.PostEinkaufBestellung(BId, Bestelldatum, Beschreibung, Zahlungsart, BestellNRLieferant, Uiid, Lid, Anzahl, Netto, Steuer, Skonto, Brutto, IsComplete);
 		await OnInitializedAsync();
 		OutputGetPostPutDelete = "POST wurde erfolgreich ausgeführt!";
 	}
@@ -373,7 +373,7 @@
 	public async Task PUTEinkaufBestellung()
 	{
 		Einkauf e4 = new Einkauf();
-		await e4.PutBestellung (IDNumber, Bestelldatum, Beschreibung, Zahlungsart, BestellNRLieferant, Uiid, Lid, Anzahl, Netto, Steuer, Skonto, Brutto, IsComplete);
+		await e4.PutEinkaufBestellung(BId, Bestelldatum, Beschreibung, Zahlungsart, BestellNRLieferant, Uiid, Lid, Anzahl, Netto, Steuer, Skonto, Brutto, IsComplete);
 		await OnInitializedAsync();
 		OutputGetPostPutDelete = "PUT wurde erfolgreich ausgeführt!";
 	}
@@ -382,25 +382,8 @@
 	public async Task DELETEEinkaufBestellung()
 	{
 		Einkauf e5 = new Einkauf();
-		await e5.DeleteBestellung(IDNumber);
+		await e5.DeleteEinkaufBestellung(BId);
 		await OnInitializedAsync();
 		OutputGetPostPutDelete = "DELETE wurde erfolgreich ausgeführt!";
-	}
-
-
-	private async void LogOut()
-	{
-		await SecureStorage.SetAsync("authToken", "1");
-		OutputGetPostPutDelete = "Sie haben sich abgemeldet. Ihr Token ist gelöscht";
-
-		var token = await SecureStorage.GetAsync("authToken");
-		if (token == "1")
-		{
-			Navigation.NavigateTo("/");
-		}
-		else
-		{
-			OutputGetPostPutDelete = "Irgendwas hat beim Logout nicht funktioniert!";
-		}
 	}
 }
