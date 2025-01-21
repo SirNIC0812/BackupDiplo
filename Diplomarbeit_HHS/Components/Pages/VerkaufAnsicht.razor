@@ -177,13 +177,13 @@
 				</div>
 
 				<div id="DivButtons">
-					<button id="GETBestellungen" @onclick="TestAPIGET">Anzeigen</button>
+					<button id="GETBestellungen" @onclick="GETVerkauf">Anzeigen</button>
 					<br>
-					<button id="POSTBestellungen" @onclick="TestAPIPOST">Erstellen</button>
+					<button id="POSTBestellungen" @onclick="POSTVerkauf">Erstellen</button>
 					<br>
-					<button id="PUTBestellungen" @onclick="TestAPIPUT">Ändern</button>
+					<button id="PUTBestellungen" @onclick="PUTVerkauf">Ändern</button>
 					<br>
-					<button id="DELETEBestellungen" @onclick="TestAPIDELETE">Löschen</button>
+					<button id="DELETEBestellungen" @onclick="DELETEVerkauf">Löschen</button>
 				</div>
 			</div>
 
@@ -426,14 +426,14 @@
 	}
 
 
-	public async Task TestAPIGET()
+	public async Task GETVerkauf()
 	{
 		GetUserById(VId);
 		OutputGetPostPutDelete = "GET wurde erfolgreich ausgeführt!";
 	}
 
 
-	public async Task TestAPIPOST()
+	public async Task POSTVerkauf()
 	{
 		Verkauf v3 = new Verkauf();
 		await v3.PostVerkauf(VId, Webshop, Email, BestellNr, Zahlungsart, Bestelldatum, Brutto, Netto, Skonto, RelSerstellt, EMailversendet, Bezahlt , Kid, Uiid);
@@ -442,7 +442,7 @@
 	}
 
 
-	public async Task TestAPIPUT()
+	public async Task PUTVerkauf()
 	{
 		Verkauf v4 = new Verkauf();
 		await v4.PutVerkauf(VId, Webshop, Email, BestellNr, Zahlungsart, Bestelldatum, Brutto, Netto, Skonto, RelSerstellt, EMailversendet, Bezahlt, Kid, Uiid);
@@ -451,7 +451,7 @@
 	}
 
 
-	public async Task TestAPIDELETE()
+	public async Task DELETEVerkauf()
 	{
 		Verkauf v5 = new Verkauf();
 		await v5.DeleteVerkauf(VId);

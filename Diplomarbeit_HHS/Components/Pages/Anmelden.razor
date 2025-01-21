@@ -53,7 +53,7 @@
                 </tr>
                 <tr>
                     <td></td>
-                    <td><button id="AnmeldeButton" @onclick="TestenMitLogin">Login</button></td>
+                    <td><button id="AnmeldeButton" @onclick="LoginButton">Login</button></td>
                 </tr>
             </tbody>
         </table>
@@ -118,7 +118,7 @@
 
     private int versuche = 1;
 
-    private async void TestenMitLogin()
+    private async void LoginButton()
     {
         bool newLogin = await LoginVorgang(Username, Passwort);
 

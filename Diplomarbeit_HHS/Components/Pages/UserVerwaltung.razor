@@ -92,13 +92,13 @@
 				</div>
 
 				<div id="DivButtons">
-					<button id="GETBestellungen" @onclick="TestAPIGET">Anzeigen</button>
+					<button id="GETBestellungen" @onclick="GETUserVerwaltung">Anzeigen</button>
 					<br>
-					<button id="POSTBestellungen" @onclick="TestAPIPOST">Erstellen</button>
+					<button id="POSTBestellungen" @onclick="POSTUserVerwaltung">Erstellen</button>
 					<br>
-					<button id="PUTBestellungen" @onclick="TestAPIPUT">Ändern</button>
+					<button id="PUTBestellungen" @onclick="PUTUserVerwaltung">Ändern</button>
 					<br>
-					<button id="DELETEBestellungen" @onclick="TestAPIDELETE">Löschen</button>
+					<button id="DELETEBestellungen" @onclick="DELETEUserVerwaltung">Löschen</button>
 				</div>
 			</div>
 
@@ -262,14 +262,14 @@
 	}
 
 
-	public async Task TestAPIGET()
+	public async Task GETUserVerwaltung()
 	{
 		GetUserById(UserID);
 		OutputGetPostPutDelete = "GET wurde erfolgreich ausgeführt!";
 	}
 
 
-	public async Task TestAPIPOST()
+	public async Task POSTUserVerwaltung()
 	{
 		UserVerwaltungService u3 = new UserVerwaltungService();
 		await u3.PostUser(UserID, Username, Passwort, Rolle);
@@ -278,7 +278,7 @@
 	}
 
 
-	public async Task TestAPIPUT()
+	public async Task PUTUserVerwaltung()
 	{
 		UserVerwaltungService u4 = new UserVerwaltungService();
 		await u4.PutUser(UserID, Username, Passwort, Rolle);
@@ -287,7 +287,7 @@
 	}
 
 
-	public async Task TestAPIDELETE()
+	public async Task DELETEUserVerwaltung()
 	{
 		UserVerwaltungService u5 = new UserVerwaltungService();
 		await u5.DeleteUser(UserID);

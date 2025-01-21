@@ -95,7 +95,6 @@
 					{
 						@foreach (var userinfo in userinfolist)
 						{
-
 							<tr @onclick="() => GetUserById(userinfo.uiId)" style="cursor: pointer;" class="@GetRowClass(userinfo.uiId)">
 								<td>@userinfo.uiId</td>
 								<td>@userinfo.katalognummer</td>
@@ -125,13 +124,13 @@
 				</div>
 
 				<div id="DivButtons">
-					<button id="GETBestellungen" @onclick="TestAPIGET">Anzeigen</button>
+					<button id="GETBestellungen" @onclick="GETUserInfo">Anzeigen</button>
 					<br>
-					<button id="POSTBestellungen" @onclick="TestAPIPOST">Erstellen</button>
+					<button id="POSTBestellungen" @onclick="POSTUserInfo">Erstellen</button>
 					<br>
-					<button id="PUTBestellungen" @onclick="TestAPIPUT">Ändern</button>
+					<button id="PUTBestellungen" @onclick="PUTUserInfo">Ändern</button>
 					<br>
-					<button id="DELETEBestellungen" @onclick="TestAPIDELETE">Löschen</button>
+					<button id="DELETEBestellungen" @onclick="DELETEUserInfo">Löschen</button>
 				</div>
 			</div>
 
@@ -333,14 +332,14 @@
 	}
 
 
-	public async Task TestAPIGET()
+	public async Task GETUserInfo()
 	{
 		GetUserById(UserInfoID);
 		OutputGetPostPutDelete = "GET wurde erfolgreich ausgeführt!";
 	}
 
 
-	public async Task TestAPIPOST()
+	public async Task POSTUserInfo()
 	{
 		UserVerwaltungService ui3 = new UserVerwaltungService();
 		await ui3.PostUserInfo(UserInfoID, Katalognummer, Vorname, Nachname, Abteilung, Abteilungsleiter, Bruttogehalt, UId);
@@ -349,7 +348,7 @@
 	}
 
 
-	public async Task TestAPIPUT()
+	public async Task PUTUserInfo()
 	{
 		UserVerwaltungService ui4 = new UserVerwaltungService();
 		await ui4.PutUserInfo(UserInfoID, Katalognummer, Vorname, Nachname, Abteilung, Abteilungsleiter, Bruttogehalt, UId);
@@ -358,7 +357,7 @@
 	}
 
 
-	public async Task TestAPIDELETE()
+	public async Task DELETEUserInfo()
 	{
 		UserVerwaltungService ui5 = new UserVerwaltungService();
 		await ui5.DeleteUserInfo(UserInfoID);

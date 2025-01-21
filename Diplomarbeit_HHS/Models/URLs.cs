@@ -19,7 +19,7 @@
 
 
 	//Kunde
-	public const string URLKunde = $"{AnfangURL}/Kunde";										//NOCH NICHT VERWENDET
+	public const string URLKunde = $"{AnfangURL}/Kunde";                                        //Schon Verwendet
 
 
 	//Lieferant
@@ -36,19 +36,19 @@
 
 
 	//Rechnungswesen
-	public const string URLRechnungswesenEinkauf = $"{AnfangURL}/Rechnungswesen/Einkauf";		//NOCH NICHT VERWENDET
+	public const string URLRechnungswesenEinkauf = $"{AnfangURL}/Rechnungswesen/Einkauf";		//IN Arbeit //funkt ned (irgendwie keine Daten)
 	public const string URLRechnungswesenVerkauf = $"{AnfangURL}/Rechnungswesen/Verkauf";       //NOCH NICHT VERWENDET
 	public const string URLRechnungswesenPersonal = $"{AnfangURL}/Rechnungswesen/Personal";     //NOCH NICHT VERWENDET
 
 
 	//User
 	public const string URLUserGetUser = $"{AnfangURL}/User/getUser";                           //Brauch ich ned unbedingt || Schon Verwendet
-	public const string URLUserGetUserAdmin = $"{AnfangURL}/User/getUser/Admin";				//wird dann User/getUser || Zeigt alle User + Admin	
+	public const string URLUserGetUserAdmin = $"{AnfangURL}/User/getUser/Admin";				//wird dann User/getUser || Zeigt alle User + Admin
 	public const string URLUserPostUser = $"{AnfangURL}/User/PostUser";                         //Post User || Schon Verwendet
 	public const string URLUserPutDelete = $"{AnfangURL}/User";                                 //Put User || Schon Verwendet
 	public const string URLUserInfo = $"{AnfangURL}/User/Userinfo";                             //Mehr Informationen über User || Schon Verwendet
 
 
 	//Verkauf	
-	public const string URLVerkauf = $"{AnfangURL}/Verkauf";                                    //NOCH NICHT VERWENDET
+	public const string URLVerkauf = $"{AnfangURL}/Verkauf";                                    //Schon Verwendet
 }

@@ -1,0 +1,337 @@
+﻿@page "/Kunden"
+@using System.Text.Json
+@using System.Text
+@using System.Net.Http.Headers
+@using Microsoft.Extensions.Configuration
+@using Diplomarbeit_HHS.Models
+@inject IConfiguration Configuration
+@inject NavigationManager Navigation
+@inject IJSRuntime JS //Schnittstelle zwischen c# und js
+
+<script src="javaScript/script.js"></script>
+<link rel="stylesheet" media="(min-width:0px)" href="style/styleMobile.css" />
+<link rel="stylesheet" media="(min-width:1000px)" href="style/style.css" />
+
+<body>
+	<header>
+		<h1 class="HeaderText">Kunden (muss noch die Kunden.cs klasse hinzufügen)</h1>
+	</header>
+	<nav>
+	</nav>
+	<section>
+		<article class="AnzeigeDaten">
+			<table id ="InhaltOnClick">
+				<thead>
+					<tr>
+						<th class="TableBestellungenID" @onclick="() => SortTable(nameof(Kunde.kId))">
+							ID
+							@(currentSortColumn == nameof(Kunde.kId)
+										? (sortAscending ? "↑" : "↓")
+										: string.Empty)
+						</th>
+						<th class="TableBestellungenUnternehmen" @onclick="() => SortTable(nameof(Kunde.fbNr))">
+							FbNr
+							@(currentSortColumn == nameof(Kunde.fbNr)
+										? (sortAscending ? "↑" : "↓")
+										: string.Empty)
+						</th>
+						<th class="TableBestellungenBestelldatum" @onclick="() => SortTable(nameof(Kunde.kdNrSap))">
+							KdNrSap
+							@(currentSortColumn == nameof(Kunde.kdNrSap)
+										? (sortAscending ? "↑" : "↓")
+										: string.Empty)
+						</th>
+						<th class="TableBestellungenID" @onclick="() => SortTable(nameof(Kunde.firmenname))">
+							Firmenname
+							@(currentSortColumn == nameof(Kunde.firmenname)
+										? (sortAscending ? "↑" : "↓")
+										: string.Empty)
+						</th>
+						<th class="TableBestellungenUnternehmen" @onclick="() => SortTable(nameof(Kunde.suchbegriff))">
+							Suchbegriff
+							@(currentSortColumn == nameof(Kunde.suchbegriff)
+										? (sortAscending ? "↑" : "↓")
+										: string.Empty)
+						</th>
+						<th class="TableBestellungenBestelldatum" @onclick="() => SortTable(nameof(Kunde.adresse))">
+							Adresse
+							@(currentSortColumn == nameof(Kunde.adresse)
+										? (sortAscending ? "↑" : "↓")
+										: string.Empty)
+						</th>
+						<th class="TableBestellungenID" @onclick="() => SortTable(nameof(Kunde.email))">
+							Email
+							@(currentSortColumn == nameof(Kunde.email)
+										? (sortAscending ? "↑" : "↓")
+										: string.Empty)
+						</th>
+						<th class="TableBestellungenUnternehmen" @onclick="() => SortTable(nameof(Kunde.iban))">
+							IBAN
+							@(currentSortColumn == nameof(Kunde.iban)
+										? (sortAscending ? "↑" : "↓")
+										: string.Empty)
+						</th>
+					</tr>
+				</thead>
+				<tfoot>
+					<!--<tr>
+						<td colspan="3">@OutputGetPostPutDelete</td>
+					</tr>-->
+				</tfoot>
+				<tbody id="TableBody">
+					@if (kunden == null)
+					{
+						<tr>
+							<td colspan="8">Es wird nach den Datensätzen gesucht.</td>
+						</tr>
+					}
+					else if (kunden.Count == 0)
+					{
+						<tr>
+							<td colspan="8">Es wurden keine Datensätze gefunden.</td>
+						</tr>
+					}
+					else
+					{
+						@foreach (var kunde in kunden)
+						{
+							<tr @onclick="() => GetKundeById(kunde.kId)" style="cursor: pointer;" class="@GetRowClass(kunde.kId)">
+								<td >@kunde.kId</td>
+								<td>@kunde.fbNr</td>
+								<td>@kunde.kdNrSap</td>
+								<td>@kunde.firmenname</td>
+								<td>@kunde.suchbegriff</td>
+								<td>@kunde.adresse</td>
+								<td>@kunde.email</td>
+								<td>@kunde.iban</td>
+							</tr>
+						}
+					}
+				</tbody>
+			</table>
+		</article>
+		<article class="AnzeigeInput">
+			<div class="LinkesDiv">
+				<div id="divEins">
+					<label class="divEinsBestellung" for="KId">ID</label>
+					<input type="number" name="KId" id="KId" @bind="KId" min="0" class="divEinsBestellung" />
+				</div>
+
+				<div id="DivButtons">
+					<button id="GETAufgaben" @onclick="GETKunde">Anzeigen</button>
+					<br>
+					<button id="POSTAufgaben" @onclick="POSTKunde">Erstellen</button>
+					<br>
+					<button id="PUTAufgaben" @onclick="PUTKunde">Ändern</button>
+					<br>
+					<button id="DELETEAufgaben" @onclick="DELETEKunde">Löschen</button>
+				</div>
+			</div>
+
+			<div class="RechtesDiv">
+				<div id="divZwei">
+					<label class="divZweiBestellung" for="FbNr">FbNr</label>
+					<label class="divZweiBestellung" for="KdNrSap">KdNrSap</label>
+					<label class="divZweiBestellung" for="Firmenname">Firmenname</label>
+					<label class="divZweiBestellung" for="Suchbegriff">Suchbegriff</label>
+
+					<input type="number" @bind="FbNr" name="FbNr" id="Aufgaben" class="divZweiBestellung" />
+					<input type="number" @bind="KdNrSap" name="KdNrSap" id="Abgabeterim" class="divZweiBestellung" />
+					<input type="text" @bind="Firmenname" name="Firmenname" id="Aufgaben" class="divZweiBestellung" />
+					<input type="text" @bind="Suchbegriff" name="Suchbegriff" id="Abgabeterim" class="divZweiBestellung" />
+				</div>
+				<div id="divDrei">
+					<label class="divDreiBestellung" for="Adresse">Adresse</label>
+					<label class="divDreiBestellung" for="Email">Email</label>
+					<label class="divDreiBestellung" for="Iban">IBAN</label>
+
+					<input type="text" @bind="Adresse" name="Adresse" id="Abgabeterim" class="divDreiBestellung" />
+					<input type="text" @bind="Email" name="Email" id="Abgabeterim" class="divDreiBestellung" />
+					<input type="text" @bind="Iban" name="Iban" id="Abgabeterim" class="divDreiBestellung" />
+				</div>
+			</div>
+		</article>
+	</section>
+</body>
+
+
+@code {
+
+	private string OutputResult = "";
+	private string OutputGetPostPutDelete = "";
+
+
+	public class Kunde
+	{
+		public int kId { get; set; }
+		public int fbNr { get; set; }
+		public int kdNrSap { get; set; }
+		public string? firmenname { get; set; }
+		public string? suchbegriff { get; set; }
+		public string? adresse { get; set; }
+		public string? email { get; set; }
+		public string? iban { get; set; }
+	}
+
+	private int KId;
+	private int FbNr;
+	private int KdNrSap;
+	private string? Firmenname;
+	private string? Suchbegriff;
+	private string? Adresse;
+	private string? Email;
+	private string? Iban;
+	
+	private int lastID;
+
+	private List<Kunden.KundenInhalt> kunden;
+
+
+	private bool sortAscending = true;
+	private string? currentSortColumn;
+
+	private void SortTable(string columnName)
+	{
+		if (currentSortColumn == columnName)
+		{
+			sortAscending = !sortAscending; // Toggle sort direction
+		}
+		else
+		{
+			currentSortColumn = columnName;
+			sortAscending = true;
+		}
+
+		if (kunden != null)
+		{
+			kunden = columnName switch
+			{
+				nameof(Kunde.kId) => sortAscending
+					? kunden.OrderBy(m => m.kId).ToList()
+					: kunden.OrderByDescending(m => m.kId).ToList(),
+				nameof(Kunde.fbNr) => sortAscending
+					? kunden.OrderBy(m => m.fbNr).ToList()
+					: kunden.OrderByDescending(m => m.fbNr).ToList(),
+				nameof(Kunde.kdNrSap) => sortAscending
+					? kunden.OrderBy(m => m.kdNrSap).ToList()
+					: kunden.OrderByDescending(m => m.kdNrSap).ToList(),
+				nameof(Kunde.firmenname) => sortAscending
+					? kunden.OrderBy(m => m.firmenname).ToList()
+					: kunden.OrderByDescending(m => m.firmenname).ToList(),
+				nameof(Kunde.suchbegriff) => sortAscending
+					? kunden.OrderBy(m => m.suchbegriff).ToList()
+					: kunden.OrderByDescending(m => m.suchbegriff).ToList(),
+				nameof(Kunde.adresse) => sortAscending
+					? kunden.OrderBy(m => m.adresse).ToList()
+					: kunden.OrderByDescending(m => m.adresse).ToList(),
+				nameof(Kunde.email) => sortAscending
+					? kunden.OrderBy(m => m.email).ToList()
+					: kunden.OrderByDescending(m => m.email).ToList(),
+				nameof(Kunde.iban) => sortAscending
+					? kunden.OrderBy(m => m.iban).ToList()
+					: kunden.OrderByDescending(m => m.iban).ToList(),
+				_ => kunden
+			};
+		}
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		Kunden k1 = new Kunden();
+		kunden = await k1.HoleAlleKunden();
+
+
+		HttpClient client = new HttpClient();
+		var token = await SecureStorage.GetAsync("authToken");
+		client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+		HttpResponseMessage GetResponse = await client.GetAsync($"{URLs.URLAufgaben}");
+
+		if (GetResponse.IsSuccessStatusCode)
+		{
+			var responseBody = await GetResponse.Content.ReadAsStringAsync();
+			OutputGetPostPutDelete = "GETALL wurde erfolgreich ausgeführt!";
+
+			foreach (var kunde in kunden)
+			{
+				lastID = kunde.kId;
+				int newID = lastID + 1;
+				KId = newID;
+			}
+		}
+		else
+		{
+			OutputGetPostPutDelete = "Error TestAPIGET: " + GetResponse.StatusCode;
+		}
+		JS.InvokeVoidAsync("setLastIDInJS", lastID);
+
+	}
+
+
+	private int? selectedId; // Speichert die ID der ausgewählten Zeile
+
+	private string GetRowClass(int Id)
+	{
+		// Rückgabe der CSS-Klasse für die aktuelle Zeile
+		return selectedId == Id ? "AusgewaehlteReihe" : "";
+	}
+
+	private async void GetKundeById(int IDNumberEingegeben)
+	{
+		selectedId = KId; // Aktualisiert die ausgewählte ID
+
+		Kunden k2 = new Kunden();
+		var Kunde = await k2.HoleKundeById(IDNumberEingegeben);
+		OutputGetPostPutDelete = Convert.ToString(Kunde);
+
+		if (Kunde == null)
+		{
+			OutputGetPostPutDelete = "Ihre werte sind null, da hat was ned funkt";
+		}
+		else
+		{
+			KId = Kunde.kId;
+			FbNr = Kunde.fbNr;
+			KdNrSap = Kunde.kdNrSap;
+			Firmenname = Kunde.firmenname;
+			Suchbegriff = Kunde.suchbegriff;
+			Adresse = Kunde.adresse;
+			Email = Kunde.email;
+			Iban = Kunde.iban;
+		}
+	}
+
+
+	public async Task GETKunde()
+	{
+		GetKundeById(KId);
+		OutputGetPostPutDelete = "GET wurde erfolgreich ausgeführt!";
+	}
+
+
+	public async Task POSTKunde()
+	{
+		Kunden k3 = new Kunden();
+		await k3.PostKunde(KId, FbNr, KdNrSap, Firmenname, Suchbegriff, Adresse, Email, Iban);
+		await OnInitializedAsync();
+		OutputGetPostPutDelete = "POST wurde erfolgreich ausgeführt!";
+	}
+
+
+	public async Task PUTKunde()
+	{
+		Kunden k4 = new Kunden();
+		await k4.PutKunde(KId, FbNr, KdNrSap, Firmenname, Suchbegriff, Adresse, Email, Iban);
+		await OnInitializedAsync();
+		OutputGetPostPutDelete = "PUT wurde erfolgreich ausgeführt!";
+	}
+
+
+	public async Task DELETEKunde()
+	{
+		Kunden k5 = new Kunden();
+		await k5.DeleteKunde(KId);
+		await OnInitializedAsync();
+		OutputGetPostPutDelete = "DELETE wurde erfolgreich ausgeführt!";
+	}
+
+}
