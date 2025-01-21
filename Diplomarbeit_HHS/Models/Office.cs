@@ -1,5 +1,4 @@
-﻿using Diplomarbeit_HHS.Components.Pages;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
@@ -9,13 +8,12 @@ using System.Threading.Tasks;
 
 namespace Diplomarbeit_HHS.Models
 {
-	
-	internal class Einkauf
+	internal class Office
 	{
-		//EinkaufBestellungen
-		public class EinkaufBestellungen
+		//OfficeBestellungen
+		public class OfficeBestellungen
 		{
-			public int bId { get; set; }
+			public int pbId { get; set; }
 			public DateTime? bestelldatum { get; set; }
 			public string? beschreibung { get; set; }
 			public string? zahlungsart { get; set; }
@@ -30,19 +28,19 @@ namespace Diplomarbeit_HHS.Models
 			public Boolean isComplete { get; set; }
 		}
 
-		public async Task<List<EinkaufBestellungen>> HoleAlleEinkaufBestellungen()
+		public async Task<List<OfficeBestellungen>> HoleAlleOfficeBestellungen()
 		{
 			HttpClient client = new HttpClient();
 			var token = await SecureStorage.GetAsync("authToken");
 			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-			string EinkaufBestellungURL = URLs.URLEinkaufBestellung;
+			string OfficeBestellungenURL = URLs.URLOfficeBestellung;
 
-			HttpResponseMessage response = await client.GetAsync(EinkaufBestellungURL);
+			HttpResponseMessage response = await client.GetAsync(OfficeBestellungenURL);
 
 			if (response.IsSuccessStatusCode)
 			{
 				string responseBody = await response.Content.ReadAsStringAsync();
-				List<EinkaufBestellungen> bestellung = JsonSerializer.Deserialize<List<EinkaufBestellungen>>(responseBody);
+				List<OfficeBestellungen> bestellung = JsonSerializer.Deserialize<List<OfficeBestellungen>>(responseBody);
 				Console.WriteLine(Convert.ToString(response));
 				return bestellung;
 			}
@@ -53,21 +51,21 @@ namespace Diplomarbeit_HHS.Models
 			}
 		}
 
-		public async Task<List<EinkaufBestellungen>> ZeigeNeueIdAnEKBE()
+		public async Task<List<OfficeBestellungen>> ZeigeNeueIdAnOFBE()
 		{
 			HttpClient client = new HttpClient();
 			var token = await SecureStorage.GetAsync("authToken");
 			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-			string EinkaufBestellungURL = URLs.URLEinkaufBestellung;
+			string OfficeBestellungenURL = URLs.URLOfficeBestellung;
 
-			HttpResponseMessage response = await client.GetAsync(EinkaufBestellungURL);
+			HttpResponseMessage response = await client.GetAsync(OfficeBestellungenURL);
 
 			if (response.IsSuccessStatusCode)
 			{
 				string responseBody = await response.Content.ReadAsStringAsync();
-				List<EinkaufBestellungen> bestellung = JsonSerializer.Deserialize<List<EinkaufBestellungen>>(responseBody);
+				List<OfficeBestellungen> bestellung = JsonSerializer.Deserialize<List<OfficeBestellungen>>(responseBody);
 				var newId = bestellung;
-				newId.Select(b => b.bId).ToList();
+				newId.Select(b => b.pbId).ToList();
 				Console.WriteLine(Convert.ToString(response));
 				return newId;
 			}
@@ -78,19 +76,17 @@ namespace Diplomarbeit_HHS.Models
 			}
 		}
 
-		public async Task<EinkaufBestellungen> HoleEinkaufBestellungById(int id)
+		public async Task<OfficeBestellungen> HoleOfficeBestellungById(int id)
 		{
 			HttpClient client = new HttpClient();
 			var token = await SecureStorage.GetAsync("authToken");
 			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-			//Der obrige code bleibt immer gleich (Klasse erstellen ig)
-			HttpResponseMessage GetResponse = await client.GetAsync($"{URLs.URLEinkaufBestellung}/{id}");
-			//OutputGetPostPutDelete = $"{URLs.URLEinkaufBestellung}/{IDNumber}";
+			HttpResponseMessage GetResponse = await client.GetAsync($"{URLs.URLOfficeBestellung}/{id}");
 
 			if (GetResponse.IsSuccessStatusCode)
 			{
 				var responseBody = await GetResponse.Content.ReadAsStringAsync();
-				EinkaufBestellungen bestellung = JsonSerializer.Deserialize<EinkaufBestellungen>(responseBody);
+				OfficeBestellungen bestellung = JsonSerializer.Deserialize<OfficeBestellungen>(responseBody);
 				return bestellung;
 			}
 			else
@@ -100,9 +96,9 @@ namespace Diplomarbeit_HHS.Models
 			}
 		}
 
-		public async Task<EinkaufBestellungen> GetEinkaufBestellungById(int IDNumber)
+		public async Task<OfficeBestellungen> GetOfficeBestellungById(int IDNumber)
 		{
-			var Bestellung = await HoleEinkaufBestellungById(IDNumber);
+			var Bestellung = await HoleOfficeBestellungById(IDNumber);
 
 			if (Bestellung == null)
 			{
@@ -111,7 +107,7 @@ namespace Diplomarbeit_HHS.Models
 			}
 			else
 			{
-				int BId = Bestellung.bId;
+				int PbId = Bestellung.pbId;
 				DateTime? Bestelldatum = Bestellung.bestelldatum;
 				string? Beschreibung = Bestellung.beschreibung;
 				string? Zahlungsart = Bestellung.zahlungsart; ;
@@ -124,210 +120,20 @@ namespace Diplomarbeit_HHS.Models
 				double Skonto = Bestellung.skonto;
 				double Brutto = Bestellung.brutto;
 				Boolean IsComplete = Bestellung.isComplete;
-				return new EinkaufBestellungen { };
+				return new OfficeBestellungen { };
 			}
 		}
 
 
-		public async Task<string> PostEinkaufBestellung(int IDNumber, DateTime? Bestelldatum, string Beschreibung, string Zahlungsart, int BestellNRLieferant, int Uiid, int Lid, int Anzahl, double Netto, double Steuer, double Skonto, double Brutto, Boolean IsComplete)
+		public async Task<string> PostOfficeBestellung(int IDNumber, DateTime? Bestelldatum, string Beschreibung, string Zahlungsart, int BestellNRLieferant, int Uiid, int Lid, int Anzahl, double Netto, double Steuer, double Skonto, double Brutto, Boolean IsComplete)
 		{
 			HttpClient client = new HttpClient();
 			var token = await SecureStorage.GetAsync("authToken");
 			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-			EinkaufBestellungen newEinkaufBestellungen = new EinkaufBestellungen { bId = IDNumber, bestelldatum = Bestelldatum, beschreibung = Beschreibung, zahlungsart = Zahlungsart, bestellNRLieferant = BestellNRLieferant, uiid = Uiid, lid = Lid, anzahl = Anzahl, netto = Netto, steuer = Steuer, skonto = Skonto, brutto = Brutto, isComplete = IsComplete };
-			string jsonData = JsonSerializer.Serialize(newEinkaufBestellungen);
+			OfficeBestellungen newOfficeBestellungen = new OfficeBestellungen { pbId = IDNumber, bestelldatum = Bestelldatum, beschreibung = Beschreibung, zahlungsart = Zahlungsart, bestellNRLieferant = BestellNRLieferant, uiid = Uiid, lid = Lid, anzahl = Anzahl, netto = Netto, steuer = Steuer, skonto = Skonto, brutto = Brutto, isComplete = IsComplete };
+			string jsonData = JsonSerializer.Serialize(newOfficeBestellungen);
 			var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
-			HttpResponseMessage response = await client.PostAsync($"{URLs.URLEinkaufBestellung}/", content);
-
-			if (response.IsSuccessStatusCode)
-			{
-				var responseBody = await response.Content.ReadAsStringAsync();
-				string OutputResult = responseBody;
-				string OutputGetPostPutDelete = "POST wurde erfolgreich ausgeführt!";
-				return OutputGetPostPutDelete;
-			}
-			else
-			{
-				string errorDetails = await response.Content.ReadAsStringAsync();
-				Console.WriteLine("Details: " + errorDetails);
-				string OutputGetPostPutDelete = "Error TestAPIPOST: " + errorDetails  + ""+ response.Content + " || " + response.Headers + " || " + response.ReasonPhrase + " || " + response.StatusCode + " || " + response.RequestMessage+ " || ";
-				return OutputGetPostPutDelete;
-			}
-		}
-
-		public async Task<String> PutEinkaufBestellung(int IDNumber, DateTime? Bestelldatum, string Beschreibung, string Zahlungsart, int BestellNRLieferant, int Uiid, int Lid, int Anzahl, double Netto, double Steuer, double Skonto, double Brutto, Boolean IsComplete)
-		{
-			HttpClient client = new HttpClient();
-			var token = await SecureStorage.GetAsync("authToken");
-			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-			EinkaufBestellungen newEinkaufBestellungen = new EinkaufBestellungen { bId = IDNumber, bestelldatum = Bestelldatum, beschreibung = Beschreibung, zahlungsart = Zahlungsart, bestellNRLieferant = BestellNRLieferant, uiid = Uiid, lid = Lid, anzahl = Anzahl, netto = Netto, steuer = Steuer, skonto = Skonto, brutto = Brutto, isComplete = IsComplete };
-			string jsonData = JsonSerializer.Serialize(newEinkaufBestellungen);
-			var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
-			HttpResponseMessage response = await client.PutAsync($"{URLs.URLEinkaufBestellung}/{IDNumber}", content);
-
-			if (response.IsSuccessStatusCode)
-			{
-				var responseBody = await response.Content.ReadAsStringAsync();
-				string OutputResult = responseBody;
-				string OutputGetPostPutDelete = "PUT wurde erfolgreich ausgeführt!";
-				return OutputGetPostPutDelete;
-			}
-			else
-			{
-				string OutputGetPostPutDelete = "Error TestAPIPUT: " + response.StatusCode;
-				return OutputGetPostPutDelete;
-			}
-		}
-
-
-		public async Task<String> DeleteEinkaufBestellung(int IDNumber)
-		{
-			HttpClient client = new HttpClient();
-			var token = await SecureStorage.GetAsync("authToken");
-			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-			HttpResponseMessage response = await client.DeleteAsync($"{URLs.URLEinkaufBestellung}/{IDNumber}");
-
-			if (response.IsSuccessStatusCode)
-			{
-				var responseBody = await response.Content.ReadAsStringAsync();
-				string OutputResult = responseBody;
-				string OutputGetPostPutDelete = "DELETE wurde erfolgreich ausgeführt!";
-				return OutputGetPostPutDelete;
-			}
-			else
-			{ 
-				string OutputGetPostPutDelete = "Error TestAPIDELETE: " + response.StatusCode;
-				return OutputGetPostPutDelete;
-			}
-		}
-
-
-
-
-		//EinkaufRechnung
-		public class EinkaufRechnung
-		{
-			public int rId { get; set; }
-			public DateTime? rechnungsdatum { get; set; }
-			public string? beschreibung { get; set; }
-			public string? zahlungsart { get; set; }
-			public int rechnungsNRLieferant { get; set; }
-			public int uiid { get; set; }
-			public int lid { get; set; }
-			public int anzahl { get; set; }
-			public double netto { get; set; }
-			public double steuer { get; set; }
-			public double skonto { get; set; }
-			public double brutto { get; set; }
-			public Boolean gezahlt { get; set; }
-		}
-
-		public async Task<List<EinkaufRechnung>> HoleAlleEinkaufRechnungen()
-		{
-			HttpClient client = new HttpClient();
-			var token = await SecureStorage.GetAsync("authToken");
-			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-			string EinkaufRechnungURL = URLs.URLEinkaufRechnung;
-
-			HttpResponseMessage response = await client.GetAsync(EinkaufRechnungURL);
-
-			if (response.IsSuccessStatusCode)
-			{
-				string responseBody = await response.Content.ReadAsStringAsync();
-				List<EinkaufRechnung> rechnung = JsonSerializer.Deserialize<List<EinkaufRechnung>>(responseBody);
-				Console.WriteLine(Convert.ToString(response));
-				return rechnung;
-			}
-			else
-			{
-				string output = "\nFehlermeldung: " + response.StatusCode;
-				return null;
-			}
-		}
-
-		public async Task<List<EinkaufRechnung>> ZeigeNeueIdAnEKRE()
-		{
-			HttpClient client = new HttpClient();
-			var token = await SecureStorage.GetAsync("authToken");
-			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-			string EinkaufRechnungURL = URLs.URLEinkaufRechnung;
-			HttpResponseMessage response = await client.GetAsync(EinkaufRechnungURL);
-
-			if (response.IsSuccessStatusCode)
-			{
-				string responseBody = await response.Content.ReadAsStringAsync();
-				List<EinkaufRechnung> rechnung = JsonSerializer.Deserialize<List<EinkaufRechnung>>(responseBody);
-				var newId = rechnung;
-				newId.Select(b => b.rId).ToList();
-				Console.WriteLine(Convert.ToString(response));
-				return newId;
-			}
-			else
-			{
-				string output = "\nFehlermeldung: " + response.StatusCode;
-				return null;
-			}
-		}
-
-		public async Task<EinkaufRechnung> HoleEinkaufRechnungById(int id)
-		{
-			HttpClient client = new HttpClient();
-			var token = await SecureStorage.GetAsync("authToken");
-			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-			HttpResponseMessage GetResponse = await client.GetAsync($"{URLs.URLEinkaufRechnung}/{id}");
-
-			if (GetResponse.IsSuccessStatusCode)
-			{
-				var responseBody = await GetResponse.Content.ReadAsStringAsync();
-				EinkaufRechnung rechnung = JsonSerializer.Deserialize<EinkaufRechnung>(responseBody);
-				return rechnung;
-			}
-			else
-			{
-				string error = "Error TestAPIGET: " + GetResponse.StatusCode;
-				return null;
-			}
-		}
-
-		public async Task<EinkaufRechnung> GetEinkaufRechnungById(int IDNumber)
-		{
-			var Rechnung = await HoleEinkaufRechnungById(IDNumber);
-
-			if (Rechnung == null)
-			{
-				string error = "Ihre Werte sind null, da hat was ned funkt";
-				return null;
-			}
-			else
-			{
-				int RId = Rechnung.rId;
-				DateTime? Rechnungsdatum = Rechnung.rechnungsdatum;
-				string? Beschreibung = Rechnung.beschreibung;
-				string? Zahlungsart = Rechnung.zahlungsart; ;
-				int RechnungsNRLieferant = Rechnung.rechnungsNRLieferant; ;
-				int Uiid = Rechnung.uiid; ;
-				int Lid = Rechnung.lid; ;
-				int Anzahl = Rechnung.anzahl;
-				double Netto = Rechnung.netto;
-				double Steuer = Rechnung.steuer;
-				double Skonto = Rechnung.skonto;
-				double Brutto = Rechnung.brutto;
-				Boolean Gezahlt = Rechnung.gezahlt;
-				return new EinkaufRechnung { };
-			}
-		}
-
-
-		public async Task<string> PostEinkaufRechnung(int IDNumber, DateTime? Rechnungsdatum, string Beschreibung, string Zahlungsart, int RechnungsNRLieferant, int Uiid, int Lid, int Anzahl, double Netto, double Steuer, double Skonto, double Brutto, Boolean Gezahlt)
-		{
-			HttpClient client = new HttpClient();
-			var token = await SecureStorage.GetAsync("authToken");
-			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-			EinkaufRechnung newEinkaufRechnung = new EinkaufRechnung { rId = IDNumber, rechnungsdatum = Rechnungsdatum, beschreibung = Beschreibung, zahlungsart = Zahlungsart, rechnungsNRLieferant = RechnungsNRLieferant, uiid = Uiid, lid = Lid, anzahl = Anzahl, netto = Netto, steuer = Steuer, skonto = Skonto, brutto = Brutto, gezahlt = Gezahlt };
-			string jsonData = JsonSerializer.Serialize(newEinkaufRechnung);
-			var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
-			HttpResponseMessage response = await client.PostAsync($"{URLs.URLEinkaufRechnung}/", content);
+			HttpResponseMessage response = await client.PostAsync($"{URLs.URLOfficeBestellung}/", content);
 
 			if (response.IsSuccessStatusCode)
 			{
@@ -345,15 +151,15 @@ namespace Diplomarbeit_HHS.Models
 			}
 		}
 
-		public async Task<String> PutEinkaufRechnung(int IDNumber, DateTime? Rechnungsdatum, string Beschreibung, string Zahlungsart, int RechnungsNRLieferant, int Uiid, int Lid, int Anzahl, double Netto, double Steuer, double Skonto, double Brutto, Boolean Gezahlt)
+		public async Task<String> PutOfficeBestellung(int IDNumber, DateTime? Bestelldatum, string Beschreibung, string Zahlungsart, int BestellNRLieferant, int Uiid, int Lid, int Anzahl, double Netto, double Steuer, double Skonto, double Brutto, Boolean IsComplete)
 		{
 			HttpClient client = new HttpClient();
 			var token = await SecureStorage.GetAsync("authToken");
 			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-			EinkaufRechnung newEinkaufRechnung = new EinkaufRechnung { rId = IDNumber, rechnungsdatum = Rechnungsdatum, beschreibung = Beschreibung, zahlungsart = Zahlungsart, rechnungsNRLieferant = RechnungsNRLieferant, uiid = Uiid, lid = Lid, anzahl = Anzahl, netto = Netto, steuer = Steuer, skonto = Skonto, brutto = Brutto, gezahlt = Gezahlt };
-			string jsonData = JsonSerializer.Serialize(newEinkaufRechnung);
+			OfficeBestellungen newOfficeBestellungen = new OfficeBestellungen { pbId = IDNumber, bestelldatum = Bestelldatum, beschreibung = Beschreibung, zahlungsart = Zahlungsart, bestellNRLieferant = BestellNRLieferant, uiid = Uiid, lid = Lid, anzahl = Anzahl, netto = Netto, steuer = Steuer, skonto = Skonto, brutto = Brutto, isComplete = IsComplete };
+			string jsonData = JsonSerializer.Serialize(newOfficeBestellungen);
 			var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
-			HttpResponseMessage response = await client.PutAsync($"{URLs.URLEinkaufRechnung}/{IDNumber}", content);
+			HttpResponseMessage response = await client.PutAsync($"{URLs.URLOfficeBestellung}/{IDNumber}", content);
 
 			if (response.IsSuccessStatusCode)
 			{
@@ -370,12 +176,202 @@ namespace Diplomarbeit_HHS.Models
 		}
 
 
-		public async Task<String> DeleteEinkaufRechnung(int IDNumber)
+		public async Task<String> DeleteOfficeBestellung(int IDNumber)
 		{
 			HttpClient client = new HttpClient();
 			var token = await SecureStorage.GetAsync("authToken");
 			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-			HttpResponseMessage response = await client.DeleteAsync($"{URLs.URLEinkaufRechnung}/{IDNumber}");
+			HttpResponseMessage response = await client.DeleteAsync($"{URLs.URLOfficeBestellung}/{IDNumber}");
+
+			if (response.IsSuccessStatusCode)
+			{
+				var responseBody = await response.Content.ReadAsStringAsync();
+				string OutputResult = responseBody;
+				string OutputGetPostPutDelete = "DELETE wurde erfolgreich ausgeführt!";
+				return OutputGetPostPutDelete;
+			}
+			else
+			{
+				string OutputGetPostPutDelete = "Error TestAPIDELETE: " + response.StatusCode;
+				return OutputGetPostPutDelete;
+			}
+		}
+
+
+
+
+		//OfficeRechnung
+		public class OfficeRechnung
+		{
+			public int prId { get; set; }
+			public DateTime? rechnungsdatum { get; set; }
+			public string? beschreibung { get; set; }
+			public string? zahlungsart { get; set; }
+			public int rechnungsNRLieferant { get; set; }
+			public int uiid { get; set; }
+			public int lid { get; set; }
+			public int anzahl { get; set; }
+			public double netto { get; set; }
+			public double steuer { get; set; }
+			public double skonto { get; set; }
+			public double brutto { get; set; }
+			public int bid {  get; set; }
+			public Boolean gezahlt { get; set; }
+		}
+
+		public async Task<List<OfficeRechnung>> HoleAlleOfficeRechnungen()
+		{
+			HttpClient client = new HttpClient();
+			var token = await SecureStorage.GetAsync("authToken");
+			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+			string OfficeRechnungURL = URLs.URLOfficeRechnung;
+			HttpResponseMessage response = await client.GetAsync(OfficeRechnungURL);
+
+			if (response.IsSuccessStatusCode)
+			{
+				string responseBody = await response.Content.ReadAsStringAsync();
+				List<OfficeRechnung> rechnung = JsonSerializer.Deserialize<List<OfficeRechnung>>(responseBody);
+				Console.WriteLine(Convert.ToString(response));
+				return rechnung;
+			}
+			else
+			{
+				string output = "\nFehlermeldung: " + response.StatusCode;
+				return null;
+			}
+		}
+
+		public async Task<List<OfficeRechnung>> ZeigeNeueIdAnOFRE()
+		{
+			HttpClient client = new HttpClient();
+			var token = await SecureStorage.GetAsync("authToken");
+			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+			string OfficeRechnungURL = URLs.URLOfficeRechnung;
+			HttpResponseMessage response = await client.GetAsync(OfficeRechnungURL);
+
+			if (response.IsSuccessStatusCode)
+			{
+				string responseBody = await response.Content.ReadAsStringAsync();
+				List<OfficeRechnung> rechnung = JsonSerializer.Deserialize<List<OfficeRechnung>>(responseBody);
+				var newId = rechnung;
+				newId.Select(b => b.prId).ToList();
+				Console.WriteLine(Convert.ToString(response));
+				return newId;
+			}
+			else
+			{
+				string output = "\nFehlermeldung: " + response.StatusCode;
+				return null;
+			}
+		}
+
+		public async Task<OfficeRechnung> HoleOfficeRechnungById(int id)
+		{
+			HttpClient client = new HttpClient();
+			var token = await SecureStorage.GetAsync("authToken");
+			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+			HttpResponseMessage GetResponse = await client.GetAsync($"{URLs.URLOfficeRechnung}/{id}");
+
+			if (GetResponse.IsSuccessStatusCode)
+			{
+				var responseBody = await GetResponse.Content.ReadAsStringAsync();
+				OfficeRechnung rechnung = JsonSerializer.Deserialize<OfficeRechnung>(responseBody);
+				return rechnung;
+			}
+			else
+			{
+				string error = "Error TestAPIGET: " + GetResponse.StatusCode;
+				return null;
+			}
+		}
+
+		public async Task<OfficeRechnung> GetOfficeRechnungById(int IDNumber)
+		{
+			var Rechnung = await HoleOfficeRechnungById(IDNumber);
+
+			if (Rechnung == null)
+			{
+				string error = "Ihre Werte sind null, da hat was ned funkt";
+				return null;
+			}
+			else
+			{
+				int PrId = Rechnung.prId;
+				DateTime? Rechnungsdatum = Rechnung.rechnungsdatum;
+				string? Beschreibung = Rechnung.beschreibung;
+				string? Zahlungsart = Rechnung.zahlungsart; ;
+				int RechnungsNRLieferant = Rechnung.rechnungsNRLieferant; ;
+				int Uiid = Rechnung.uiid; ;
+				int Lid = Rechnung.lid; ;
+				int Anzahl = Rechnung.anzahl;
+				double Netto = Rechnung.netto;
+				double Steuer = Rechnung.steuer;
+				double Skonto = Rechnung.skonto;
+				double Brutto = Rechnung.brutto;
+				int Bid = Rechnung.bid;
+				Boolean Gezahlt = Rechnung.gezahlt;
+				return new OfficeRechnung { };
+			}
+		}
+
+
+		public async Task<string> PostOfficeRechnung(int IDNumber, DateTime? Rechnungsdatum, string Beschreibung, string Zahlungsart, int RechnungsNRLieferant, int Uiid, int Lid, int Anzahl, double Netto, double Steuer, double Skonto, double Brutto, int BId, Boolean Gezahlt)
+		{
+			HttpClient client = new HttpClient();
+			var token = await SecureStorage.GetAsync("authToken");
+			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+			OfficeRechnung newOfficeRechnung = new OfficeRechnung { prId = IDNumber, rechnungsdatum = Rechnungsdatum, beschreibung = Beschreibung, zahlungsart = Zahlungsart, rechnungsNRLieferant = RechnungsNRLieferant, uiid = Uiid, lid = Lid, anzahl = Anzahl, netto = Netto, steuer = Steuer, skonto = Skonto, brutto = Brutto, bid=BId, gezahlt = Gezahlt };
+			string jsonData = JsonSerializer.Serialize(newOfficeRechnung);
+			var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+			HttpResponseMessage response = await client.PostAsync($"{URLs.URLOfficeRechnung}/", content);
+
+			if (response.IsSuccessStatusCode)
+			{
+				var responseBody = await response.Content.ReadAsStringAsync();
+				string OutputResult = responseBody;
+				string OutputGetPostPutDelete = "POST wurde erfolgreich ausgeführt!";
+				return OutputGetPostPutDelete;
+			}
+			else
+			{
+				string errorDetails = await response.Content.ReadAsStringAsync();
+				Console.WriteLine("Details: " + errorDetails);
+				string OutputGetPostPutDelete = "Error TestAPIPOST: " + errorDetails + "" + response.Content + " || " + response.Headers + " || " + response.ReasonPhrase + " || " + response.StatusCode + " || " + response.RequestMessage + " || ";
+				return OutputGetPostPutDelete;
+			}
+		}
+
+		public async Task<String> PutOfficeRechnung(int IDNumber, DateTime? Rechnungsdatum, string Beschreibung, string Zahlungsart, int RechnungsNRLieferant, int Uiid, int Lid, int Anzahl, double Netto, double Steuer, double Skonto, double Brutto, int BId, Boolean Gezahlt)
+		{
+			HttpClient client = new HttpClient();
+			var token = await SecureStorage.GetAsync("authToken");
+			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+			OfficeRechnung newOfficeRechnung = new OfficeRechnung { prId = IDNumber, rechnungsdatum = Rechnungsdatum, beschreibung = Beschreibung, zahlungsart = Zahlungsart, rechnungsNRLieferant = RechnungsNRLieferant, uiid = Uiid, lid = Lid, anzahl = Anzahl, netto = Netto, steuer = Steuer, skonto = Skonto, brutto = Brutto, bid = BId, gezahlt = Gezahlt };
+			string jsonData = JsonSerializer.Serialize(newOfficeRechnung);
+			var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+			HttpResponseMessage response = await client.PutAsync($"{URLs.URLOfficeRechnung}/{IDNumber}", content);
+
+			if (response.IsSuccessStatusCode)
+			{
+				var responseBody = await response.Content.ReadAsStringAsync();
+				string OutputResult = responseBody;
+				string OutputGetPostPutDelete = "PUT wurde erfolgreich ausgeführt!";
+				return OutputGetPostPutDelete;
+			}
+			else
+			{
+				string OutputGetPostPutDelete = "Error TestAPIPUT: " + response.StatusCode;
+				return OutputGetPostPutDelete;
+			}
+		}
+
+
+		public async Task<String> DeleteOfficeRechnung(int IDNumber)
+		{
+			HttpClient client = new HttpClient();
+			var token = await SecureStorage.GetAsync("authToken");
+			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+			HttpResponseMessage response = await client.DeleteAsync($"{URLs.URLOfficeRechnung}/{IDNumber}");
 
 			if (response.IsSuccessStatusCode)
 			{
