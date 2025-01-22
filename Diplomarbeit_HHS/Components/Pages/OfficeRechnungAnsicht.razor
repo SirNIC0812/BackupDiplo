@@ -11,6 +11,7 @@
 <script src="javaScript/script.js"></script>
 <link rel="stylesheet" media="(min-width:0px)" href="style/styleMobile.css" />
 <link rel="stylesheet" media="(min-width:1000px)" href="style/style.css" />
+<link rel="stylesheet" media="(min-width:0px)" href="style/Diplomarbeit_HHS.styles.css" />
 
 <body>
 	<header>
@@ -152,12 +153,12 @@
 					<label class="divZweiBestellung" for="RechnungsNRLieferant">RechnungsNRLieferant</label>
 					<label class="divZweiBestellung" for="UUID">UUID</label>
 					<label class="divZweiBestellung" for="LID">LID</label>
-					<label class="divZweiBestellung" for="BID">BID</label>
+					<label class="divZweiBestellung" for="PbId">PbID</label>
 
 					<input type="number" @bind="RechnungsNRLieferant" name="RechnungsNRLieferant" id="RechnungsNRLieferant" class="divZweiBestellung" />
 					<input type="number" @bind="Uiid" name="UUID" id="UUID" class="divZweiBestellung" />
 					<input type="number" @bind="Lid" name="LID" id="LID" class="divZweiBestellung" />
-					<input type="number" @bind="BId" name="BID" id="BID" class="divZweiBestellung" />
+					<input type="number" @bind="PbId" name="PbId" id="PbId" class="divZweiBestellung" />
 				</div>
 
 				<div id="divVier">
@@ -191,7 +192,7 @@
 	public class OfficeRechnung
 	{
 		public int prId { get; set; }
-		public DateTime? rechnungsdatum { get; set; }
+		public DateOnly? rechnungsdatum { get; set; }
 		public string? beschreibung { get; set; }
 		public string? zahlungsart { get; set; }
 		public int rechnungsNRLieferant { get; set; }
@@ -202,12 +203,12 @@
 		public double steuer { get; set; }
 		public double skonto { get; set; }
 		public double brutto { get; set; }
-		public int bid { get; set; }
+		public int pbid { get; set; }
 		public Boolean gezahlt { get; set; }
 	}
 
 	private int PrId;
-	private DateTime? Rechnungsdatum;
+	private DateOnly? Rechnungsdatum;
 	private string? Beschreibung;
 	private string? Zahlungsart;
 	private int RechnungsNRLieferant;
@@ -218,7 +219,7 @@
 	private double Steuer;
 	private double Skonto;
 	private double Brutto;
-	private int BId;
+	private int PbId;
 	private Boolean Gezahlt;
 
 	private int lastID;
@@ -352,7 +353,7 @@
 			Steuer = Rechnung.steuer;
 			Skonto = Rechnung.skonto;
 			Brutto = Rechnung.brutto;
-			BId = Rechnung.bid;
+			PbId = Rechnung.pbid;
 			Gezahlt = Rechnung.gezahlt;
 		}
 	}
@@ -368,7 +369,7 @@
 	public async Task POSTOfficeRechnung()
 	{
 		Office o3 = new Office();
-		await o3.PostOfficeRechnung(PrId, Rechnungsdatum, Beschreibung, Zahlungsart, RechnungsNRLieferant, Uiid, Lid, Anzahl, Netto, Steuer, Skonto, Brutto, BId, Gezahlt);
+		await o3.PostOfficeRechnung(PrId, Rechnungsdatum, Beschreibung, Zahlungsart, RechnungsNRLieferant, Uiid, Lid, Anzahl, Netto, Steuer, Skonto, Brutto, PbId, Gezahlt);
 		await OnInitializedAsync();
 		OutputGetPostPutDelete = "POST wurde erfolgreich ausgeführt!";
 	}
@@ -377,7 +378,7 @@
 	public async Task PUTOfficeRechnung()
 	{
 		Office o4 = new Office();
-		await o4.PutOfficeRechnung(PrId, Rechnungsdatum, Beschreibung, Zahlungsart, RechnungsNRLieferant, Uiid, Lid, Anzahl, Netto, Steuer, Skonto, Brutto, BId, Gezahlt);
+		await o4.PutOfficeRechnung(PrId, Rechnungsdatum, Beschreibung, Zahlungsart, RechnungsNRLieferant, Uiid, Lid, Anzahl, Netto, Steuer, Skonto, Brutto, PbId, Gezahlt);
 		await OnInitializedAsync();
 		OutputGetPostPutDelete = "PUT wurde erfolgreich ausgeführt!";
 	}

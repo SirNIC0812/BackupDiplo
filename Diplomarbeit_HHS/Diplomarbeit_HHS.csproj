@@ -58,6 +58,19 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Content Remove="wwwroot\style\Diplomarbeit_HHS.styles.css" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Resources\Styles\Diplomarbeit_HHS.styles.css" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <MauiAsset Include="Resources\Styles\Diplomarbeit_HHS.styles.css" />
+      <MauiAsset Include="wwwroot\style\Diplomarbeit_HHS.styles.css" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)" />

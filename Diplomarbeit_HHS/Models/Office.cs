@@ -204,7 +204,7 @@ namespace Diplomarbeit_HHS.Models
 		public class OfficeRechnung
 		{
 			public int prId { get; set; }
-			public DateTime? rechnungsdatum { get; set; }
+			public DateOnly? rechnungsdatum { get; set; }
 			public string? beschreibung { get; set; }
 			public string? zahlungsart { get; set; }
 			public int rechnungsNRLieferant { get; set; }
@@ -215,7 +215,7 @@ namespace Diplomarbeit_HHS.Models
 			public double steuer { get; set; }
 			public double skonto { get; set; }
 			public double brutto { get; set; }
-			public int bid {  get; set; }
+			public int pbid {  get; set; }
 			public Boolean gezahlt { get; set; }
 		}
 
@@ -297,7 +297,7 @@ namespace Diplomarbeit_HHS.Models
 			else
 			{
 				int PrId = Rechnung.prId;
-				DateTime? Rechnungsdatum = Rechnung.rechnungsdatum;
+				DateOnly? Rechnungsdatum = Rechnung.rechnungsdatum;
 				string? Beschreibung = Rechnung.beschreibung;
 				string? Zahlungsart = Rechnung.zahlungsart; ;
 				int RechnungsNRLieferant = Rechnung.rechnungsNRLieferant; ;
@@ -308,19 +308,19 @@ namespace Diplomarbeit_HHS.Models
 				double Steuer = Rechnung.steuer;
 				double Skonto = Rechnung.skonto;
 				double Brutto = Rechnung.brutto;
-				int Bid = Rechnung.bid;
+				int Pbid = Rechnung.pbid;
 				Boolean Gezahlt = Rechnung.gezahlt;
 				return new OfficeRechnung { };
 			}
 		}
 
 
-		public async Task<string> PostOfficeRechnung(int IDNumber, DateTime? Rechnungsdatum, string Beschreibung, string Zahlungsart, int RechnungsNRLieferant, int Uiid, int Lid, int Anzahl, double Netto, double Steuer, double Skonto, double Brutto, int BId, Boolean Gezahlt)
+		public async Task<string> PostOfficeRechnung(int IDNumber, DateOnly? Rechnungsdatum, string Beschreibung, string Zahlungsart, int RechnungsNRLieferant, int Uiid, int Lid, int Anzahl, double Netto, double Steuer, double Skonto, double Brutto, int PbId, Boolean Gezahlt)
 		{
 			HttpClient client = new HttpClient();
 			var token = await SecureStorage.GetAsync("authToken");
 			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-			OfficeRechnung newOfficeRechnung = new OfficeRechnung { prId = IDNumber, rechnungsdatum = Rechnungsdatum, beschreibung = Beschreibung, zahlungsart = Zahlungsart, rechnungsNRLieferant = RechnungsNRLieferant, uiid = Uiid, lid = Lid, anzahl = Anzahl, netto = Netto, steuer = Steuer, skonto = Skonto, brutto = Brutto, bid=BId, gezahlt = Gezahlt };
+			OfficeRechnung newOfficeRechnung = new OfficeRechnung { prId = IDNumber, rechnungsdatum = Rechnungsdatum, beschreibung = Beschreibung, zahlungsart = Zahlungsart, rechnungsNRLieferant = RechnungsNRLieferant, uiid = Uiid, lid = Lid, anzahl = Anzahl, netto = Netto, steuer = Steuer, skonto = Skonto, brutto = Brutto, pbid = PbId, gezahlt = Gezahlt };
 			string jsonData = JsonSerializer.Serialize(newOfficeRechnung);
 			var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
 			HttpResponseMessage response = await client.PostAsync($"{URLs.URLOfficeRechnung}/", content);
@@ -341,12 +341,12 @@ namespace Diplomarbeit_HHS.Models
 			}
 		}
 
-		public async Task<String> PutOfficeRechnung(int IDNumber, DateTime? Rechnungsdatum, string Beschreibung, string Zahlungsart, int RechnungsNRLieferant, int Uiid, int Lid, int Anzahl, double Netto, double Steuer, double Skonto, double Brutto, int BId, Boolean Gezahlt)
+		public async Task<String> PutOfficeRechnung(int IDNumber, DateOnly? Rechnungsdatum, string Beschreibung, string Zahlungsart, int RechnungsNRLieferant, int Uiid, int Lid, int Anzahl, double Netto, double Steuer, double Skonto, double Brutto, int PbId, Boolean Gezahlt)
 		{
 			HttpClient client = new HttpClient();
 			var token = await SecureStorage.GetAsync("authToken");
 			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-			OfficeRechnung newOfficeRechnung = new OfficeRechnung { prId = IDNumber, rechnungsdatum = Rechnungsdatum, beschreibung = Beschreibung, zahlungsart = Zahlungsart, rechnungsNRLieferant = RechnungsNRLieferant, uiid = Uiid, lid = Lid, anzahl = Anzahl, netto = Netto, steuer = Steuer, skonto = Skonto, brutto = Brutto, bid = BId, gezahlt = Gezahlt };
+			OfficeRechnung newOfficeRechnung = new OfficeRechnung { prId = IDNumber, rechnungsdatum = Rechnungsdatum, beschreibung = Beschreibung, zahlungsart = Zahlungsart, rechnungsNRLieferant = RechnungsNRLieferant, uiid = Uiid, lid = Lid, anzahl = Anzahl, netto = Netto, steuer = Steuer, skonto = Skonto, brutto = Brutto, pbid = PbId, gezahlt = Gezahlt };
 			string jsonData = JsonSerializer.Serialize(newOfficeRechnung);
 			var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
 			HttpResponseMessage response = await client.PutAsync($"{URLs.URLOfficeRechnung}/{IDNumber}", content);
